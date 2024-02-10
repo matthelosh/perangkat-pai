@@ -28,4 +28,11 @@ class Sekolah extends Model
         'nip_ks'
     ];
 
+    function rombels() {
+        return $this->hasMany(Rombel::class, 'sekolah_id','npsn');
+    }
+
+    function gurus() {
+        return $this->hasMany(Guru::class, 'sekolah_id','npsn');
+    }
 }

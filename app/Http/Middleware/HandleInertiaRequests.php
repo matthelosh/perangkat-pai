@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Menu;
+use App\Models\Sekolah;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -37,7 +40,28 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            'user' => $request->user() ?? null
+            'user' => $request->user() ? $this->user($request->user()):  null,
+            'navs' => $request->user() ? $this->menus($request->user()->id) : null,
+            'sekolahs' => $request->user() ? $this->sekolahs() : null,
         ]);
+    }
+
+    private function menus($user_id) {
+        $user = User::where('id', $user_id)->with('roles')->first();
+        $menus =  Menu::where('parent_id', 0)->where('roles','LIKE', '%'. $user->roles[0]->name.'%')->with('children', function($q) use($user) {
+            $q->where('roles', 'LIKE',  '%'.$user->roles[0]->name.'%');
+        })->get();
+
+       return $menus;
+    }
+
+    private function user($user) : User {
+        return User::where('id', $user->id)->with('roles')->first();
+    }
+
+    private function sekolahs() {
+        if (auth()->user()->hasRole('admin')) {
+            return Sekolah::all();
+        }
     }
 }

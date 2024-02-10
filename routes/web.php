@@ -21,9 +21,23 @@ Route::middleware("auth")->group(function() {
     Route::inertia("/about", "Dashboard/About")->name("about");
     
     // Sekolah
-    Route::prefix("sekolah")->group(function() {
-        Route::inertia("/", "Dashboard/Sekolah")->name("sekolah");
+    Route::resource("sekolah", SekolahController::class)->only(['index','store','import','update','destroy']);
+    Route::post("/sekolah/impor", [SekolahController::class, 'import'])->name('sekolah.import');
+
+    // Guru
+    Route::resource("guru", GuruController::class)->only(['index','store','import','update','destroy']);
+    Route::post("/guru/impor", [GuruController::class, 'import'])->name('guru.import');
+
+    // Rombel
+    Route::resource("rombel", RombelController::class);
+
+// Settings
+    Route::prefix("setting")->group(function() {
+        Route::resource("user", UserController::class)->name('index', 'setting.account');
+        Route::resource("/menu", MenuController::class);
     });
+
+
 
 // Logout
     Route::post("/logout", function() {

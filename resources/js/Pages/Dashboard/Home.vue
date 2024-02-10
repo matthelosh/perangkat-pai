@@ -12,6 +12,7 @@ import Layout from '@/layouts/DashboardLayout.vue'
                 <el-col :span="24">
                     <el-card width="100%">
                         <h1>Dashboard</h1>
+                        {{ $page.props.user }}
                     </el-card>
                 </el-col>
             </el-row>
