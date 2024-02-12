@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Rombel extends Model
 {
@@ -25,5 +26,10 @@ class Rombel extends Model
 
     function guru() {
         return $this->belongsTo(Guru::class, 'guru_id','nip');
+    }
+
+    public function siswas(): BelongsToMany
+    {
+        return $this->belongsToMany(Siswa::class);
     }
 }

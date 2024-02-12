@@ -19,7 +19,7 @@ class SekolahController extends Controller
             $user = User::find(auth()->user()->id);
             if($user->hasRole('gpai'))
             {
-                $sekolahs = $sekolahs->where('npsn', $user->userable()->sekolah_id);
+                $sekolahs = Sekolah::where('npsn', $user->userable->sekolah_id)->get();
             }
             return Inertia::render("Dashboard/Utama/Sekolah", [
                 'sekolahs' => $sekolahs

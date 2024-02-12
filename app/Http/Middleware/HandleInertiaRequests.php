@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Models\Menu;
+use App\Models\Tapel;
+use App\Models\Semester;
 use App\Models\Sekolah;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -41,14 +43,16 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'user' => $request->user() ? $this->user($request->user()):  null,
-            'navs' => $request->user() ? $this->menus($request->user()->id) : null,
+            'navs' => $request->user() ? $this->menus($request->user()) : null,
             'sekolahs' => $request->user() ? $this->sekolahs() : null,
+            'tapel' => Tapel::whereStatus('active')->first(),
+            'semester' => Semester::whereStatus('active')->first()
         ]);
     }
 
-    private function menus($user_id) {
-        $user = User::where('id', $user_id)->with('roles')->first();
-        $menus =  Menu::where('parent_id', 0)->where('roles','LIKE', '%'. $user->roles[0]->name.'%')->with('children', function($q) use($user) {
+    private function menus($user) {
+        // $user = User::where('id', $user_id)->with('roles')->first();
+        $menus =  Menu::where('parent_id', 0)->where('roles','LIKE', '%'. auth()->user()->roles[0]->name.'%')->with('children', function($q) use($user) {
             $q->where('roles', 'LIKE',  '%'.$user->roles[0]->name.'%');
         })->get();
 
@@ -62,6 +66,8 @@ class HandleInertiaRequests extends Middleware
     private function sekolahs() {
         if (auth()->user()->hasRole('admin')) {
             return Sekolah::all();
+        } else {
+            return Sekolah::where('npsn', auth()->user()->userable->sekolah_id)->get();
         }
     }
 }

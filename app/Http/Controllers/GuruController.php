@@ -19,6 +19,8 @@ class GuruController extends Controller
         try {
             if($role == 'admin') {
                 $gurus = Guru::with('sekolah', 'account')->get();
+            } else if($role=='gpai') {
+                $gurus = Guru::where('id', auth()->user()->userable_id)->with('sekolah','account')->get();
             }
 
             return Inertia::render("Dashboard/Utama/Guru", [

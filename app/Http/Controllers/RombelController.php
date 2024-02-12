@@ -15,31 +15,49 @@ class RombelController extends Controller
     {
         try {
             if (auth()->user()->hasRole('admin')) {
-                $rombels = Rombel::all();
+                $rombels = Rombel::whereIsActive(true)->with('sekolah')->get();
+            } else if (auth()->user()->hasRole('gpai')) {
+                $rombels = Rombel::where('guru_id', auth()->user()->userable->nip)->with('sekolah')->whereIsActive(true)->get();
             }
 
             return Inertia::render("Dashboard/Utama/Rombel",[
                 'rombels' => $rombels,
             ]);
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+  
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $data = json_decode($request->data);
+            $kodes = explode("-", $data->kode);
+            $rombel = Rombel::updateOrCreate(
+                [
+                    'id' => $data->id ?? null,
+                ],
+                [
+                    'sekolah_id' => $kodes[1],
+                    'guru_id' => auth()->user()->userable->nip,
+                    'kode' => $data->kode,
+                    'label' => $data->label,
+                    'tapel' => $kodes[0],
+                    'fase' => $data->fase,
+                    'tingkat' => $data->tingkat,
+                    'is_active' => '1'
+                ]
+            );
+
+            return back();
+        } catch(\Exception $e) {
+            return back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -69,8 +87,15 @@ class RombelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Rombel $rombel)
+    public function destroy(Request $request, $id)
     {
-        //
+        try {
+            $rombel = Rombel::find($id);
+            $rombel->delete();
+
+            return back();
+        } catch (\Exception $e) {
+            return back()->withErrors('message', $e->getMessage());
+        }
     }
 }

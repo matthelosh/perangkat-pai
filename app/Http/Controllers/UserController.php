@@ -34,7 +34,7 @@ class UserController extends Controller
     {
         try {
             $data = json_decode($request->data);
-            User::updateOrCreate(
+            $user = User::updateOrCreate(
                 [
                     'email' => $data->email,
                 ],
@@ -45,6 +45,10 @@ class UserController extends Controller
                     'userable_type' => $request->query("type")
                 ]
             );
+
+            if(str_contains($request->query('type'), 'Guru')) {
+                $user->assignRole('gpai');
+            }
             return back();
         } catch (\Throwable $th) {
             throw $th;
