@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use App\Models\Kaldik;
+use App\Models\Elemen;
 use Illuminate\Http\Request;
 
-class KaldikController extends Controller
+class ElemenController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        return Inertia::render("Dashboard/Utama/Kaldik");
+        //
     }
 
     /**
@@ -35,7 +34,7 @@ class KaldikController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Kaldik $kaldik)
+    public function show(Elemen $elemen)
     {
         //
     }
@@ -43,7 +42,7 @@ class KaldikController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Kaldik $kaldik)
+    public function edit(Elemen $elemen)
     {
         //
     }
@@ -51,7 +50,7 @@ class KaldikController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Kaldik $kaldik)
+    public function update(Request $request, Elemen $elemen)
     {
         //
     }
@@ -59,7 +58,7 @@ class KaldikController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Kaldik $kaldik)
+    public function destroy(Elemen $elemen)
     {
         //
     }

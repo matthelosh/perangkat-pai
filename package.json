@@ -6,7 +6,7 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@popperjs/core": "^2.11.6",
+        "@popperjs/core": "^2.11.8",
         "@vitejs/plugin-vue": "^4.5.0",
         "autoprefixer": "^10.4.17",
         "axios": "^1.6.4",
@@ -23,6 +23,9 @@
         "@inertiajs/vue3": "^1.0.14",
         "element-plus": "^2.5.4",
         "simple-vue-camera": "^1.1.3",
-        "vue3-excel-editor": "^1.0.23"
+        "v-calendar": "^3.1.2",
+        "vue3-easy-data-table": "^1.5.47",
+        "vue3-excel-editor": "^1.0.23",
+        "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz"
     }
 }

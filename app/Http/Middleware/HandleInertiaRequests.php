@@ -60,7 +60,7 @@ class HandleInertiaRequests extends Middleware
     }
 
     private function user($user) : User {
-        return User::where('id', $user->id)->with('roles')->first();
+        return User::where('id', $user->id)->with('roles','userable')->first();
     }
 
     private function sekolahs() {

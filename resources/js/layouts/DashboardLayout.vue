@@ -33,7 +33,7 @@ const toggleSideNav = () => {
                 <el-header class="bg-slate-600 flex justify-between items-center text-white" height="60px">
                     <span class="flex gap-1">
                         <Icon :icon="`mdi:${showSide ? 'close' : 'menu'}`" class="text-white text-2xl cursor-pointer" @click="toggleSideNav" />
-                        <span v-if="!showSide">Header</span>
+                        <span v-if="!showSide">{{ props.title }}</span>
                     </span>
                     <div class="header-items">
                         <el-popover trigger="hover">

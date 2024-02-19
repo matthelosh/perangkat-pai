@@ -19,6 +19,6 @@ class Siswa extends Model
 
     public function rombels() : BelongsToMany
     {
-        return $this->belongToMany(Rombel::class);
+        return $this->belongsToMany(Rombel::class);
     }
 }
