@@ -3,7 +3,6 @@ import { ref, computed, defineAsyncComponent } from 'vue';
 import { usePage, router, Link } from '@inertiajs/vue3';
 import { Icon } from '@iconify/vue';
 import Layout from '@/layouts/DashboardLayout.vue';
-const Tp = defineAsyncComponent(() => import('@/components/Dashboard/Perangkat/Rencana/TP.vue'))
 const page = usePage()
 const mode = ref('list')
 

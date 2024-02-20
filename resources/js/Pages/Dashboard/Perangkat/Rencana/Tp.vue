@@ -2,16 +2,17 @@
 import { ref, computed, defineAsyncComponent, onBeforeMount, watch } from 'vue';
 import {  Head, usePage, router } from '@inertiajs/vue3';
 import { Icon } from '@iconify/vue';
-
+import * as _ from 'lodash';
 import Layout from '@/layouts/DashboardLayout.vue'
 import { ElNotification } from 'element-plus';
 
 const page = usePage()
-
+const CetakTp = defineAsyncComponent(() => import('@/components/Dashboard/Perangkat/Rencana/CetakTp.vue'))
 const mine = ref(false)
-const elemens = ref([])
-
-
+const elemens = computed(() => page.props.elemens)
+const fase = computed(() => route().params.fase)
+const mode = ref('form')
+const cpTeks = page.props.elemens
 const addTp = (elemen) => {
     
     const index = elemens.value.findIndex(el => el.kode == elemen.kode)
@@ -105,22 +106,33 @@ const tutup = () => {
 const onMineChanged = (e) => {
     let params = route().params;
     
-    router.get('/rencana/tp', {fase: params.fase, mine: mine.value}, {replace:true, preserveState: true, only: ['elemens']}
+    router.get('/rencana/tp', {fase: params.fase, mine: mine.value}, { preserveState: true, only: ['elemens']}
     )
 }
 
+const groupMe = (datas, key) => {
+    return Object.groupBy(datas, data => data[key])
+}
+
+const cetak = async() => {
+    mode.value = 'cetak'
+}
+
 onBeforeMount(() => {
-    elemens.value = page.props.elemens
+    
 })
 </script>
 
 <template>
 <Layout title="Tujuan Pembelajaran">
-    <el-card>
+    <el-card v-if="mode == 'form'">
         <template #header>
             <div class="w-full flex items-center justify-between">
                 <h3>Tujuan Pembelajaran</h3>
-                <div class="toolbar-items">
+                <div class="toolbar-items flex gap-2">
+                    <el-button circle @click="cetak">
+                        <Icon icon="mdi:printer" />
+                    </el-button>
                     <el-button circle @click="tutup">
                         <Icon icon="mdi:close" />
                     </el-button>
@@ -198,9 +210,11 @@ onBeforeMount(() => {
                     </div>
                 </el-collapse-item>
             </el-collapse>
+
         </div>
     </el-card>
-    
+   
+    <CetakTp v-if="mode == 'cetak'" :elemens="elemens" @close="mode='form'" />
 </Layout>
 
 </template>
