@@ -24,4 +24,7 @@ class Elemen extends Model
     function tps() {
         return $this->hasMany(Tp::class, 'elemen_id', 'kode');
     }
+    function atps() {
+        return $this->hasMany(Atp::class, 'elemen_id', 'kode');
+    }
 }

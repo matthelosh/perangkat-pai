@@ -66,8 +66,12 @@ Route::prefix("rencana")->group(function() {
         Route::resource("cp", CpController::class);
     });
     
+    // Tujuan Pembelajaran
     Route::resource('tp', TpController::class);
     
+    // alur Tujuan Pembelajaran
+    Route::resource("atp", AtpController::class);
+
     // 
     // Kaldik
     Route::resource("kaldik", KaldikController::class);

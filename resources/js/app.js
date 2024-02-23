@@ -5,6 +5,8 @@ import { createInertiaApp } from '@inertiajs/vue3';
 // import { ZiggyVue } from 'ziggy-js'
 import ElemenPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import ELementTiptapPlugin from 'element-tiptap-vue3-fixed';
+import 'element-tiptap-vue3-fixed/lib/style.css'
 import VueExcelEditor from 'vue3-excel-editor';
 import { setupCalendar } from 'v-calendar';
 
@@ -18,6 +20,7 @@ createInertiaApp({
             .use(plugin)
             // .use(ZiggyVue)
             .use(ElemenPlus, {size: 'small'})
+            .use(ELementTiptapPlugin)
             .use(VueExcelEditor)
             .use(setupCalendar, {})
             .mixin({ methods: { appRoute: route }})

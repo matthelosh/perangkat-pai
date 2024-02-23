@@ -61,6 +61,8 @@ class TpController extends Controller
                         'teks' => $tp['teks']
                     ]
                     );
+
+                $i++;
             }
 
             return back()->with('message', 'Tujuan Pembelajaran disimpan');

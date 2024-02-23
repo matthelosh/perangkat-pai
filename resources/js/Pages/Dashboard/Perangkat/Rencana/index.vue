@@ -31,6 +31,10 @@ const close = () => {
                             <Icon icon="mdi:chart-finance" class="mr-2 text-lg" />
                             <span>Tujuan Pembelajaran</span>
                         </el-menu-item>
+                        <el-menu-item index="1" @click="buka('atp.index', fase)">
+                            <Icon icon="mdi:timeline" class="mr-2 text-lg" />
+                            <span>Alur Tujuan Pembelajaran</span>
+                        </el-menu-item>
                     </el-menu>
                 </div>
             </el-card>
