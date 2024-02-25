@@ -59,7 +59,7 @@ Route::middleware("auth")->group(function () {
 // Rencana
 Route::prefix("rencana")->group(function() {
 
-    Route::inertia("/", "Dashboard/Perangkat/Rencana/index")->name('rencana');
+    Route::get("/", [RencanaController::class, 'index'])->name('rencana');
     // Kurikulum
     Route::prefix('kurikulum')->group(function() {
         Route::get("/", [KurikulumController::class, 'index'])->name('kurikulum.index');
@@ -75,6 +75,9 @@ Route::prefix("rencana")->group(function() {
     // 
     // Kaldik
     Route::resource("kaldik", KaldikController::class);
+
+    // Jadwal
+    Route::resource('jadwal', JadwalController::class);
     
 });
     // Settings
