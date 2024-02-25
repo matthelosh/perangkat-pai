@@ -18,7 +18,7 @@ const layout = computed(() => {
 const loading=ref(false)
 const kaldik = ref({
     is_libur: true,
-    warna: '#ff3344'
+    warna: 'red'
 })
 const showKaldik = ref(false)
 const attributes = computed(() => {
