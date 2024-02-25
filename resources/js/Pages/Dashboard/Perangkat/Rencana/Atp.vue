@@ -4,8 +4,14 @@ import{ usePage, Head, router } from '@inertiajs/vue3'
 import { Icon } from '@iconify/vue';
 import { Doc, Text, Paragraph, Color,  Bold, Underline, Italic, BulletList, OrderedList, Strike, Highlight } from 'element-tiptap-vue3-fixed'
 import Layout from '@/layouts/DashboardLayout.vue'
+import dayjs from 'dayjs'
+import localeData from 'dayjs/plugin/localeData'
+import 'dayjs/locale/id'
+dayjs.locale('id')
+dayjs.extend(localeData)
 
 const page = usePage()
+const tanggal = ref(dayjs().format('YYYY-MM-DD'))
 
 const loading = ref(false)
 const atps = ref([])
@@ -67,6 +73,17 @@ const tps = computed(() => {
     return res
 })
 
+const totalAw = computed(() => {
+    let aws = 0
+    page.props.elemens.forEach(el => {
+        if (el.atps && el.atps.length > 0) {
+            aws += el.atps.reduce((a,c) => a+parseInt(c.aw),0)
+        }
+    })
+
+    return aws
+})
+
 // Form Atp
 const showForm = ref(false)
 const atp = ref({})
@@ -109,6 +126,11 @@ onBeforeMount(() => {
 
                     <h3>Form Alur Tujuan Pembelajaran</h3>
                     <div class="items flex items-center gap-2">
+                        <div class="flex gap-2">
+                            AW Tersedia:
+                            <el-button type="primary">{{ 144 - totalAw}} JP</el-button>
+                        </div>
+                        <el-date-picker v-model="tanggal" format="DD-MM-YYYY" value-format="YYYY-MM-DD" placeholder="Tanggal dibuat" />
                         <el-button type="primary" @click="cetak">
                             <Icon icon="mdi:printer" />
                         </el-button>
@@ -166,7 +188,7 @@ onBeforeMount(() => {
             </div>
             <table class="my-2 w-full">
                 <thead>
-                    <tr class="uppercase">
+                    <tr class="uppercase bg-slate-300">
                         <th class="border border-black p-2">Elemen</th>
                         <th class="border border-black p-2">Materi Ajar</th>
                         <th class="border border-black p-2">Tingkat</th>
@@ -194,10 +216,33 @@ onBeforeMount(() => {
                             </td>
                         </tr>
                     </template>
+                    <tr class="bg-slate-300">
+                        <td colspan="4" class="border border-black text-right p-2 font-bold">Total Alokasi Waktu</td>
+                        <td  class="border border-black p-2 text-center font-bold">{{ totalAw }} JP <br /> ({{ totalAw/4 }} TM)</td>
+                        <td  class="border border-black p-2 text-center font-bold"></td>
+                        <td  class="border border-black p-2 text-center font-bold"></td>
+                        <td  class="border border-black p-2 text-center font-bold"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        
+        <div class="ttd grid grid-cols-3 my-6">
+                <div>
+                    <p>&nbsp;</p>
+                    <p>Kepala Sekolah</p>
+
+                    <p class="underline font-bold  mt-14">{{ page.props.sekolahs[0].nama_ks}}</p>
+                    <p>NIP. {{ page.props.sekolahs[0].nip_ks }}</p>
+                </div>
+                <div></div>
+                <div>
+                    <p>{{ page.props.sekolahs[0].desa }}, {{ dayjs(tanggal).format('D MMMM YYYY') }}</p>
+                    <p>Guru PAI</p>
+
+                    <p class="underline font-bold  mt-14"><span class="uppercase">{{ page.props.user.userable.nama }}</span>, {{ page.props.user.userable.gelar_belakang }}</p>
+                    <p>NIP. {{ page.props.user.userable.nip }}</p>
+                </div>
+            </div>
     </el-card>
 
     <el-dialog v-model="showForm" draggable>

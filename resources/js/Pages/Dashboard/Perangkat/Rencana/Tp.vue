@@ -203,9 +203,6 @@ onBeforeMount(() => {
                                     </tr>
                                 </tbody>
                             </table>
-                            <div v-else>
-                                {{ elemen.tps }}
-                            </div>
                         </el-scrollbar>
                     </div>
                 </el-collapse-item>

@@ -3,10 +3,16 @@ import { ref, computed, defineAsyncComponent, onMounted } from 'vue';
 import {  Head, usePage, router } from '@inertiajs/vue3';
 // import route from 'vendor/tightenco/ziggy/src/js';
 import { Icon } from '@iconify/vue';
+import dayjs from 'dayjs'
+import localeData from 'dayjs/plugin/localeData'
+import 'dayjs/locale/id'
+dayjs.locale('id')
+dayjs.extend(localeData)
 
 const page = usePage()
 const props = defineProps({elemens: Array})
 const emit = defineEmits(['close'])
+const tanggal = ref(dayjs().format('YYYY-MM-DD'))
 
 const datas = computed(() => {
     let results = []
@@ -67,6 +73,8 @@ onMounted(() => {
             <div class="flex justify-between items-center print:hidden">
                 <span class="text-xl font-bold text-blue-900">Lembar Cetak  Tujuan Pembelajaran Fase {{ params.fase }} </span>
                 <div class="toolbar-items flex items-center gap-2">
+                    
+                    <el-date-picker v-model="tanggal" format="DD-MM-YYYY" value-format="YYYY-MM-DD"></el-date-picker>
                     <el-button type="primary"  @click="cetak" class="print:hidden">
                         <Icon icon="mdi:printer" />
                     </el-button>
@@ -77,7 +85,9 @@ onMounted(() => {
             </div>
         </template>
         <div class="card-body">
-            <h3 class="text-xl font-bold text-blue-900 text-center mb-4">Tujuan Pembelajaran Fase {{ params.fase }}</h3>
+            <h3 class="text-xl font-bold text-blue-900 text-center mb-4">
+                Tujuan Pembelajaran Fase {{ params.fase }}
+            </h3>
             <table>
                 <tr>
                     <td>Satuan Pendidikan</td>
@@ -108,8 +118,13 @@ onMounted(() => {
                             <td class="border border-black px-1 align-top">{{ el.tps[key][0].kompetensi  }}</td>
                             <td class="border border-black px-1 align-top">{{ key }}</td>
                             <td class="border border-black px-1 align-top">
-                                <ul class="list-decimal pl-8">
-                                    <li v-for="(tp, t) in el.tps[key]" :key="tp.kode">{{ tp.teks }}</li>
+                                <ul>
+                                    <li v-for="(tp, t) in el.tps[key]" :key="tp.kode">
+                                    <span class="flex gap-2">
+                                        <span >{{ tp.kode.split("-")[1] }}.</span>
+                                        <span>{{ tp.teks }}</span>
+                                    </span>
+                                    </li>
                                 </ul>
                             </td>
                         </tr>
@@ -127,7 +142,7 @@ onMounted(() => {
                 </div>
                 <div></div>
                 <div>
-                    <p>{{ page.props.sekolahs[0].desa }}, ..................... 20...</p>
+                    <p>{{ page.props.sekolahs[0].desa }}, {{ dayjs(tanggal).format('D MMMM YYYY') }}</p>
                     <p>Guru PAI</p>
 
                     <p class="underline font-bold uppercase mt-14">{{ page.props.user.userable.nama }}, {{ page.props.user.userable.gelar_belakang }}</p>
