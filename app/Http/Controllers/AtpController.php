@@ -18,7 +18,7 @@ class AtpController extends Controller
     {
         try {
             if ($request->query('fase')) {
-                if ($request->query('mine') == 'true') {
+                if ($request->query('mine') == '1') {
                     $nip = auth()->user()->userable->nip;
                     $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function($q) use($nip) {
                         $q->where('guru_id', $nip);
@@ -69,7 +69,8 @@ class AtpController extends Controller
 
             return back()->with('message', 'ATP disimpan');
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
+            return back()->withErrors(['message' => $th->getMessage()]);
         }
     }
 

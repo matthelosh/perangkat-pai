@@ -23,7 +23,11 @@ class Atp extends Model
         'asesmen',
     ];
 
-    private function elemen() {
+    function elemen() {
         return $this->belongsTo(Elemen::class, 'elemen_id', 'kode');
+    }
+
+    function prosems() {
+        return $this->hasMany(Prosem::class, 'atp_id', 'id');
     }
 }

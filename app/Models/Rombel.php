@@ -32,4 +32,11 @@ class Rombel extends Model
     {
         return $this->belongsToMany(Siswa::class);
     }
+
+    public function jadwals() {
+        return $this->hasMany(Jadwal::class, 'rombel_id', 'kode');
+    }
+    public function rombel()  {
+        return $this->hasMany(Prosem::class, 'rombel_id', 'kode');
+    }
 }

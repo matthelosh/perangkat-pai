@@ -95,6 +95,7 @@ const cetak = async() => {
     win.document.write(html)
     setTimeout(() => {
         win.print()
+        win.close()
     }, 500)
 }
 

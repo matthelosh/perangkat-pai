@@ -9,13 +9,14 @@ import localeData from 'dayjs/plugin/localeData'
 import 'dayjs/locale/id'
 dayjs.locale('id')
 dayjs.extend(localeData)
+import { ElNotification } from 'element-plus';
 
 const page = usePage()
 const tanggal = ref(dayjs().format('YYYY-MM-DD'))
 
 const loading = ref(false)
 const atps = ref([])
-const mine = ref(false)
+const mine = ref('1')
 const kembali = () => {
     router.get(route('rencana'))
 }
@@ -98,11 +99,12 @@ const simpanAtp = async() => {
             loading.value = false
             atp.value = {}
             showForm.value = false
-            ElNotification({title: 'Info', message: page.props.message})
+            ElNotification({title: 'Info', message: 'Alur TP disimpan', type: 'success'})
         },
         onError: err => {
+            loading.value = false
             console.log(err)
-            ElNotification({title: 'Error', message: err})
+            ElNotification({title: 'Error', message: err.message, type: 'error'})
         }
     })
 }
@@ -111,6 +113,7 @@ const simpanAtp = async() => {
 
 onBeforeMount(() => {
     atps.value = page.props.atps
+    // mine.value = params.mine
     // parseTpAtp()
 })
 </script>
@@ -160,71 +163,80 @@ onBeforeMount(() => {
                     <td>{{ page.props.sekolahs[0].nama }}</td>
                 </tr>
             </table>
-
-            <table class="w-full my-2">
-                <thead>
-                    <tr>
-                        <th class="border border-black p-2" rowspan="2">Capaian Umum PAI</th>
-                        <th class="border border-black p-2" :colspan="page.props.elemens.length">Capaian Per Elemen</th>
-                    </tr>
-                    <tr>
-                        <th class="border border-black p-2" v-for="(elemen, e) in page.props.elemens" :key="e">{{ elemen.label }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="border border-black p-2 text-justify align-top">{{ page.props.cp.teks }}</td>
-                        <td class="border border-black p-2 text-justify align-top" v-for="(elemen, e) in page.props.elemens" :key="e">{{ elemen.deskripsi_cp }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="w-full flex h-10 bg-slate-100 justify-between items-center px-2 print:hidden">
-                <el-switch v-model="mine" active-text="Punya saya" inactive-text="Dari sistem" @change="onMineChanged"></el-switch>
+            <el-collapse>
+                <el-collapse-item>
+                    <template #title>
+                        <div class="print:hidden"> Lihat Capaian Pembelajaran</div>
+                    </template>
+                    <table class="w-full my-2">
+                        <thead>
+                            <tr>
+                                <th class="border border-black p-2" rowspan="2">Capaian Umum PAI</th>
+                                <th class="border border-black p-2" :colspan="page.props.elemens.length">Capaian Per Elemen</th>
+                            </tr>
+                            <tr>
+                                <th class="border border-black p-2" v-for="(elemen, e) in page.props.elemens" :key="e">{{ elemen.label }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-black p-2 text-justify align-top">{{ page.props.cp.teks }}</td>
+                                <td class="border border-black p-2 text-justify align-top" v-for="(elemen, e) in page.props.elemens" :key="e">{{ elemen.deskripsi_cp }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </el-collapse-item>
+            </el-collapse>
+                <div class="w-full flex h-10 bg-slate-100 justify-between items-center px-2 print:hidden">
+                <el-switch v-model="mine" active-value="1" inactive-value="0" active-text="Punya saya" inactive-text="Dari sistem" @change="onMineChanged"></el-switch>
+                
                 <div class="items flex items-center gap-2">
                     <el-button circle @click="showForm = true">
                         <Icon icon="mdi:plus" />
                     </el-button>
                 </div>
             </div>
-            <table class="my-2 w-full">
-                <thead>
-                    <tr class="uppercase bg-slate-300">
-                        <th class="border border-black p-2">Elemen</th>
-                        <th class="border border-black p-2">Materi Ajar</th>
-                        <th class="border border-black p-2">Tingkat</th>
-                        <th class="border border-black p-2">Semester</th>
-                        <th class="border border-black p-2">Alokasi Waktu</th>
-                        <th class="border border-black p-2">Tujuan Pembelajaran</th>
-                        <th class="border border-black p-2">Alur Konten (Lingkup Materi)</th>
-                        <th class="border border-black p-2">Asesmen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template v-for="(el,e) in page.props.elemens" :key="e">
-                        <tr v-for="(atp,a) in el.atps" :key="atp.kode">
-                            <td class="border border-black p-2" v-if="(e+a===e)" :rowspan="(e+a===e) ? el.atps.length : '0'">{{ el.label }}</td>
-                            <td class="border border-black px-2">{{ atp.materi }}</td>
-                            <td class="border border-black px-2 text-center">{{ atp.tingkat }}</td>
-                            <td class="border border-black px-2 text-center">{{ atp.semester }}</td>
-                            <td class="border border-black px-2 text-center">{{ atp.aw }} JP</td>
-                            <td class="border border-black px-2">{{ atp.tps }}</td>
-                            <td class="border border-black px-2">
-                                <span v-html="atp.konten" class="konten"></span>
-                            </td>
-                            <td class="border border-black px-2">
-                                <span v-html="atp.asesmen" class="asesmen"></span>
-                            </td>
+            <el-scrollbar>
+                <table class="my-2 w-full">
+                    <thead>
+                        <tr class="uppercase bg-slate-300">
+                            <th class="border border-black p-2">Elemen</th>
+                            <th class="border border-black p-2">Materi Ajar</th>
+                            <th class="border border-black p-2">Tingkat</th>
+                            <th class="border border-black p-2">Semester</th>
+                            <th class="border border-black p-2">Alokasi Waktu</th>
+                            <th class="border border-black p-2">Tujuan Pembelajaran</th>
+                            <th class="border border-black p-2">Alur Konten (Lingkup Materi)</th>
+                            <th class="border border-black p-2">Asesmen</th>
                         </tr>
-                    </template>
-                    <tr class="bg-slate-300">
-                        <td colspan="4" class="border border-black text-right p-2 font-bold">Total Alokasi Waktu</td>
-                        <td  class="border border-black p-2 text-center font-bold">{{ totalAw }} JP <br /> ({{ totalAw/4 }} TM)</td>
-                        <td  class="border border-black p-2 text-center font-bold"></td>
-                        <td  class="border border-black p-2 text-center font-bold"></td>
-                        <td  class="border border-black p-2 text-center font-bold"></td>
-                    </tr>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <template v-for="(el,e) in page.props.elemens" :key="e">
+                            <tr v-for="(atp,a) in el.atps" :key="atp.kode">
+                                <td class="border border-black p-2" v-if="(e+a===e)" :rowspan="(e+a===e) ? el.atps.length : '0'">{{ el.label }}</td>
+                                <td class="border border-black px-2">{{ atp.materi }}</td>
+                                <td class="border border-black px-2 text-center">{{ atp.tingkat }}</td>
+                                <td class="border border-black px-2 text-center">{{ atp.semester }}</td>
+                                <td class="border border-black px-2 text-center">{{ atp.aw }} JP</td>
+                                <td class="border border-black px-2">{{ atp.tps }}</td>
+                                <td class="border border-black px-2">
+                                    <span v-html="atp.konten" class="konten"></span>
+                                </td>
+                                <td class="border border-black px-2">
+                                    <span v-html="atp.asesmen" class="asesmen"></span>
+                                </td>
+                            </tr>
+                        </template>
+                        <tr class="bg-slate-300">
+                            <td colspan="4" class="border border-black text-right p-2 font-bold">Total Alokasi Waktu</td>
+                            <td  class="border border-black p-2 text-center font-bold">{{ totalAw }} JP <br /> ({{ totalAw/4 }} TM)</td>
+                            <td  class="border border-black p-2 text-center font-bold"></td>
+                            <td  class="border border-black p-2 text-center font-bold"></td>
+                            <td  class="border border-black p-2 text-center font-bold"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </el-scrollbar>
         </div>
         <div class="ttd grid grid-cols-3 my-6">
                 <div>
@@ -278,7 +290,7 @@ onBeforeMount(() => {
                     <el-col :span="24">
                         <el-form-item label="Tujuan Pembelajaran">
                             <el-select v-model="atp.tps" placeholder="Bisa pilih lebih dari satu" multiple>
-                                <el-option v-for="(tp,t) in tps" :key="t" :value="tp">{{ tp }}</el-option>
+                                <el-option v-for="(tp,t) in tps" :key="t" :value="tp">{{(t+1)+". "+ tp }}</el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>

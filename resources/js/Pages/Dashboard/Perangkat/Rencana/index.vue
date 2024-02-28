@@ -14,7 +14,7 @@ const rombels = computed(() => {
 })
 
 const buka = (doc, fase, rombel=null) => {
-    router.get(route(doc, {_query: {fase: fase, rombel: rombel}}))
+    router.get(route(doc, {_query: {fase: fase, rombel: rombel, mine: '1'}}))
 }
 
 const close = () => {
@@ -47,11 +47,11 @@ const close = () => {
                         </el-menu-item>
                         <el-sub-menu index="3">
                             <template #title>
-                                <Icon icon="mdi:calendar-badge" />
-                                <span>&nbsp;Jadwal</span>
+                                <Icon icon="mdi:poll" />
+                                <span>&nbsp;Analisis Pekan Efektif</span>
                             </template>
                             <el-menu-item-group>
-                                <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`3-${r+1}`" @click="buka('jadwal.index', fase,rombel)">{{ rombel.label }}</el-menu-item>
+                                <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`3-${r+1}`" @click="buka('ape.index', fase,rombel.kode)">{{ rombel.label }}</el-menu-item>
                             </el-menu-item-group>
                         </el-sub-menu>
                         <el-sub-menu index="4">
@@ -60,7 +60,16 @@ const close = () => {
                                 <span>&nbsp;Prota</span>
                             </template>
                             <el-menu-item-group>
-                                <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`3-${r+1}`" @click="buka('prota.index', fase,rombel)">{{ rombel.label }}</el-menu-item>
+                                <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`4-${r+1}`" @click="buka('prota.index', fase,rombel.kode)">{{ rombel.label }}</el-menu-item>
+                            </el-menu-item-group>
+                        </el-sub-menu>
+                        <el-sub-menu index="5">
+                            <template #title>
+                                <Icon icon="mdi:calendar-check" />
+                                <span>&nbsp;Prosem</span>
+                            </template>
+                            <el-menu-item-group>
+                                <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`5-${r+1}`" @click="buka('prosem.index', fase,rombel.kode)">{{ rombel.label }}</el-menu-item>
                             </el-menu-item-group>
                         </el-sub-menu>
                     </el-menu>

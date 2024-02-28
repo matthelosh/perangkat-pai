@@ -72,12 +72,18 @@ Route::prefix("rencana")->group(function() {
     // alur Tujuan Pembelajaran
     Route::resource("atp", AtpController::class);
 
-    // 
+    // P
     // Kaldik
     Route::resource("kaldik", KaldikController::class);
 
     // Jadwal
     Route::resource('jadwal', JadwalController::class);
+
+    // APE
+    Route::get("pekan-efektif", [RencanaController::class, 'ape'])->name('ape.index');
+
+    Route::resource("prota", ProtaController::class);
+    Route::resource("prosem", ProsemController::class);
     
 });
     // Settings

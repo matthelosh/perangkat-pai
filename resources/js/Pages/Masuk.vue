@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, reactive } from 'vue';
-import { router } from '@inertiajs/vue3'
+import { router, Head } from '@inertiajs/vue3'
 import { ElNotification } from 'element-plus';
 
 const user = ref({})
@@ -41,6 +41,7 @@ onMounted(() => {
 
 <template>
     <div class="wrapper w-screen h-screen bg-gray-300 flex items-center justify-center">
+        <Head title="Silahkan Masuk | Perangkat Ajar PAI" />
         <el-form @keyup.enter="onSubmit" :rules="rules" id="form-login" v-model="user" class="bg-slate-50 p-8 pb-4 rounded-lg shadow hover:shadow-lg transition-all" @submit="onSubmit">
             <el-form-item label="Username">
                 <el-input placeholder="Masukkan username" v-model="user.name" required></el-input>
