@@ -32,7 +32,9 @@ class AtpController extends Controller
                 $cp = Cp::where('fase', $request->query('fase'))->first();
             }
 
-            $babs = MateriAjar::all();
+            $tingkat = $request->query('fase') == 'A' ? ['1','2'] : ($request->query('fase') == 'B' ? ['3','4'] : ['5', '6']);
+
+            $babs = MateriAjar::where('tingkat', $tingkat[0])->orWhere('tingkat', $tingkat[1])->get();
             return Inertia::render('Dashboard/Perangkat/Rencana/Atp', ['elemens' => $elemens, 'babs' => $babs, 'cp' => $cp]);
         } catch (\Throwable $th) {
             throw $th;

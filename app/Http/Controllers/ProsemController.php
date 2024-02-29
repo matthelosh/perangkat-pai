@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Atp;
+use Inertia\Inertia;
+use App\Models\Tapel;
+use App\Models\Kaldik;
 use App\Models\Prosem;
 use App\Models\Rombel;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Support\Carbon;
 
 class ProsemController extends Controller
 {
@@ -17,19 +20,28 @@ class ProsemController extends Controller
     {
         try {
             $rombel = Rombel::whereKode($request->query('rombel'))->with('jadwals')->first();
+            $semester = $request->query('semester') ?? '1';
+            $tapel = Tapel::whereStatus('active')->first();
+            $tahuns = explode("/", $tapel->label);
+            $start = Carbon::createFromDate($tahuns[0], 7, 1, 'Asia/Jakarta')->startOfDay();
+            $end = Carbon::createFromDate($tahuns[1], 12, 31, 'Asia/Jakarta')->endOfDay();
+            $kaldiks = Kaldik::whereBetween('mulai', [$start, $end])->where('tapel_id', $tapel->kode)->get();
             if ($request->query('mine') == '1') {
                 $atps = Atp::where('guru_id', auth()->user()->userable->nip)
-                            ->whereRombelId($request->query('rombel'))
+                            ->whereTingkat($rombel->tingkat)
+                            ->whereSemester($semester)
                             ->get();
             } else {
                 $atps = Atp::whereNull('guru_id')
                             ->whereTingkat($rombel->tingkat)
+                            ->whereSemester($semester)
                             ->get();
             }
-
+            // dd($atps);
             return Inertia::render('Dashboard/Perangkat/Rencana/Prosem', [
                 'atps' => $atps,
-                'rombel' => $rombel
+                'rombel' => $rombel,
+                'kaldiks' => $kaldiks
             ]);
         } catch (\Throwable $th) {
             throw $th;

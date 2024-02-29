@@ -14,6 +14,9 @@ import { ElNotification } from 'element-plus';
 const page = usePage()
 const tanggal = ref(dayjs().format('YYYY-MM-DD'))
 
+const Kop = defineAsyncComponent(() => import('@/components/Umum/Kop.vue'))
+const Ttd = defineAsyncComponent(() => import('@/components/Umum/Ttd.vue'))
+
 const loading = ref(false)
 const atps = ref([])
 const mine = ref('1')
@@ -145,7 +148,8 @@ onBeforeMount(() => {
             </el-affix>
         </template>
         <div class="card-body cetak">
-            <h1 class="text-lg text-blue-900 font-bold text-center mb-4">Alur Tujuan Pembelajaran</h1>
+            <Kop />
+            <h1 class="text-lg text-blue-900 font-bold text-center mb-4 uppercase">Alur Tujuan Pembelajaran</h1>
             <table class="uppercase">
                 <tr>
                     <td>Mata pelajaran</td>
@@ -237,24 +241,8 @@ onBeforeMount(() => {
                     </tbody>
                 </table>
             </el-scrollbar>
+            <Ttd :tanggal="tanggal" />
         </div>
-        <div class="ttd grid grid-cols-3 my-6">
-                <div>
-                    <p>&nbsp;</p>
-                    <p>Kepala Sekolah</p>
-
-                    <p class="underline font-bold  mt-14">{{ page.props.sekolahs[0].nama_ks}}</p>
-                    <p>NIP. {{ page.props.sekolahs[0].nip_ks }}</p>
-                </div>
-                <div></div>
-                <div>
-                    <p>{{ page.props.sekolahs[0].desa }}, {{ dayjs(tanggal).format('D MMMM YYYY') }}</p>
-                    <p>Guru PAI</p>
-
-                    <p class="underline font-bold  mt-14"><span class="uppercase">{{ page.props.user.userable.nama }}</span>, {{ page.props.user.userable.gelar_belakang }}</p>
-                    <p>NIP. {{ page.props.user.userable.nip }}</p>
-                </div>
-            </div>
     </el-card>
 
     <el-dialog v-model="showForm" draggable>
@@ -299,7 +287,7 @@ onBeforeMount(() => {
                     <el-col :span="19">
                         <el-form-item label="Materi Ajar">
                             <el-select v-model="atp.materi" placeholder="Pilih Materi/Bab">
-                                <el-option v-for="(materi, m) in page.props.babs" :key="materi.id" :value="`${materi.bab}. ${materi.label}`">{{ materi.bab }}. {{ materi.label }}</el-option>
+                                <el-option v-for="(materi, m) in page.props.babs" :key="materi.id" :value="`${materi.bab}. ${materi.label}`">{{ materi.bab }}. {{ materi.label }} (Kelas {{ materi.tingkat }})</el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
