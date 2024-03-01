@@ -23,7 +23,7 @@ const onSubmit = async() => {
         onError: (err) => {
             Object.keys(err).forEach(k => {
                 setTimeout(() => {
-                    ElNotification({title: 'Error', message: err[k]})
+                    ElNotification({title: 'Error', message: err[k], type: 'error'})
                 }, 500)
             })
         },

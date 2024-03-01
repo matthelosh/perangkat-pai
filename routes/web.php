@@ -56,36 +56,42 @@ Route::middleware("auth")->group(function () {
     Route::post("/siswa/impor", [SiswaController::class, "impor"])->name(
         "siswa.impor"
     );
-// Rencana
-Route::prefix("rencana")->group(function() {
+    // Rencana
+    Route::prefix("rencana")->group(function() {
 
-    Route::get("/", [RencanaController::class, 'index'])->name('rencana');
-    // Kurikulum
-    Route::prefix('kurikulum')->group(function() {
-        Route::get("/", [KurikulumController::class, 'index'])->name('kurikulum.index');
-        Route::resource("cp", CpController::class);
+        Route::get("/", [PerangkatControler::class, 'rencana'])->name('rencana');
+        // Kurikulum
+        Route::prefix('kurikulum')->group(function() {
+            Route::get("/", [KurikulumController::class, 'index'])->name('kurikulum.index');
+            Route::resource("cp", CpController::class);
+        });
+        
+        // Tujuan Pembelajaran
+        Route::resource('tp', TpController::class);
+        
+        // alur Tujuan Pembelajaran
+        Route::resource("atp", AtpController::class);
+
+        // P
+        // Kaldik
+        Route::resource("kaldik", KaldikController::class);
+
+        // Jadwal
+        Route::resource('jadwal', JadwalController::class);
+
+        // APE
+        Route::get("pekan-efektif", [RencanaController::class, 'ape'])->name('ape.index');
+
+        Route::resource("prota", ProtaController::class);
+        Route::resource("prosem", ProsemController::class);
+        
     });
-    
-    // Tujuan Pembelajaran
-    Route::resource('tp', TpController::class);
-    
-    // alur Tujuan Pembelajaran
-    Route::resource("atp", AtpController::class);
 
-    // P
-    // Kaldik
-    Route::resource("kaldik", KaldikController::class);
+    // Pelaksanaan
+    Route::prefix('pelaksanaan')->group(function() {
+        Route::get('/', [PerangkatControler::class, 'pelaksanaan'])->name('pelaksanaan');
+    });
 
-    // Jadwal
-    Route::resource('jadwal', JadwalController::class);
-
-    // APE
-    Route::get("pekan-efektif", [RencanaController::class, 'ape'])->name('ape.index');
-
-    Route::resource("prota", ProtaController::class);
-    Route::resource("prosem", ProsemController::class);
-    
-});
     // Settings
     Route::prefix("setting")->group(function () {
         Route::resource("user", UserController::class)->name(

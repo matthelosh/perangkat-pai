@@ -45,8 +45,8 @@ class HandleInertiaRequests extends Middleware
             'user' => $request->user() ? $this->user($request->user()):  null,
             'navs' => $request->user() ? $this->menus($request->user()) : null,
             'sekolahs' => $request->user() ? $this->sekolahs() : null,
-            'tapel' => Tapel::whereStatus('active')->first(),
-            'semester' => Semester::whereStatus('active')->first(),
+            'tapel' => $request->user() ? Tapel::whereStatus('active')->first() : null,
+            'semester' => $request->user() ? Semester::whereStatus('active')->first() : null,
             'app_env' => $request->user() ? config('app.env') : null,
         ]);
     }

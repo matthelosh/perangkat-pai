@@ -10,6 +10,7 @@ class AuthController extends Controller
 {
     public function authenticate(Request $request) : RedirectResponse 
     {
+        try {
         $credentials = $request->validate([
             'name' => ['required'],
             'password' => ['required']
@@ -24,5 +25,8 @@ class AuthController extends Controller
         return back()->withErrors([
             'name' => 'Periksan lagi username dan password Anda'
         ])->onlyInput('name');
+        } catch(\Exception $e) {
+            return back()->withErrors((['message' => $e->getMessage()]));
+        }
     }
 }

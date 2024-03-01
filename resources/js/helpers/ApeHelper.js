@@ -51,7 +51,7 @@ export const unefektif = (month, day) => {
         if ( rentang < 1 ) {
             // console.log(kaldik)
             // if ((bulans.lastIndexOf(month)) == dayjs(kaldik.mulai).get('month') && haris.lastIndexOf(day) == dayjs(kaldik.mulai).get('day')) {
-            if ((bulans.lastIndexOf(month)) == dayjs(kaldik.mulai).get('month') && (bulans.lastIndexOf(month)) == dayjs(kaldik.mulai).get('month')) {
+            if ((haris.lastIndexOf(day)) == dayjs(kaldik.mulai).get('day') && (bulans.lastIndexOf(month)) == dayjs(kaldik.mulai).get('month')) {
                 events.push(kaldik)
                 // console.log(haris.lastIndexOf(day) == dayjs(kaldik.mulai).get('day') && (bulans.lastIndexOf(month)) == dayjs(kaldik.mulai).get('month'))
                 // console.log(kaldik)
