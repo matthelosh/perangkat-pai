@@ -168,7 +168,7 @@ const cetak = async() => {
 </script>
 
 <template>
-    <Layout title="Kalender Pendidikan">
+    <Layout title="Program Tahunan">
         <Head title="Program Tahunan" />
         <el-row class="w-full" v-if="page.props.atps.length > 0">
         <el-col :span="24">
@@ -179,7 +179,7 @@ const cetak = async() => {
                             <Link :href="appRoute('rencana')" class="text-slate-700 font-bold text-2xl">
                                 <Icon icon="mdi:arrow-left" />
                             </Link>
-                            Prota {{ sekolah.nama }} | {{ page.props.tapel.label }}
+                            Prota {{ sekolah.nama }} | {{ page.props.tapel.label }} | Kelas {{ page.props.rombel.label }}
                         </h3>
                         <div class="items flex items-center gap-2">
                             <el-button type="primary" @click="cetak">
@@ -190,6 +190,9 @@ const cetak = async() => {
                 </template>
                 <div class="card-body">
                     <!-- {{ attributes }} -->
+                    <div class="title mb-4 bg-white h-12 flex items-center justify-center">
+                        <h1 class="text-center font-bold">Jumlah: {{ page.props.atps.length }}ATP</h1>
+                    </div>
                     <div class="w-full flex justify-center">
                         <Calendar :disabled-dates="disabledDates" :columns="layout.cols" :rows="layout.rows" is-expanded :min-date="`${page.props.tapel.label.split('/')[0]}-07-01`" :max-date="`${page.props.tapel.label.split('/')[1]}-06-30`" locale="id" @dayclick="onDayClicked" timezone="Asia/Jakarta" :attributes="attributes" />
                     </div>

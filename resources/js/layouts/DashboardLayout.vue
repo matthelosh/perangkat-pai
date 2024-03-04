@@ -26,11 +26,11 @@ const toggleSideNav = () => {
     <Head :title="props.title" />
     <div class="common-layout">
         <el-container class="h-[100vh]">
-            <el-aside  class="bg-slate-300 overflow-x-hidden transition-all h-max-screen relative" width="auto">
+            <el-aside  class="bg-slate-300 print:hidden overflow-x-hidden transition-all h-max-screen relative" width="auto">
                 <SideNav ref="sideNav" :user="page.props.user" :vp="viewPort" />
             </el-aside>
             <el-container>
-                <el-header class="bg-slate-600 flex justify-between items-center text-white" height="60px">
+                <el-header class="bg-slate-600 print:hidden flex justify-between items-center text-white" height="60px">
                     <span class="flex gap-1">
                         <Icon :icon="`mdi:${showSide ? 'close' : 'menu'}`" class="text-white text-2xl cursor-pointer" @click="toggleSideNav" />
                         <span v-if="!showSide">{{ props.title }}</span>
