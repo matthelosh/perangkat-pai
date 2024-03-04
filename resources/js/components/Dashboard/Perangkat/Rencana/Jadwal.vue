@@ -122,54 +122,54 @@ const cetak = async() => {
 
             <div class="title my-4">
                 <h3 class="font-bold text-xl text-center uppercase">jadwal Pelajaran Pendidikan Agama Islam (PAI)</h3> 
-                <h3 class="font-bold text-xl text-center uppercase">TP. {{page.props.tapel.label}}</h3> 
+                <h3 class="font-bold text-xl text-center uppercase">TP. {{page.props.tapel.label}} Semester {{ page.props.semester.kode == '1' ? 'Ganjil' : 'genap' }}</h3> 
             </div>
             <table class="border w-full">
                 <thead>
                     <tr class="bg-slate-300">
-                        <th rowspan="2" class="border p-2 print:border-black">Jamke</th>
-                        <th colspan="6" class="border p-2 print:border-black">Hari</th>
+                        <th rowspan="2" class="border p-2 border-black">Jamke</th>
+                        <th colspan="6" class="border p-2 border-black">Hari</th>
                     </tr>
                     <tr class="bg-slate-300">
-                        <th class="border p-2 print:border-black">Senin</th>
-                        <th class="border p-2 print:border-black">Selasa</th>
-                        <th class="border p-2 print:border-black">Rabu</th>
-                        <th class="border p-2 print:border-black">Kamis</th>
-                        <th class="border p-2 print:border-black">Jumat</th>
-                        <th class="border p-2 print:border-black">Sabtu</th>
+                        <th class="border p-2 border-black">Senin</th>
+                        <th class="border p-2 border-black">Selasa</th>
+                        <th class="border p-2 border-black">Rabu</th>
+                        <th class="border p-2 border-black">Kamis</th>
+                        <th class="border p-2 border-black">Jumat</th>
+                        <th class="border p-2 border-black">Sabtu</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr 
                         v-for="jamke in 10" :key="jamke"
                     >
-                        <td class="border text-center p-2 print:border-black bg-slate-300">{{ jamke }} | {{ jams[jamke-1] }}</td>
-                        <td class="border text-center p-2 print:border-black" :class="showJadwal('Senin',jamke) ? 'bg-white' : 'bg-slate-200'">
+                        <td class="border text-center p-2 border-black bg-slate-300">{{ jamke }} | {{ jams[jamke-1] }}</td>
+                        <td class="border text-center p-2 border-black" :class="showJadwal('Senin',jamke) ? 'bg-white' : 'bg-slate-200'">
                             <button class="hover:text-teal-500" @click="edit(showJadwal('Senin', jamke))">
                                 {{showJadwal('Senin', jamke)?.rombel?.label}}
                             </button>
                         </td>
-                        <td class="border text-center p-2 print:border-black" :class="showJadwal('Selasa',jamke) ? 'bg-white' : 'bg-slate-200'">
+                        <td class="border text-center p-2 border-black" :class="showJadwal('Selasa',jamke) ? 'bg-white' : 'bg-slate-200'">
                             <button class="hover:text-teal-500" @click="edit(showJadwal('Selasa', jamke))">
                                 {{ showJadwal('Selasa', jamke)?.rombel?.label}}
                             </button>
                         </td>
-                        <td class="border text-center p-2 print:border-black" :class="showJadwal('Rabu',jamke) ? 'bg-white' : 'bg-slate-200'">
+                        <td class="border text-center p-2 border-black" :class="showJadwal('Rabu',jamke) ? 'bg-white' : 'bg-slate-200'">
                             <button class="hover:text-teal-500" @click="edit(showJadwal('Rabu', jamke))">
                             {{ showJadwal('Rabu', jamke)?.rombel?.label}}
                             </button>
                         </td>
-                        <td class="border text-center p-2 print:border-black" :class="showJadwal('Kamis',jamke) ? 'bg-white' : 'bg-slate-200'">
+                        <td class="border text-center p-2 border-black" :class="showJadwal('Kamis',jamke) ? 'bg-white' : 'bg-slate-200'">
                             <button class="hover:text-teal-500" @click="edit(showJadwal('Kamis', jamke))">
                                 {{ showJadwal('Kamis', jamke)?.rombel?.label}}
                             </button>
                         </td>
-                        <td class="border text-center p-2 print:border-black" :class="showJadwal('Jumat',jamke) ? 'bg-white' : 'bg-slate-200'">
+                        <td class="border text-center p-2 border-black" :class="showJadwal('Jumat',jamke) ? 'bg-white' : 'bg-slate-200'">
                             <button class="hover:text-teal-500" @click="edit(showJadwal('Jumat', jamke))">
                                 {{ showJadwal('Jumat', jamke)?.rombel?.label}}
                             </button>
                         </td>
-                        <td class="border text-center p-2 print:border-black" :class="showJadwal('Sabtu',jamke) ? 'bg-white' : 'bg-slate-200'">
+                        <td class="border text-center p-2 border-black" :class="showJadwal('Sabtu',jamke) ? 'bg-white' : 'bg-slate-200'">
                             <button class="hover:text-teal-500" @click="edit(showJadwal('Sabtu', jamke))">
                                 {{ showJadwal('Sabtu', jamke)?.rombel?.label}}
                             </button>

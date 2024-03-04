@@ -71,6 +71,7 @@ Route::middleware("auth")->group(function () {
         
         // alur Tujuan Pembelajaran
         Route::resource("atp", AtpController::class);
+        Route::post('/atp/destroy/all', [AtpController::class, 'destroyAll'])->name('atp.destroy.all');
 
         // P
         // Kaldik
@@ -83,6 +84,7 @@ Route::middleware("auth")->group(function () {
         Route::get("pekan-efektif", [RencanaController::class, 'ape'])->name('ape.index');
 
         Route::resource("prota", ProtaController::class);
+        Route::get("/prosem/cetak", [ProsemController::class, 'cetak'])->name('prosem.cetak');
         Route::resource("prosem", ProsemController::class);
         
     });

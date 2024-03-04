@@ -2,50 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Atp;
 use Inertia\Inertia;
-use App\Models\Tapel;
 use App\Models\Jadwal;
-use App\Models\Kaldik;
 use App\Models\Prosem;
-use App\Models\Rombel;
-use App\Models\Semester;
+use App\Services\ProsemService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class ProsemController extends Controller
 {
+
+    public function __construct(private ProsemService $prosemService)
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         try {
-            $rombel = Rombel::whereKode($request->query('rombel'))->with('jadwals')->first();
-            $semester = Semester::whereStatus('active')->first();
-            $tapel = Tapel::whereStatus('active')->first();
-            $tahuns = explode("/", $tapel->label);
-            $start = Carbon::createFromDate($tahuns[0], 7, 1, 'Asia/Jakarta')->startOfDay();
-            $end = Carbon::createFromDate($tahuns[1], 12, 31, 'Asia/Jakarta')->endOfDay();
-            $kaldiks = Kaldik::whereBetween('mulai', [$start, $end])->where('tapel_id', $tapel->kode)->get();
-            if ($request->query('mine') == '1') {
-                $atps = Atp::where('guru_id', auth()->user()->userable->nip)
-                            ->whereTingkat($rombel->tingkat)
-                            ->whereSemester($semester->kode)
-                            ->with('prosems')
-                            ->get();
-            } else {
-                $atps = Atp::whereNull('guru_id')
-                            ->whereTingkat($rombel->tingkat)
-                            ->whereSemester($semester->kode)
-                            ->with('prosems')
-                            ->get();
-            }
-            // dd($atps);
-            return Inertia::render('Dashboard/Perangkat/Rencana/Prosem', [
-                'atps' => $atps,
-                'rombel' => $rombel,
-                'kaldiks' => $kaldiks
+
+            $datas = $this->prosemService->index($request->rombel, $request->mine);
+            $component = 'Dashboard/Perangkat/Rencana/Prosem';
+            return Inertia::render($component, [
+                'atps' => $datas['atps'],
+                'rombel' => $datas['rombel'],
+                'kaldiks' => $datas['kaldiks']
             ]);
         } catch (\Throwable $th) {
             throw $th;
@@ -53,11 +36,22 @@ class ProsemController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the print page for Prosem.
      */
-    public function create()
+    public function cetak(Request $request)
     {
-        //
+        try {
+
+            $datas = $this->prosemService->index($request->rombel, $request->mine);
+            $component = 'Dashboard/Perangkat/Rencana/CetakProsem';
+            return Inertia::render($component, [
+                'atps' => $datas['atps'],
+                'rombel' => $datas['rombel'],
+                'kaldiks' => $datas['kaldiks']
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

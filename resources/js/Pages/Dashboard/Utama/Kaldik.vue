@@ -35,7 +35,8 @@ const attributes = computed(() => {
                 visibility: 'hover'
             },
             index: index,
-            description: item.deskripsi
+            description: item.deskripsi,
+            customData: item
         })
     })
 
@@ -67,11 +68,12 @@ const simpan = () => {
     router.post(route('kaldik.store'), {data: data}, {
         onSuccess: (page) => {
             loading.value = false
+            showKaldik.value = false
             ElNotification({title: 'Info', message: 'Agenda disimpan'})
         },
         onError: (err) => {
-            ElNotification({title: 'Error', message: err})
             loading.value = false
+            ElNotification({title: 'Error', message: err})
         }
     })
 }
@@ -83,6 +85,24 @@ const onDialogClose = () => {
         warna: '#ff3344'
     }
 }
+
+const dayClicked = (day) => {
+    console.log(day)
+}
+
+const hapus = () => {
+    loading.value = true
+    router.delete(route('kaldik.destroy', {id: kaldik.value.id}), {
+        onSuccess: (page) => {
+            loading.value = false
+            ElNotification({title: 'Info', message: 'Kaldik dihapus', type: 'success'})
+        },
+        onError: err => {
+            loading.value = false
+            ElNotification({title: 'Error', message: err, type: 'error'})
+        }
+    })
+}
 </script>
 
 <template>
@@ -90,14 +110,17 @@ const onDialogClose = () => {
         <Head title="Kalender Pendidikan" />
         <h3 class="text-center font-bold uppercase text-blue-900 text-2xl mb-8">KALENDER PENDIDIKAN {{ page.props.tapel.label }}</h3>
         <div class="w-full flex justify-center">
-            <Calendar :columns="layout.cols" :rows="layout.rows" is-expanded :min-date="`${page.props.tapel.label.split('/')[0]}-07-01`" :max-date="`${page.props.tapel.label.split('/')[1]}-06-30`" locale="id" @dayclick="onDayClicked" timezone="Asia/Jakarta" :attributes="attributes" />
+            <Calendar :columns="layout.cols" :rows="layout.rows" is-expanded :min-date="`${page.props.tapel.label.split('/')[0]}-07-01`" :max-date="`${page.props.tapel.label.split('/')[1]}-06-30`" locale="id" @dayclick="onDayClicked"  timezone="Asia/Jakarta" :attributes="attributes" />
         </div>
 
         <el-dialog v-model="showKaldik" @close="onDialogClose">
             <template #header>
                 <div class="w-full flex justify-between">
                     <span>Form Agenda</span>
-                    <el-button type="primary" :loading="loading" @click="simpan">Simpan</el-button>
+                    <div class="toolbar flex gap-1">
+                        <el-button type="danger" :loading="loading" @click="hapus">Hapus</el-button>
+                        <el-button type="primary" :loading="loading" @click="simpan">Simpan</el-button>
+                    </div>
                 </div>
             </template>
             <div class="dialog-body">

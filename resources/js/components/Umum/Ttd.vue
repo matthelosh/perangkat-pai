@@ -16,9 +16,10 @@ const tanggal = props.tanggal ?? '..........................'
 
 <template>
 <div class="w-full flex justify-around items-center font-serif my-4">
-    <div class="ttd_ks ">
+    <div class="ttd_ks relative">
         <p class="leading-4">&nbsp;</p>
         <p class="leading-4">Kepala Sekolah</p>
+        <img :src="`/storage/ttd-kepsek/${page.props.sekolahs[0].nip_ks}.png`" class="absolute" />
         <p class="leading-4 mt-20  underline font-bold"><span class="uppercase">{{ sekolah.nama_ks}}</span> </p>
         <p class="leading-4 tracking-wide">NIP. {{ sekolah.nip_ks}}</p>
     </div>

@@ -9,7 +9,7 @@ import 'dayjs/locale/id'
 dayjs.extend(localeData)
 dayjs.locale("id")
 import { cssLink } from '@/helpers/printHelper'
-import { unefektif, allUnefektif, tes } from '@/helpers/ApeHelper';
+import { unefektif, allUnefektif, weeksPerMonth } from '@/helpers/ApeHelper';
 import { ElNotification } from 'element-plus';
 
 const Kop = defineAsyncComponent(() => import('@/components/Umum/Kop.vue'))
@@ -18,10 +18,13 @@ const Ttd = defineAsyncComponent(() => import('@/components/Umum/Ttd.vue'))
 const page = usePage()
 const sekolah = computed(() => page.props.sekolahs[0])
 const params = route().params;
-const semester = ref('1')
+// const semester = ref('1')
 const atps = ref([
 ])
-const syahrs = computed(() => dayjs.months())
+const syahrs = computed(() => {
+    let months = dayjs.months()
+    return months.slice((page.props.semester.kode == '1' ? 6 : 0), (page.props.semester.kode == '1' ? 12 : 6))
+})
 const pickerVisibilities = ref([])
 const weekDays = computed(() => {
     let wD = dayjs.weekdays()
@@ -31,13 +34,18 @@ const weekDays = computed(() => {
 })
 
 const allEvents = computed(() => {
-    let all = allUnefektif(syahrs.value.slice((semester.value == '1' ? 6 : 0), (semester.value == '1' ? 12 : 6)),page.props.rombel.jadwals[0].hari)
-    let dates = []
-    for ( let evs of all) {
-        for ( let ev of evs ) {
-            dates.push(ev)
-        }
-    }
+    
+    let hari = page.props.rombel.jadwals[0].hari
+    let all = allUnefektif(syahrs.value,hari)
+    // console.log(allUnefektif(bulans, hari))
+    // console.log( all)
+    // let dates = []
+    // for ( let evs of all) {
+    //     for ( let ev of evs ) {
+    //         dates.push(ev)
+    //         // console.log(ev)
+    //     }
+    // }
 
     return all
 })
@@ -52,41 +60,15 @@ const disableDates = computed(() => {
     return disabled
 })
 
-const cetak = async() => {
-    const el = document.querySelector(".cetak")
-    let tr = ''
-    page.props.atps.forEach((atp, a) => {
 
-    })
-    let html = `
-        <!doctype html>
-        <html>
-            <head>
-                <title>Program Tahunan Kelas ${page.props.rombel.label} - ${sekolah.value.nama}</title>    
-                <link href="${cssLink(page.props.app_env)}" rel="stylesheet" />
-            </head>
-            <body>${el.outerHTML}</body>
-        </html>
-    `
-
-    
-    let win = window.open("","_blank", "width=800, height=600")
-    win.document.write(html)
-
-    setTimeout(() => {
-        win.print()
-        win.close()
-    }, 500)
-}
 
 const disabledDates = (time) => {
-    let disabled = []
+    let disabled = ['2024-03-12']
     for ( let ae of allEvents.value.flat(2) ) {
         let date = new Date(ae)
-        disabled.push(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`)
+        disabled.push(dayjs(date).format('YYYY-MM-DD'))
     }
-    // console.log(disabled.includes(time.getFullYear()+'-'+time.getMonth()+'-'+time.getDay()))
-    return weekDays.value.includes(time.getDay()) || disabled.includes(time.getFullYear()+'-'+time.getMonth()+'-'+time.getDay())
+    return weekDays.value.includes(time.getDay()) || disabled.includes(dayjs(time).format('YYYY-MM-DD'))
 }
 
 const onTanggalChanged = ( atp_id) => {
@@ -94,9 +76,7 @@ const onTanggalChanged = ( atp_id) => {
     if(atp.prosems && atp.prosems.tanggals?.length > 0) {
         atp.rombel_id = page.props.rombel.kode
         router.post(route('prosem.store'), {atp}, {
-            // preserveState: true,
             onSuccess: (page) => {
-                // parseTanggalProsem()
                 router.reload({only: ['atps']})
                 ElNotification({title: 'Info', message: 'Prosem disimpan', type: 'success'})
             },
@@ -110,7 +90,6 @@ const onTanggalChanged = ( atp_id) => {
             preserveState: true,
             onSuccess: (page) => {
                 console.log(page)
-                // parseTanggalProsem()
                 ElNotification({title: 'Info', message: 'Prosem dihapus', type: 'success'})
             },
             onError: (err) => {
@@ -119,7 +98,6 @@ const onTanggalChanged = ( atp_id) => {
         })
     }
 
-    // console.log(prosem)
 }
 
 
@@ -154,15 +132,15 @@ onBeforeMount(() => {
                             <span class="text-blue-700 font-bold uppercase">Program Semester</span>
                         </div>
                         <div class="toolbar flex">
-                            <el-button text circle @click="cetak">
+                            <Link :href="appRoute('prosem.cetak', {_query: params})">
                                 <Icon icon="mdi:printer" class="text-xl" />
-                            </el-button>
+                            </Link>
                         </div>
                     </div>
                 </template>
                 <div class="card-body cetak font-serif w-full mx-auto bg-white p-4 shadow print:shadow-none rounded">
-                    <Kop />
                     <!-- {{ page.props.atps }} -->
+                    <!-- {{ allEvents }} -->
                     <div class="title uppercase text-center my-6 font-bold">
                         <h3 class="text-xl">PROGRAM Semester (PROSEM) {{ page.props.semester.kode == '1' ? 'Ganjil' : 'Genap' }}</h3>
                         <h3 class="text-xl">TAHUN PELAJARAN {{ page.props.tapel.label }}</h3>
@@ -214,6 +192,14 @@ onBeforeMount(() => {
                                     </td>
                                 </tr>
                             </template>
+                            <tr>
+                                <td class="border border-black text-right p-2" colspan="3">Jumlah</td>
+                                <td class="border border-black text-center">
+                                    {{ atps.reduce((a,c) => a + parseInt(c.aw), 0) }} JP /
+                                    {{ atps.reduce((a,c) => a + parseInt(c.aw), 0)/4  }}TM
+                                </td>
+                                <td class="border border-black"></td>
+                            </tr>
                         </tbody>
                     </table>
                     <div v-else class="my-6 mx-12">
@@ -226,7 +212,6 @@ onBeforeMount(() => {
                             <p>Susun ATP <Link :href="appRoute('atp.index', {_query: {fase: params.fase, mine: params.mine}})" class=" font-semibold text-blue-400 uppercase bg-blue-100 px-3 py-1 shadow">di sini</Link></p>
                         </el-alert>
                     </div>
-                    <Ttd />
                 </div>
             </el-card>
         </el-col>

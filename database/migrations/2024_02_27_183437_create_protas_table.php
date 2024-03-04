@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('protas', function (Blueprint $table) {
             $table->id();
+            $table->string('guru_id', 35)->nullable();
+            $table->string('rombel_id', 50);
+            $table->string('atp_id', 30)->nullable();
+            $table->date('tanggal');
+            $table->enum('semester', ['1','2']);
+            $table->string('minggu_ke', 1);
+            $table->string('aw', 3);
             $table->timestamps();
         });
     }

@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\Elemen;
 use App\Models\MateriAjar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AtpController extends Controller
 {
@@ -24,9 +25,12 @@ class AtpController extends Controller
                         $q->where('guru_id', $nip);
                     })->with('atps', function($q) use ($nip) {
                         $q->where('guru_id', $nip);
+                        $q->orderBy('semester', 'ASC');
                     })->get();
                 } else {
-                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps', 'atps')->get();
+                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps')->with('atps', function($q) {
+                        $q->orderBy('semester', 'ASC');
+                    })->get();
                 }
 
                 $cp = Cp::where('fase', $request->query('fase'))->first();
@@ -53,10 +57,11 @@ class AtpController extends Controller
             Atp::updateOrCreate(
                 [
                     'id' => $data['id'] ?? null,
+                    'kode' => $this->kode($request->query('mine'), $data['elemen_id']) ,
                 ],
                 [
                     'guru_id' => $request->query('mine') ? auth()->user()->userable->nip : null,
-                    'kode' => $this->kode($request->query('mine'), $data['elemen_id']) ,
+                    
                     'elemen_id' => $data['elemen_id'],
                     'tingkat' => $data['tingkat'],
                     'fase' => $data['tingkat'] > 3 ? 'C' : ($data['tingkat'] > 2 ? 'B' : 'C'),
@@ -106,9 +111,16 @@ class AtpController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Atp $atp)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $atp = Atp::findOrFail($id);
+            $atp->update(['aw' => $request->aw]);
+
+            return back()->with('message', $atp);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -117,5 +129,18 @@ class AtpController extends Controller
     public function destroy(Atp $atp)
     {
         //
+    }
+
+    public function destroyAll(Request $request) {
+        try {
+            if ($request->query('mine')) {
+                
+                DB::table('atps')->where('guru_id','=',auth()->user()->userable->nip)->delete();
+                
+                return back()->with('message', 'Atp dibersihkan');
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

@@ -80,8 +80,15 @@ class KaldikController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Kaldik $kaldik)
+    public function destroy(Request $request, $id)
     {
-        //
+        try {
+            $kaldik = Kaldik::findOrFail($id);
+            $kaldik->delete();
+
+            return back()->with('message', 'Kaldik dihapus');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

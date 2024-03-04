@@ -30,4 +30,9 @@ class Atp extends Model
     function prosems() {
         return $this->hasMany(Prosem::class, 'atp_id', 'id');
     }
+    function protas() {
+        return $this->hasMany(Prota::class, 'atp_id', 'kode');
+    }
+
+
 }

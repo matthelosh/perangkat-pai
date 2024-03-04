@@ -112,7 +112,31 @@ const simpanAtp = async() => {
     })
 }
 
+const edit = (item) => {
+    atp.value = item
+    showForm.value = true
+}
 
+const onAwChanged = async(e, item) => {
+    if(e.target.innerText !== item.aw) {
+        await router.patch(route('atp.update', {id: item.id}), {aw: e.target.innerText}, {
+            onSuccess: (page) => {
+                router.reload({only: ['elemens']})
+            }
+        })
+    }
+}
+
+const hapusSemua = async() => {
+    await router.post(`/rencana/atp/destroy/all?fase=${params.value.fase}&mine=${params.value.mine}`, {
+        onSuccess: (page) => {
+            router.reload({ only: ['elemens']})
+        },
+        onError: err => {
+            console.log(err)
+        }
+    })
+}
 
 onBeforeMount(() => {
     atps.value = page.props.atps
@@ -195,6 +219,13 @@ onBeforeMount(() => {
                 <el-switch v-model="mine" active-value="1" inactive-value="0" active-text="Punya saya" inactive-text="Dari sistem" @change="onMineChanged"></el-switch>
                 
                 <div class="items flex items-center gap-2">
+                    <el-popconfirm :title="`Anda akan menghapus seluruh ATP dase ${params.fase}`" @confirm="hapusSemua">
+                        <template #reference>
+                            <el-button circle>
+                                <Icon icon="mdi:delete" class="text-red-500" />
+                            </el-button>
+                        </template>
+                    </el-popconfirm>
                     <el-button circle @click="showForm = true">
                         <Icon icon="mdi:plus" />
                     </el-button>
@@ -212,6 +243,7 @@ onBeforeMount(() => {
                             <th class="border border-black p-2">Tujuan Pembelajaran</th>
                             <th class="border border-black p-2">Alur Konten (Lingkup Materi)</th>
                             <th class="border border-black p-2">Asesmen</th>
+                            <th class="border border-black p-2 print:hidden">Opsi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -221,13 +253,25 @@ onBeforeMount(() => {
                                 <td class="border border-black px-2">{{ atp.materi }}</td>
                                 <td class="border border-black px-2 text-center">{{ atp.tingkat }}</td>
                                 <td class="border border-black px-2 text-center">{{ atp.semester }}</td>
-                                <td class="border border-black px-2 text-center">{{ atp.aw }} JP</td>
-                                <td class="border border-black px-2">{{ atp.tps }}</td>
+                                <td class="border border-black px-2 text-center"><span @blur="onAwChanged($event, atp)" class="px-2 bg-yellow-100 print:bg-white" contenteditable>{{ atp.aw }}</span> JP</td>
+                                <td class="border border-black px-2">
+                                    <div v-if="atp.tps !== ''">
+                                        <ul class="pl-4 list-decimal">
+                                            <li v-for="(tp,t) in ((typeof atp.tps === 'string') ? atp.tps.split(';') : atp.tps)" :key="t">{{ tp }}</li>
+                                        </ul>
+                                    </div>
+                                    <!-- <p v-else>Asesmen Sumatif</p> -->
+                                </td>
                                 <td class="border border-black px-2">
                                     <span v-html="atp.konten" class="konten"></span>
                                 </td>
                                 <td class="border border-black px-2">
                                     <span v-html="atp.asesmen" class="asesmen"></span>
+                                </td>
+                                <td class="border border-black px-2 print:hidden text-center">
+                                    <el-button circle text class="p-2" type="warning" @click="edit(atp)">
+                                        <Icon icon="mdi:edit" class="text-xl" />
+                                    </el-button>
                                 </td>
                             </tr>
                         </template>
@@ -237,6 +281,7 @@ onBeforeMount(() => {
                             <td  class="border border-black p-2 text-center font-bold"></td>
                             <td  class="border border-black p-2 text-center font-bold"></td>
                             <td  class="border border-black p-2 text-center font-bold"></td>
+                            <td  class="border border-black p-2 text-center font-bold print:hidden"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -287,6 +332,11 @@ onBeforeMount(() => {
                     <el-col :span="19">
                         <el-form-item label="Materi Ajar">
                             <el-select v-model="atp.materi" placeholder="Pilih Materi/Bab">
+                                <el-option value="Asesmen Sumatif">Asesmen Sumatif</el-option>
+                                <el-option value="Asesmen Sumatif">PTS Ganjil</el-option>
+                                <el-option value="Asesmen Sumatif">PAS Ganjil</el-option>
+                                <el-option value="Asesmen Sumatif">PTS Genap</el-option>
+                                <el-option value="Asesmen Sumatif">PAT Genap</el-option>
                                 <el-option v-for="(materi, m) in page.props.babs" :key="materi.id" :value="`${materi.bab}. ${materi.label}`">{{ materi.bab }}. {{ materi.label }} (Kelas {{ materi.tingkat }})</el-option>
                             </el-select>
                         </el-form-item>
