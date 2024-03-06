@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, defineAsyncComponent } from 'vue';
 import { Icon } from '@iconify/vue';
-import { usePage, router } from '@inertiajs/vue3';
+import { usePage, router, Link } from '@inertiajs/vue3';
 import dayjs from 'dayjs';
 
 dayjs.locale('id');
@@ -119,12 +119,11 @@ const cetak = async() => {
         </div>
         <div class="content p-3 bg-white cetak">
             <Kop class="hidden print:flex" />
-
             <div class="title my-4">
                 <h3 class="font-bold text-xl text-center uppercase">jadwal Pelajaran Pendidikan Agama Islam (PAI)</h3> 
                 <h3 class="font-bold text-xl text-center uppercase">TP. {{page.props.tapel.label}} Semester {{ page.props.semester.kode == '1' ? 'Ganjil' : 'genap' }}</h3> 
             </div>
-            <table class="border w-full">
+            <table class="border w-full" v-if="page.props.rombels.length > 0">
                 <thead>
                     <tr class="bg-slate-300">
                         <th rowspan="2" class="border p-2 border-black">Jamke</th>
@@ -177,6 +176,11 @@ const cetak = async() => {
                     </tr>
                 </tbody>
             </table>
+
+            <el-alert type="error" v-else title="Buat Rombel dulu." class="p-3">
+                <p class="mb-4">Anda belum membuat rombel</p>
+                <Link :href="appRoute('rombel.index')" class="px-3 py-2 bg-sky-300  text-sky-800 rounded-xl font-bold">Buat Rombel</Link>
+            </el-alert>
             <!-- {{ jadwals }} -->
             <Ttd class="hidden print:flex" />
         </div>

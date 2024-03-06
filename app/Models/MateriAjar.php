@@ -15,4 +15,8 @@ class MateriAjar extends Model
         'label',
         'elemen'
     ];
+
+    function kontens() {
+        return $this->hasMany(SubMateri::class, 'materi_id', 'id');
+    }
 }

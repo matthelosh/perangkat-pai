@@ -5,6 +5,7 @@ import { Icon } from '@iconify/vue';
 
 import Layout from '@/layouts/DashboardLayout.vue'
 const Cp = defineAsyncComponent(() => import('@/components/Dashboard/Perangkat/Kurikulum/Cp.vue'))
+const Materi = defineAsyncComponent(() => import('@/components/Dashboard/Perangkat/Kurikulum/Materi.vue'))
 const page = usePage();
 const showStruktur = ref(false)
 const showRasio = ref(false)
@@ -60,6 +61,11 @@ const showRasio = ref(false)
                     <Cp :cps="page.props.cps" />
                 </div>
             </el-card>
+        </el-col>
+    </el-row>
+    <el-row class="py-4">
+        <el-col :span="24">
+            <Materi />
         </el-col>
     </el-row>
 </div>

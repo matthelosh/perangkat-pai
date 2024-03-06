@@ -64,6 +64,8 @@ Route::middleware("auth")->group(function () {
         Route::prefix('kurikulum')->group(function() {
             Route::get("/", [KurikulumController::class, 'index'])->name('kurikulum.index');
             Route::resource("cp", CpController::class);
+            Route::resource("materi", MateriAjarController::class);
+            Route::resource('submateri', SubMateriController::class);
         });
         
         // Tujuan Pembelajaran

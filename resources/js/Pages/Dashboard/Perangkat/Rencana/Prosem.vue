@@ -9,7 +9,7 @@ import 'dayjs/locale/id'
 dayjs.extend(localeData)
 dayjs.locale("id")
 import { cssLink } from '@/helpers/printHelper'
-import { unefektif, allUnefektif, weeksPerMonth } from '@/helpers/ApeHelper';
+import { weekOfMonth, allUnefektif, weeksPerMonth, unefektif } from '@/helpers/ApeHelper';
 import { ElNotification } from 'element-plus';
 
 const Kop = defineAsyncComponent(() => import('@/components/Umum/Kop.vue'))
@@ -33,114 +33,93 @@ const weekDays = computed(() => {
     return weeks
 })
 
-const allEvents = computed(() => {
-    
-    let hari = page.props.rombel.jadwals[0].hari
-    let all = allUnefektif(syahrs.value,hari)
-    // console.log(allUnefektif(bulans, hari))
-    // console.log( all)
-    // let dates = []
-    // for ( let evs of all) {
-    //     for ( let ev of evs ) {
-    //         dates.push(ev)
-    //         // console.log(ev)
-    //     }
+const minggus = (m) => {
+    return weeksPerMonth(m, page.props.rombel.jadwals[0].hari, page.props.semester.kode)
+}
+
+const eventsDate  =computed(() => {
+    let events = allUnefektif(syahrs.value, page.props.rombel.jadwals[0].hari)
+    events.flat(2)
+
+    // let liburs = []
+    let offs = []
+    // for (let t=0; t < liburs.value.length; t++) {
+    //     offs.push({
+    //         minggu: weekOfMonth(liburs.value[t]),
+    //         bulan: dayjs(liburs.value[t]).format('MMMM'),
+    //         tanggal: dayjs(liburs.value[t]).format('YYYY-MM-DD')
+    //     })
     // }
-
-    return all
-})
-
-const disableDates = computed(() => {
-    let disabled = []
-    for ( let ae of allEvents.value) {
-        let date = new Date(ae)
-        disabled.push(`${date.getFullYear()}-${(date.getMonth()-1)}-${date.getDate()}`)
-    }
-
-    return disabled
-})
-
-
-
-const disabledDates = (time) => {
-    let disabled = ['2024-03-12']
-    for ( let ae of allEvents.value.flat(2) ) {
-        let date = new Date(ae)
-        disabled.push(dayjs(date).format('YYYY-MM-DD'))
-    }
-    return weekDays.value.includes(time.getDay()) || disabled.includes(dayjs(time).format('YYYY-MM-DD'))
-}
-
-const onTanggalChanged = ( atp_id) => {
-    let atp = atps.value.find(atp => atp.id == atp_id)
-    if(atp.prosems && atp.prosems.tanggals?.length > 0) {
-        atp.rombel_id = page.props.rombel.kode
-        router.post(route('prosem.store'), {atp}, {
-            onSuccess: (page) => {
-                router.reload({only: ['atps']})
-                ElNotification({title: 'Info', message: 'Prosem disimpan', type: 'success'})
-            },
-            onError: (err) => {
-                router.reload({only: ['atps']})
-                ElNotification({title: 'Error', message: err, type: 'error'})
-            }
+    liburs.value.forEach((libur, l) => {
+        offs.push({
+            minggu: weekOfMonth(libur.mulai),
+            bulan: dayjs(libur.mulai).format('MMMM'),
+            tanggal: libur.mulai
         })
-    } else {
-        router.delete(route('prosem.destroy', {id:atp_id}), {
-            preserveState: true,
-            onSuccess: (page) => {
-                console.log(page)
-                ElNotification({title: 'Info', message: 'Prosem dihapus', type: 'success'})
-            },
-            onError: (err) => {
-                ElNotification({title: 'Error', message: err, type: 'error'})
-            }
-        })
-    }
-
-}
-
-
-const parseTanggalProsem = async() => {
-    page.props.atps.forEach((atp, a) => {
-        atps.value.push(atp)
-        atps.value[a].prosems = {
-            tanggals : atps.value[a].prosems ? atps.value[a].prosems.map(p => p.tanggal) : [],
-            ids: atps.value[a].prosems ? atps.value[a].prosems.map(p => p.id) : []
-        }   
     })
+
+    return offs
+})
+
+const liburs = computed(() => {
+    let all = []
+    for (let m=0; m < syahrs.value.length; m++) {
+        all.push(unefektif(syahrs.value[m], page.props.rombel.jadwals[0].hari))
+    }
+    return all.flat(2)
+})
+
+const cekLibur = (m,w) => {
+    // console.log(m,w)
+    return eventsDate.value.filter(ev => (ev.bulan == m && ev.minggu == w)).length > 0
 }
 
-onBeforeMount(() => {
-    
-    parseTanggalProsem()
-    
-})
+const cetak = () => {
+    let el = document.querySelector(".cetak")
+    let cssLink = page.props.app_env == 'local' ? 'https://perpai.test:5173/resources/css/app.css' : '/build/assets/app.css';
+    let html = `<html>
+                <head>
+                    <title>Program Semester</title>    
+                    <link href="${cssLink}" rel="stylesheet" />
+                </head>
+                <body>
+                    ${el.outerHTML}
+                </body>
+            </html>`
+
+    let win = window.open("", "_blank", "width=800,height=700")
+    win.document.write(html)
+    setTimeout(() => {
+        win.print()
+        win.close()
+    }, 1000)
+}
+
 </script>
 
 <template>
-<DashLayout title="Program Semester">
-    <el-row>
+<DashLayout title="Cetak Program Semester">
+    <el-row class="w-full">
         <el-col :span="24">
-            <el-card :body-style="{background: '#efefef'}">
+            <el-card>
                 <template #header>
-                    <div class="flex items-center justify-between">
-                        <div class="flex gap-2">
-                            <Link :href="appRoute('rencana')">
-                                <Icon icon="mdi:arrow-left" class="text-2xl text-green-800 font-bold" />
+                    <div class="toolbar flex justify-between items-center">
+                        <h3 class="font-bold text-blue-600 uppercase flex items-center gap-2">
+                            <Link :href="appRoute('rencana', {_query: params})">
+                                <Icon icon="mdi:arrow-left" class="text-xl" />
                             </Link>
-                            <span class="text-blue-700 font-bold uppercase">Program Semester</span>
-                        </div>
-                        <div class="toolbar flex">
-                            <Link :href="appRoute('prosem.cetak', {_query: params})">
-                                <Icon icon="mdi:printer" class="text-xl" />
-                            </Link>
+                            Program Semester {{ page.props.semester.kode }} ({{ page.props.semester.kode == '1' ? 'Ganjil' : 'Genap' }}) Kelas {{ page.props.rombel.label }} Tahun {{ page.props.tapel.label }}</h3>
+                        <div class="toolbar-items flex items-center gap-2">
+                            <el-button circle  type="" @click="cetak">
+                                <Icon icon="mdi:printer" />
+                            </el-button>
                         </div>
                     </div>
                 </template>
-                <div class="card-body cetak font-serif w-full mx-auto bg-white p-4 shadow print:shadow-none rounded">
-                    <!-- {{ page.props.atps }} -->
-                    <!-- {{ allEvents }} -->
+                <div class="card-body cetak">
+                    <Kop />
+
+                    <!-- {{ eventsDate }} -->
                     <div class="title uppercase text-center my-6 font-bold">
                         <h3 class="text-xl">PROGRAM Semester (PROSEM) {{ page.props.semester.kode == '1' ? 'Ganjil' : 'Genap' }}</h3>
                         <h3 class="text-xl">TAHUN PELAJARAN {{ page.props.tapel.label }}</h3>
@@ -169,52 +148,64 @@ onBeforeMount(() => {
                             </tr>
                         </table>
                     </div>
-                    <table class="w-[90%] mx-auto my-8" v-if="atps.length > 0">
-                        <thead>
-                            <tr>
-                                <th class="border border-black px-2">No</th>
-                                <th class="border border-black px-2">Materi</th>
-                                <th class="border border-black px-2">Tujuan Pembelajaran</th>
-                                <th class="border border-black px-2">Alokasi Waktu</th>
-                                <th class="border border-black px-2">Tanggal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template v-for="(atp, a) in atps">
+
+                    <el-scrollbar width="100vw">
+                        <table class="my-8 w-full">
+                            <thead>
                                 <tr>
-                                    <td class="border border-black p-2 text-center">{{ a+1 }}</td>
-                                    <td class="border border-black p-2">{{ atp.materi }}</td>
-                                    <td class="border border-black p-2">{{ atp.tps }}</td>
-                                    <td class="border border-black p-2 text-center">{{ atp.aw }}</td>
-                                    <td class="border border-black p-2">
-                                        <!-- {{atp.prosems}} -->
-                                        <el-date-picker v-model="atps[a].prosems.tanggals" format="DD-MM-YYYY" value-format="YYYY-MM-DD" placeholder="Tanggal Pelaksanaan" :disabled-date="disabledDates" :size="'small'" type="dates" @change="onTanggalChanged( atp.id )"></el-date-picker>
-                                    </td>
+                                    <th class="border border-black p-2" rowspan="2">No</th>
+                                    <th class="border border-black p-2" rowspan="2">Materi</th>
+                                    <th class="border border-black p-2" rowspan="2">Alur Tujuan Pembelajaran</th>
+                                    <th class="border border-black p-2" rowspan="2">Konten Materi</th>
+                                    <th class="border border-black p-2" rowspan="2">Alokasi Waktu</th>
+                                    <th v-for="m in syahrs" :key="m" class="border border-black p-2" :colspan="minggus(m)">{{ m }}</th>
                                 </tr>
-                            </template>
-                            <tr>
-                                <td class="border border-black text-right p-2" colspan="3">Jumlah</td>
-                                <td class="border border-black text-center">
-                                    {{ atps.reduce((a,c) => a + parseInt(c.aw), 0) }} JP /
-                                    {{ atps.reduce((a,c) => a + parseInt(c.aw), 0)/4  }}TM
-                                </td>
-                                <td class="border border-black"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div v-else class="my-6 mx-12">
-                        <el-alert  type="error" style="padding: 20px;">
-                            <template #title>
-                                <span class="text-lg font-semibold">
-                                    Anda belum menyusun ATP Kelas {{ page.props.rombel.label }} Semester {{  page.props.semester.kode }} Tahun {{ page.props.tapel.label }}
-                                </span>
-                            </template>
-                            <p>Susun ATP <Link :href="appRoute('atp.index', {_query: {fase: params.fase, mine: params.mine}})" class=" font-semibold text-blue-400 uppercase bg-blue-100 px-3 py-1 shadow">di sini</Link></p>
-                        </el-alert>
-                    </div>
+                                <tr>
+                                    <template v-for="m in syahrs" :key="m+'a'">
+                                        <th class="border border-black p-2" v-for="w in minggus(m)" :key="w">{{ w }}</th>
+                                    </template>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(prota, p) in page.props.protas" :key="p">
+                                    <td class="border border-black p-2 text-center">{{ p+1 }}</td>
+                                    <td class="border border-black p-2">{{ prota.atp?.materi ??prota.atp_id }}</td>
+                                    <td class="border border-black p-2">
+                                        <ul v-if="prota.atp?.tps" class="pl-4 list-disc">
+                                            <li v-for="(tp,t) in prota.atp.tps.split(';')" :key="t">{{ tp }}</li>
+                                        </ul>
+                                        <p v-else>{{ prota.atp ? prota.atp.materi : prota.atp_id }}</p>
+                                    </td>
+                                    <td class="border border-black p-2"><ul v-if="prota.atp?.tps" class="pl-4 list-disc">
+                                            <li v-for="(kn,t) in prota.atp.konten.split(';')" :key="t">{{ kn }}</li>
+                                        </ul>
+                                        <p v-else>{{ prota.atp ? prota.atp.materi : prota.atp_id }}</p></td>
+                                    <td class="border border-black p-2 text-center">{{ prota.aw }} JP</td>
+                                    <template v-for="m in syahrs" :key="m+'a'">
+                                        <td class="border border-black p-2" v-for="w in minggus(m)" :key="w" :class="(prota.minggu_ke == w && dayjs(prota.tanggal).format('MMMM') == m) ? 'bg-white' :( cekLibur(m, w) ? 'bg-red-100' : 'bg-slate-200')">
+                                            <span v-if="prota.minggu_ke == w && dayjs(prota.tanggal).format('MMMM') == m">{{ dayjs(prota.tanggal).format('DD/MM') }}</span>
+                                            <span v-else>
+                                                <p v-if="cekLibur(m, w)">Libur</p>
+                                            </span>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </el-scrollbar>
+                    <p>Keterangan:</p>
+                    <!-- {{ liburs }} -->
+                    <ul class="list-decimal pl-6">
+                        <template v-for="(libur, l) in liburs" :key="l">
+                            <li class="text-red-800">
+                                {{ dayjs(libur.mulai).format('DD/MM/YYYY') }}: {{ libur.label }}
+                            </li>
+                        </template>
+                    </ul>
+                    <Ttd />
                 </div>
             </el-card>
         </el-col>
     </el-row>
-</DashLayout>
+</DashLayout>  
 </template>

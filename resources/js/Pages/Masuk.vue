@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed, onMounted, reactive } from 'vue';
-import { router, Head } from '@inertiajs/vue3'
+import { router, Head, usePage, Link } from '@inertiajs/vue3'
 import { ElNotification } from 'element-plus';
 
+const page = usePage()
 const user = ref({})
 const loading = ref(false)
 const rules = reactive({
@@ -40,8 +41,9 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="wrapper w-screen h-screen bg-gray-300 flex items-center justify-center">
+    <div class="relative wrapper w-screen h-screen bg-gray-300 flex items-center justify-center">
         <Head title="Silahkan Masuk | Perangkat Ajar PAI" />
+        <Link :href="appRoute('home')" class="absolute z-20 top-4 right-4 text-sky-600 hover:text-sky-800">Dashboard</Link>
         <el-form @keyup.enter="onSubmit" :rules="rules" id="form-login" v-model="user" class="bg-slate-50 p-8 pb-4 rounded-lg shadow hover:shadow-lg transition-all" @submit="onSubmit">
             <el-form-item label="Username">
                 <el-input placeholder="Masukkan username" v-model="user.name" required></el-input>

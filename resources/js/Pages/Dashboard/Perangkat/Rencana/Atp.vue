@@ -10,16 +10,17 @@ import 'dayjs/locale/id'
 dayjs.locale('id')
 dayjs.extend(localeData)
 import { ElNotification } from 'element-plus';
-
+import { effectiveOfYear } from '@/helpers/ApeHelper';
 const page = usePage()
 const tanggal = ref(dayjs().format('YYYY-MM-DD'))
 
 const Kop = defineAsyncComponent(() => import('@/components/Umum/Kop.vue'))
 const Ttd = defineAsyncComponent(() => import('@/components/Umum/Ttd.vue'))
-
+const selectedMateri = ref(null)
 const loading = ref(false)
-const atps = ref([])
+const atps = computed (() => page.props.atps.filter(at => at.tingkat == atp.value.tingkat))
 const mine = ref('1')
+const tingkat = ref(null)
 const kembali = () => {
     router.get(route('rencana'))
 }
@@ -78,13 +79,8 @@ const tps = computed(() => {
 })
 
 const totalAw = computed(() => {
-    let aws = 0
-    page.props.elemens.forEach(el => {
-        if (el.atps && el.atps.length > 0) {
-            aws += el.atps.reduce((a,c) => a+parseInt(c.aw),0)
-        }
-    })
-
+    let aws = atps.value.reduce((a,c) => a+parseInt(c.aw),0)
+       
     return aws
 })
 
@@ -94,13 +90,20 @@ const atp = ref({})
 const tingkats = computed(() => {
     return params.value.fase == 'C' ? ['5','6'] : (params.value.fase == 'B' ? ['3','4']: ['1','2'])
 })
+
+const addAtp = () => {
+    if (selectedMateri.value !== null) {
+        atp.value.materi = selectedMateri.value.bab+', '+selectedMateri.value.label
+    }
+
+    showForm.value = true
+}
 const simpanAtp = async() => {
-    // atps.value.push(atp.value)
     loading.value = true
     router.post(route('atp.store', {_query: { mine: mine.value}}), { data: atp.value}, {
         onSuccess: (page) => {
             loading.value = false
-            atp.value = {}
+            atp.value = {konten: null, aw: 0, tps: null, tingkat: atp.value.tingkat}
             showForm.value = false
             ElNotification({title: 'Info', message: 'Alur TP disimpan', type: 'success'})
         },
@@ -138,8 +141,24 @@ const hapusSemua = async() => {
     })
 }
 
+const hapus = (item) => {
+    router.delete(route('atp.destroy', {id: item.id}), {
+        onSuccess: (page) => {
+            ElNotification({title: 'Info', message: 'Alur TP disimpan', type: 'success'})
+        }, onError: err => console.log(err)
+    })
+}
+
+const onMateriChanged = (e) => {
+    if (typeof e === 'object') {
+        atp.value.materi = e.bab+". "+e.label
+    } else {
+        atp.value.materi = e
+    }
+}
+
 onBeforeMount(() => {
-    atps.value = page.props.atps
+    // atps.value = page.props.atps
     // mine.value = params.mine
     // parseTpAtp()
 })
@@ -156,10 +175,10 @@ onBeforeMount(() => {
 
                     <h3>Form Alur Tujuan Pembelajaran</h3>
                     <div class="items flex items-center gap-2">
-                        <div class="flex gap-2">
-                            AW Tersedia:
-                            <el-button type="primary">{{ 144 - totalAw}} JP</el-button>
-                        </div>
+                        <el-button type="primary">{{ totalAw }} JP</el-button>
+                        <el-select placeholder="Pilih Kelas" v-model="atp.tingkat">
+                            <el-option v-for="(t) in tingkats" :key="t" :value="t" :label="'Kelas '+t" />
+                        </el-select>
                         <el-date-picker v-model="tanggal" format="DD-MM-YYYY" value-format="YYYY-MM-DD" placeholder="Tanggal dibuat" />
                         <el-button type="primary" @click="cetak">
                             <Icon icon="mdi:printer" />
@@ -171,7 +190,7 @@ onBeforeMount(() => {
                 </div>
             </el-affix>
         </template>
-        <div class="card-body cetak">
+        <div class="card-body cetak" v-if="atp.tingkat">
             <Kop />
             <h1 class="text-lg text-blue-900 font-bold text-center mb-4 uppercase">Alur Tujuan Pembelajaran</h1>
             <table class="uppercase">
@@ -181,9 +200,9 @@ onBeforeMount(() => {
                     <td>Pendidikan Agama Islam dan Budi Pekerti</td>
                 </tr>
                 <tr>
-                    <td>Fase</td>
+                    <td>Fase / Kelas</td>
                     <td class="px-1">:</td>
-                    <td>{{ params.fase }}</td>
+                    <td>{{ params.fase }} / {{ atp.tingkat }}</td>
                 </tr>
                 <tr>
                     <td>Satuan Pendidikan</td>
@@ -216,8 +235,8 @@ onBeforeMount(() => {
                 </el-collapse-item>
             </el-collapse>
                 <div class="w-full flex h-10 bg-slate-100 justify-between items-center px-2 print:hidden">
-                <el-switch v-model="mine" active-value="1" inactive-value="0" active-text="Punya saya" inactive-text="Dari sistem" @change="onMineChanged"></el-switch>
-                
+                <!-- <el-switch v-model="mine" active-value="1" inactive-value="0" active-text="Punya saya" inactive-text="Dari sistem" @change="onMineChanged"></el-switch> -->
+                <div>Tambahkan ATP</div>
                 <div class="items flex items-center gap-2">
                     <el-popconfirm :title="`Anda akan menghapus seluruh ATP dase ${params.fase}`" @confirm="hapusSemua">
                         <template #reference>
@@ -226,7 +245,7 @@ onBeforeMount(() => {
                             </el-button>
                         </template>
                     </el-popconfirm>
-                    <el-button circle @click="showForm = true">
+                    <el-button circle @click="addAtp">
                         <Icon icon="mdi:plus" />
                     </el-button>
                 </div>
@@ -247,34 +266,85 @@ onBeforeMount(() => {
                         </tr>
                     </thead>
                     <tbody>
-                        <template v-for="(el,e) in page.props.elemens" :key="e">
+                        <!-- {{page.props.atps}} -->
+                        <tr v-for="(atp, a) in atps" :key="a">
+                            <td class="border border-black align-top p-2">{{ atp.elemen.label }}</td>
+                            <td class="border border-black align-top p-2">{{ atp.materi }}</td>
+                            <td class="border border-black align-top p-2 text-center">{{ atp.tingkat }}</td>
+                            <td class="border border-black align-top p-2 text-center">{{ atp.semester }}</td>
+                            <td class="border border-black align-top p-2 text-center">{{ atp.aw }}</td>
+                            <td class="border border-black align-top p-2">
+                                <ul class="list-disc pl-4" v-if="atp.tps">
+                                    <li v-for="(tp, t) in atp.tps.split(';')" :key="t+'tp'">{{ tp }}</li>
+                                </ul>
+                                <p v-else> Asesmen Sumatif</p>
+                            </td>
+                            <td class="border border-black align-top p-2">
+                                <div v-if="atp.konten !== ''">
+                                        <ul class="pl-4 list-disc">
+                                            <li v-for="(kont,k) in ((typeof atp.konten === 'string') ? atp.konten.split(';') : atp.konten)" :key="k">{{ kont }}</li>
+                                        </ul>
+                                    </div>
+                            </td>
+                            <td class="border border-black p-2 align-top">
+                                    <span v-html="atp.asesmen" class="asesmen"></span>
+                                </td>
+                                <td class="border border-black px-2 print:hidden text-center">
+                                    <div class="flex items-center gap-1">
+                                        <el-button circle text class="p-2" type="warning" @click="edit(atp)">
+                                            <Icon icon="mdi:edit" class="text-xl" />
+                                        </el-button>
+                                        <el-popconfirm title="Yakin menghapus ATP ini?" @confirm="hapus(atp)">
+                                            <template #reference>
+                                                <el-button circle text class="p-2" type="danger" >
+                                                    <Icon icon="mdi:delete" class="text-xl" />
+                                                </el-button>
+                                            </template>
+                                        </el-popconfirm>
+                                    </div>
+                                </td>
+                        </tr>
+                        <!-- <template v-for="(el,e) in page.props.elemens" :key="e">
                             <tr v-for="(atp,a) in el.atps" :key="atp.kode">
                                 <td class="border border-black p-2" v-if="(e+a===e)" :rowspan="(e+a===e) ? el.atps.length : '0'">{{ el.label }}</td>
-                                <td class="border border-black px-2">{{ atp.materi }}</td>
-                                <td class="border border-black px-2 text-center">{{ atp.tingkat }}</td>
-                                <td class="border border-black px-2 text-center">{{ atp.semester }}</td>
-                                <td class="border border-black px-2 text-center"><span @blur="onAwChanged($event, atp)" class="px-2 bg-yellow-100 print:bg-white" contenteditable>{{ atp.aw }}</span> JP</td>
-                                <td class="border border-black px-2">
+                                <td class="border border-black p-2 align-top">{{ atp.materi }}</td>
+                                <td class="border border-black p-2 text-center align-top">{{ atp.tingkat }}</td>
+                                <td class="border border-black p-2 text-center align-top">{{ atp.semester }}</td>
+                                <td class="border border-black p-2 text-center align-top"><span @blur="onAwChanged($event, atp)" class="px-2 bg-yellow-100 print:bg-white" contenteditable>{{ atp.aw }}</span> JP</td>
+                                <td class="border border-black p-2 align-top">
                                     <div v-if="atp.tps !== ''">
                                         <ul class="pl-4 list-decimal">
                                             <li v-for="(tp,t) in ((typeof atp.tps === 'string') ? atp.tps.split(';') : atp.tps)" :key="t">{{ tp }}</li>
                                         </ul>
                                     </div>
-                                    <!-- <p v-else>Asesmen Sumatif</p> -->
+                                    <p v-else>Asesmen Sumatif</p>
                                 </td>
-                                <td class="border border-black px-2">
-                                    <span v-html="atp.konten" class="konten"></span>
+                                <td class="border border-black p-2 align-top">
+                                    <div v-if="atp.konten !== ''">
+                                        <ul class="pl-4 list-disc">
+                                            <li v-for="(kont,k) in ((typeof atp.konten === 'string') ? atp.konten.split(';') : atp.konten)" :key="k">{{ kont }}</li>
+                                        </ul>
+                                    </div>
                                 </td>
-                                <td class="border border-black px-2">
+                                <td class="border border-black p-2 align-top">
                                     <span v-html="atp.asesmen" class="asesmen"></span>
                                 </td>
                                 <td class="border border-black px-2 print:hidden text-center">
-                                    <el-button circle text class="p-2" type="warning" @click="edit(atp)">
-                                        <Icon icon="mdi:edit" class="text-xl" />
-                                    </el-button>
+                                    <div class="flex items-center gap-1">
+                                        <el-button circle text class="p-2" type="warning" @click="edit(atp)">
+                                            <Icon icon="mdi:edit" class="text-xl" />
+                                        </el-button>
+                                        <el-popconfirm title="Yakin menghapus ATP ini?" @confirm="hapus(atp)">
+                                            <template #reference>
+                                                <el-button circle text class="p-2" type="danger" >
+                                                    <Icon icon="mdi:delete" class="text-xl" />
+                                                </el-button>
+                                            </template>
+                                        </el-popconfirm>
+                                    </div>
                                 </td>
                             </tr>
-                        </template>
+                        </template> -->
                         <tr class="bg-slate-300">
                             <td colspan="4" class="border border-black text-right p-2 font-bold">Total Alokasi Waktu</td>
                             <td  class="border border-black p-2 text-center font-bold">{{ totalAw }} JP <br /> ({{ totalAw/4 }} TM)</td>
@@ -288,6 +358,14 @@ onBeforeMount(() => {
             </el-scrollbar>
             <Ttd :tanggal="tanggal" />
         </div>
+        <el-alert type="warning" v-else>
+            <template #title>
+                <div class="flex gap-1 items-center">
+                    <Icon icon="mdi:alert-box" class="text-red-400 text-2xl" />
+                    <h3 class="font-semibold">Pilih Kelas Dulu</h3>
+                </div>
+            </template>
+        </el-alert>
     </el-card>
 
     <el-dialog v-model="showForm" draggable>
@@ -319,25 +397,21 @@ onBeforeMount(() => {
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-row v-if="tps.length > 0">
+                <el-row :gutter="20">
                     <el-col :span="24">
-                        <el-form-item label="Tujuan Pembelajaran">
-                            <el-select v-model="atp.tps" placeholder="Bisa pilih lebih dari satu" multiple>
-                                <el-option v-for="(tp,t) in tps" :key="t" :value="tp">{{(t+1)+". "+ tp }}</el-option>
+                        <el-form-item label="Materi Ajar">
+                            <el-select v-model="selectedMateri" placeholder="Pilih Materi/Bab" value-key="id" @change="onMateriChanged" filterable>
+                                <el-option :value="`Asesmen Sumatif ${selectedMateri?.bab}`">Asesmen Sumatif {{ selectedMateri?.bab }}</el-option>
+                                <el-option v-for="(materi, m) in page.props.babs.filter(bab => bab.tingkat == atp.tingkat)" :key="materi.id" :value="materi" :label="`${materi.bab}. ${materi.label} (Kelas ${materi.tingkat})`" />
                             </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-row :gutter="20">
+                <el-row v-if="tps.length > 0">
                     <el-col :span="19">
-                        <el-form-item label="Materi Ajar">
-                            <el-select v-model="atp.materi" placeholder="Pilih Materi/Bab">
-                                <el-option value="Asesmen Sumatif">Asesmen Sumatif</el-option>
-                                <el-option value="Asesmen Sumatif">PTS Ganjil</el-option>
-                                <el-option value="Asesmen Sumatif">PAS Ganjil</el-option>
-                                <el-option value="Asesmen Sumatif">PTS Genap</el-option>
-                                <el-option value="Asesmen Sumatif">PAT Genap</el-option>
-                                <el-option v-for="(materi, m) in page.props.babs" :key="materi.id" :value="`${materi.bab}. ${materi.label}`">{{ materi.bab }}. {{ materi.label }} (Kelas {{ materi.tingkat }})</el-option>
+                        <el-form-item label="Konten Materi">
+                            <el-select v-model="atp.konten" value-key="kode" v-if="selectedMateri && selectedMateri.kontens" multiple placeholder="Bisa pilih lebih dari satu">
+                                <el-option v-for="(konten, k) in selectedMateri.kontens" :key="k" :value="konten.label">{{(k+1)+'. '+ konten.label }}</el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -349,9 +423,10 @@ onBeforeMount(() => {
                 </el-row>
                 <el-row v-if="tps.length > 0">
                     <el-col :span="24">
-                        <el-form-item label="Konten Materi">
-                            <!-- <el-input type="textarea" v-model="atp.konten" placeholder="Isi dengan konten materi/Sub materi" /> -->
-                            <el-tiptap v-model:content="atp.konten" :extensions="extensions" />
+                        <el-form-item label="Tujuan Pembelajaran">
+                            <el-select v-model="atp.tps" placeholder="Bisa pilih lebih dari satu" multiple filterable>
+                                <el-option v-for="(tp,t) in tps" :key="t" :value="tp">{{(t+1)+". "+ tp }}</el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>

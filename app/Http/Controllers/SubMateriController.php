@@ -28,7 +28,24 @@ class SubMateriController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->data;
+        try {
+            SubMateri::updateOrCreate(
+                [
+                    'id' => $data['id'] ?? null,
+                ],
+                [
+                    'materi_id' => $data['materi_id'],
+                    'fase' => $data['fase'],
+                    'tingkat' => $data['tingkat'],
+                    'label' => $data['label']
+                ]
+            );
+
+            return back()->with('status', 'Submateri Disimpan');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -58,8 +75,14 @@ class SubMateriController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SubMateri $subMateri)
+    public function destroy(Request $request, $id)
     {
-        //
+        try {
+            $submateri = SubMateri::findOrFail($id);
+            $submateri->delete();
+            return back()->with('status', 'Submateri Dihapus');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

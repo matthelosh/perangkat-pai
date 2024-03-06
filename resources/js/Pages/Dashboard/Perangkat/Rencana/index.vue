@@ -28,6 +28,7 @@ const close = () => {
         <el-col :span="24">
             <Jadwal />
         </el-col>
+        
     </el-row>
     <el-row :gutter="20" v-if="mode == 'list'">
         <el-col :span="8" v-for="fase in ['A','B','C']" :key="fase">
@@ -45,7 +46,7 @@ const close = () => {
                             <Icon icon="mdi:timeline" class="mr-2 text-lg" />
                             <span>Alur Tujuan Pembelajaran</span>
                         </el-menu-item>
-                        <el-sub-menu index="3">
+                        <el-sub-menu index="3" v-if="page.props.rombels && page.props.rombels.length > 0">
                             <template #title>
                                 <Icon icon="mdi:poll" />
                                 <span>&nbsp;Analisis Pekan Efektif</span>
@@ -54,7 +55,7 @@ const close = () => {
                                 <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`3-${r+1}`" @click="buka('ape.index', fase,rombel.kode)">{{ rombel.label }}</el-menu-item>
                             </el-menu-item-group>
                         </el-sub-menu>
-                        <el-sub-menu index="4">
+                        <el-sub-menu index="4" v-if="page.props.rombels && page.props.rombels.length > 0">
                             <template #title>
                                 <Icon icon="mdi:calendar-check" />
                                 <span>&nbsp;Prota</span>
@@ -63,7 +64,7 @@ const close = () => {
                                 <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`4-${r+1}`" @click="buka('prota.index', fase,rombel.kode)">{{ rombel.label }}</el-menu-item>
                             </el-menu-item-group>
                         </el-sub-menu>
-                        <el-sub-menu index="5">
+                        <el-sub-menu index="5" v-if="page.props.rombels && page.props.rombels.length > 0">
                             <template #title>
                                 <Icon icon="mdi:calendar-check" />
                                 <span>&nbsp;Prosem</span>

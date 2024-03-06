@@ -7,6 +7,7 @@ import 'v-calendar/style.css'
 import { ElNotification } from "element-plus";
 import { weekOfMonth } from "@/helpers/ApeHelper";
 import Layout from "@/layouts/DashboardLayout.vue";
+import { cssLink } from "@/helpers/printHelper";
 
 const page = usePage();
 const layout = computed(() => {
@@ -40,6 +41,7 @@ const prota = ref({
     tanggal: null,
     atp_id: null,
     minggu_ke: null,
+    warna: 'blue',
     aw: 0,
 })
 
@@ -68,7 +70,7 @@ const attributes = computed(() => {
     page.props.agendas.forEach((item, index) => {
         attrs.push({
             key: item.id, 
-            highlight: item.warna, 
+            highlight: item.warna ?? 'blue', 
             dates: {start: new Date(item.mulai), end: new Date(item.selesai)},
             startDate: new Date(item.mulai),
             endDate: new Date(item.selesai),
@@ -82,27 +84,23 @@ const attributes = computed(() => {
         })
     })
 
-    page.props.atps.forEach((atp,a) => {
-        if (atp.protas && atp.protas.length > 0) {
-            atp.protas.forEach((prot, p) => {
-                attrs.push({
-                    key: prot.kode,
-                    highlight: 'blue',
-                    dates: { start: new Date(prot.tanggal), end: new Date(prot.tanggal)},
-                    startDate: new Date(prot.tanggal),
-                    endtDate: new Date(prot.tanggal),
-                    popover: {
-                        label: `${atp.materi} - ${atp.konten}`,
-                        visibility: 'hover'
-                    }, 
-                    index: ((a+1)+'-'+(p+1)),
-                    description: atp.tps,
-                    atp_id: atp.kode,
-                    prota: prot
-                })
+        page.props.protas.forEach((prot, p) => {
+            attrs.push({
+                key: prot.atp ? prot.atp.id+'-'+(p+1) : Math.floor(Math.random()*100),
+                highlight: (!prot.atp) ? (prot.atp_id.includes('CADANGAN') ? 'purple' : 'orange') : (prot.atp.materi.includes('Asesmen Sumatif' )? 'yellow' : 'teal'),
+                dates: { start: new Date(prot.tanggal), end: new Date(prot.tanggal)},
+                startDate: new Date(prot.tanggal),
+                endtDate: new Date(prot.tanggal),
+                popover: {
+                    label: `${prot.atp ? (prot.atp.materi +' | '+prot.atp.konten) : prot.atp_id}`,
+                    visibility: 'hover'
+                }, 
+                index: prot.atp ? prot.atp.id+'-'+(p+1) : Math.floor(Math.random()*100),
+                description: prot.atp ? (prot.atp.materi +' | '+prot.atp.konten): prot.atp_id,
+                atp_id: prot.atp ? prot.atp.kode : null,
+                prota: prot
             })
-        }
-    })
+        })
 
 
     return attrs
@@ -118,17 +116,19 @@ const onDayClicked = async(calendar, $event) => {
             prota.value = calendar.attributeCells[0].data.prota
         } 
         prota.value.tanggal = calendar.id
-        prota.value.minggu_ke = weekOfMonth(prota.value.tanggal)
+        prota.value.minggu_ke = prota.value.minggu_ke ?? weekOfMonth(prota.value.tanggal)
         showFormProta.value = true
     }
 }
 
 const simpan = () => {
     loading.value = true
+    console.log(prota.value)
     router.post(route('prota.store', {_query: params.value}), {data: prota.value}, {
        onSuccess: (page) => {
            loading.value = false
            ElNotification({title: 'Info', message: 'Prota Disimpan', type:'success'})
+           showFormProta.value = false
         },
         onError: (err) => {
            loading.value = false
@@ -151,19 +151,78 @@ const onDialogClose = () => {
     }
 }
 
-const onAtpChanged = () => {
-    if (!['PTS','PAS'].includes(prota.value.atp_id)) {
+const onAtpChanged = (e) => {
+    if (!['PTS','PAS', 'CADANGAN'].includes(prota.value.atp_id)) {
         let selectedAtp = page.props.atps.find(atp => atp.kode == prota.value.atp_id)
+        console.log(e)
         prota.value.aw = selectedAtp.aw
         prota.value.semester = selectedAtp.semester
         
     } else {
         prota.value.aw = 0
+        prota.value.atp_id = prota.value.atp_id+' Semester '+prota.value.semester
     }
 }
 
-const cetak = async() => {
+const hapusProta = () => {
+    router.delete(route('prota.destroy', {id: prota.value.id}), {
+        onSuccess: (page) => {
+            prota.value = {guru_id: params.value.mine == '1' ? page.props.user.userable.nip : null,
+            rombel_id: page.props.rombel.kode,
+            tanggal: null,
+            atp_id: null,
+            minggu_ke: null,
+            warna: 'blue',
+            aw: 0,}
+            showFormProta.value = false
+        }
+    })
+}
 
+const cetak = async() => {
+    
+    let trs = ''
+    page.props.protas.forEach((prota,a) => {
+        trs += `
+        <tr>
+            <td class="border border-black p-2 align-top">${a+1}</td>
+            <td class="border border-black p-2 align-top">${prota.atp?.kode?? '-'}</td>
+            <td class="border border-black p-2 align-top">${prota.atp ? (prota.atp.tps !== '' ? prota.atp.tps :prota.atp.materi) : prota.atp_id}</td>
+            <td class="border border-black p-2 align-top">${prota.aw}</td>
+            <td class="border border-black p-2 align-top">${prota.semester}</td>
+        </tr>
+        `
+    })
+
+    let html = `<!doctype html>
+                <html>
+                    <head>
+                        <title>Program Tahunan ${page.props.tapel.label}</title>    
+                        <link href="${cssLink(page.props.app_env)}" rel="stylesheet" />
+                    </head>
+                    <body>
+                        <h3></h3>
+                        <table class="w-[80%] mx-auto">
+                            <thead>
+                                <tr>
+                                    <th class="border border-black px-2">No</th>    
+                                    <th class="border border-black px-2">Kode</th>    
+                                    <th class="border border-black px-2">ATP</th>    
+                                    <th class="border border-black px-2">AW</th>    
+                                    <th class="border border-black px-2">SMT</th>    
+                                </tr>    
+                            </thead>  
+                            <tbody>
+                                ${trs}
+                            </tbody>  
+                        </table>    
+                    </body>
+                </html>
+    
+    `
+
+    let win = window.open("","_blank", "width=800,height=700")
+    win.document.write(html)
 }
 </script>
 
@@ -200,32 +259,42 @@ const cetak = async() => {
             </el-card>
         </el-col>
     </el-row>
-    <el-dialog v-model="showFormProta" draggable @close="onDialogClose">
+    <el-drawer direction="rtl" v-model="showFormProta" draggable @close="onDialogClose">
         <template #header>
-            <h3>Form Program Tahunan</h3>
+            <div class="w-full flex justify-between items-center">
+                <h3>Form Program Tahunan</h3>
+                <div class="items flex items-center gap-2" v-if="prota.id">
+                    <el-popconfirm title="Yakin menghapus Prota ini?" @confirm="hapusProta">
+                        <template #reference>
+                            <el-button type="danger">Hapus</el-button>
+                        </template>
+                    </el-popconfirm>
+                </div>
+            </div>
         </template>
-        <div class="dialog-body" draggable>
+        <div class="dialog-body">
             <el-form v-model="prota" label-position="top" :inline=true>
-                <el-form-item label="Tanggal">
+                <el-form-item label="Tanggal" class="w-[50%]">
                     <el-date-picker v-model="prota.tanggal" disabled />
-                </el-form-item>
-                <el-form-item label="Pilih Materi ATP" width="50%" class="w-[49%]">
-                    <el-select v-model="prota.atp_id" @change="onAtpChanged">
-                        <el-option value="PTS">PTS</el-option>
-                        <el-option value="PAS">PAS</el-option>
-                        <el-option v-for="(atp, a) in page.props.atps" :key="atp.kode" :value="atp.kode">
-                            <span v-html="atp.konten" />
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="AW (JP)">
-                    <el-input type="number" v-model="prota.aw" placeholder="Alokasi Waktu" />
                 </el-form-item>
                 <el-form-item label="Semester" class="w-[30%]">
                     <el-select v-model="prota.semester" placeholder="Pilih Semester">
                         <el-option value="1">Semester 1</el-option>
                         <el-option value="2">Semester 2</el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="Pilih Materi ATP" width="100%" class="w-[100%]">
+                    <el-select v-model="prota.atp_id" @change="onAtpChanged" filterable>
+                        <el-option value="PTS">PTS</el-option>
+                        <el-option value="PAS">PAS</el-option>
+                        <el-option value="CADANGAN">CADANGAN</el-option>
+                        <el-option v-for="(atp, a) in page.props.atps" :key="atp.kode" :value="atp.kode">
+                            <div>{{atp.materi +' | '+atp.konten }}</div>
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="AW (JP)">
+                    <el-input type="number" v-model="prota.aw" placeholder="Alokasi Waktu" />
                 </el-form-item>
                 <el-form-item label="Minggu Ke" class="w-[25%]">
                     <el-select v-model="prota.minggu_ke" placeholder="Pilih Minggu">
@@ -237,6 +306,6 @@ const cetak = async() => {
                 </el-form-item>
             </el-form>
         </div>
-    </el-dialog>
+    </el-drawer>
     </Layout>
 </template>

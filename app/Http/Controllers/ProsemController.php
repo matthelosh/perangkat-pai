@@ -25,11 +25,7 @@ class ProsemController extends Controller
 
             $datas = $this->prosemService->index($request->rombel, $request->mine);
             $component = 'Dashboard/Perangkat/Rencana/Prosem';
-            return Inertia::render($component, [
-                'atps' => $datas['atps'],
-                'rombel' => $datas['rombel'],
-                'kaldiks' => $datas['kaldiks']
-            ]);
+            return Inertia::render($component, $datas);
         } catch (\Throwable $th) {
             throw $th;
         }

@@ -6,18 +6,26 @@ use App\Models\Cp;
 use App\Models\Atp;
 use Inertia\Inertia;
 use App\Models\Elemen;
+use App\Models\Kaldik;
 use App\Models\MateriAjar;
+use App\Models\Rombel;
+use App\Models\Tapel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AtpController extends Controller
 {
+
+    private function tapel() {
+        return Tapel::whereStatus('active')->pluck('kode')->first();
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         try {
+            $kaldiks = Kaldik::whereIsLibur(true)->where('tapel_id', $this->tapel())->get();
             if ($request->query('fase')) {
                 if ($request->query('mine') == '1') {
                     $nip = auth()->user()->userable->nip;
@@ -27,10 +35,29 @@ class AtpController extends Controller
                         $q->where('guru_id', $nip);
                         $q->orderBy('semester', 'ASC');
                     })->get();
+
+                    // $rombels = Rombel::whereGuruId($nip)
+                    //                     ->whereTapel($this->tapel())
+                    //                     ->whereFase($request->query('fase'))
+                    //                     ->get();
+
+                    $atps = Atp::
+                                whereFase($request->query('fase'))
+                                ->whereGuruId($nip)
+                                ->with('elemen')
+                                ->get();
                 } else {
                     $elemens = Elemen::where('fase', $request->query('fase'))->with('tps')->with('atps', function($q) {
+                        $q->whereNull('guru_id');
                         $q->orderBy('semester', 'ASC');
                     })->get();
+
+                    $atps = Atp::whereFase($request->query('fase'))
+                                ->whereNull('guru_id')
+                                ->with('elemen')
+                                ->get();
+
+                    // $rombels = null;
                 }
 
                 $cp = Cp::where('fase', $request->query('fase'))->first();
@@ -38,10 +65,18 @@ class AtpController extends Controller
 
             $tingkat = $request->query('fase') == 'A' ? ['1','2'] : ($request->query('fase') == 'B' ? ['3','4'] : ['5', '6']);
 
-            $babs = MateriAjar::where('tingkat', $tingkat[0])->orWhere('tingkat', $tingkat[1])->get();
-            return Inertia::render('Dashboard/Perangkat/Rencana/Atp', ['elemens' => $elemens, 'babs' => $babs, 'cp' => $cp]);
+            $babs = MateriAjar::where('tingkat', $tingkat[0])->orWhere('tingkat', $tingkat[1])->with('kontens')->get();
+            return Inertia::render('Dashboard/Perangkat/Rencana/Atp', [
+                'elemens' => $elemens, 
+                'babs' => $babs, 
+                'cp' => $cp, 
+                'kaldiks' => $kaldiks, 
+                'atps' => $atps, 
+                // 'rombels' => $rombels
+            ]);
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
+            return back()->withErrors("status", $th->getMessage());
         }
     }
 
@@ -64,12 +99,12 @@ class AtpController extends Controller
                     
                     'elemen_id' => $data['elemen_id'],
                     'tingkat' => $data['tingkat'],
-                    'fase' => $data['tingkat'] > 3 ? 'C' : ($data['tingkat'] > 2 ? 'B' : 'C'),
+                    'fase' => (int) $data['tingkat'] > 4 ? 'C' : ($data['tingkat'] > 2 ? 'B' : 'A'),
                     'semester' => $data['semester'],
                     'aw' => $data['aw'],
                     'materi' => $data['materi'],
                     'tps' => implode(";", $data['tps']),
-                    'konten' => $data['konten'],
+                    'konten' => implode(";",$data['konten']),
                     'asesmen' => $data['asesmen'],
                 ]
             );
@@ -126,9 +161,16 @@ class AtpController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Atp $atp)
+    public function destroy(Request $request, $id)
     {
-        //
+        try {
+            $atp = Atp::findOrFail($id);
+            $atp->delete();
+
+            return back()->with('status', 'Atp Dihapus');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function destroyAll(Request $request) {
@@ -143,4 +185,5 @@ class AtpController extends Controller
             throw $th;
         }
     }
+
 }

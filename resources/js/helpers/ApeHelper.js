@@ -28,6 +28,8 @@ export const weeksPerMonth = (month, hari, semester) => {
     
 }
 
+
+
 export const weekOfMonth = (tanggal) => {
     const month = dayjs(tanggal).format('MMMM')
     const hari = dayjs(tanggal).format('dddd')
@@ -38,51 +40,32 @@ export const weekOfMonth = (tanggal) => {
     let i = 0;
     for (let d = parseInt(date.format('D')); d < days; d +=7) {
         i++
-    //    console.log(i, d)
     }
-    // console.log(weekdays-i)
-    return ((weekdays-i)+1)
+    return weekdays === 5 ? weekdays - i : (weekdays+1)-i
 }
 
 export const allUnefektif = (months, day) => {
     let dates = []
     for(let m of months) {
-        // console.log(unefektif(m, day), m)
         if (unefektif(m, day).length > 0 ) {
             dates.push(unefektif(m, day).map(d => d.mulai))
         } 
-        // else {
-        //     dates = unefektif(m, day)
-        // }
     }
-    // console.log(page.props.kaldiks)
-    // console.log(dates)
     return dates
 }
 
 export const unefektif = (month, day) => {
     let events = [];
-    // console.log(page.props.kaldiks.length, month)
      page.props.kaldiks.forEach(kaldik => {
         let rentang = dayjs(kaldik.selesai).date() - dayjs(kaldik.mulai).date()
-        // console.log(month, day,rentang, kaldik.mulai, kaldik.selesai)
         if ( rentang < 1 ) {
-            // console.log(((haris.lastIndexOf(day) == dayjs(kaldik.mulai).get('day'))&&(bulans.lastIndexOf(month) == dayjs(kaldik.mulai).get('month'))), month, day)
-            // if ((bulans.lastIndexOf(month)) == dayjs(kaldik.mulai).get('month') && haris.lastIndexOf(day) == dayjs(kaldik.mulai).get('day')) {
             if ((haris.lastIndexOf(day)) == dayjs(kaldik.mulai).get('day') && (bulans.lastIndexOf(month) == dayjs(kaldik.mulai).get('month'))) {
                 events.push(kaldik)
-                // console.log(kaldik)
-                // console.log(haris.lastIndexOf(day) == dayjs(kaldik.mulai).get('day') && (bulans.lastIndexOf(month)) == dayjs(kaldik.mulai).get('month'))
-                // console.log(kaldik)
             } else {
-                // console.log(false)
             }
             
         } else {
-            // console.log(kaldik)
-            // if(month == bulans.lastIndexOf(m)) {
                 for (let h = 0; h < rentang+1; h++) {
-                    // console.log(dayjs(kaldik.mulai).add(h, 'day'))
                     let hari = dayjs(kaldik.mulai).add(h, 'day').get('day')
                     let bulan = dayjs(kaldik.mulai).add(h, 'day').get('month')
                     if (hari == haris.lastIndexOf(day) && bulan == bulans.lastIndexOf(month)) {
@@ -97,11 +80,18 @@ export const unefektif = (month, day) => {
                         })
                     }
                 }
-            // }
         } 
     })
-    // console.log(events)
     return events
+}
+
+export const effectiveOfYear = (hari) => {
+    let total = 0;
+    for (let s=1; s < 2;s++) {
+        total + sumEfektif(bulans, hari, s)
+    }
+
+    return total
 }
 
 export const sumEfektif = (months, day, semester) => {

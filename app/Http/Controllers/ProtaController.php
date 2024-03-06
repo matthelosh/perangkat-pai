@@ -31,6 +31,10 @@ class ProtaController extends Controller
                                 $q->where('guru_id', $nip);
                             })
                             ->get();
+                $protas = Prota::whereGuruId($nip)
+                                ->whereRombelId($rombel->kode)
+                                ->with('atp')
+                                ->get();
             } else {
                 $atps = Atp::where('tingkat', $rombel->tingkat)
                             ->whereNull('guru_id')
@@ -39,10 +43,13 @@ class ProtaController extends Controller
                                 $q->whereNull('guru_id');
                             })
                             ->get();
+                $protas = Prota::whereRombelId($rombel->kode)
+                            ->with('atp')
+                            ->get();
             }
             // dd($atps[0]->protas);
             return Inertia::render("Dashboard/Perangkat/Rencana/Prota", [
-                // 'protas' => $protas,
+                'protas' => $protas,
                 'agendas' => $this->kaldiks(),
                 'atps' => $atps,
                 'rombel' => $rombel,
@@ -71,6 +78,7 @@ class ProtaController extends Controller
     {
         try {
             $data = $request->data;
+            // dd($data);
             $prota = Prota::updateOrCreate(
                 [
                     'id' => $data['id'] ?? null,
@@ -85,7 +93,7 @@ class ProtaController extends Controller
                     'aw' => $data['aw']
                 ]
             );
-
+            // dd($prota);
             return back()->with('status', 'Prota disimpan');
         } catch (\Throwable $th) {
             throw $th;
@@ -119,8 +127,15 @@ class ProtaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Prota $prota)
+    public function destroy(Request $request, $id)
     {
-        //
+        try {
+            $prota = Prota::findOrFail($id);
+            $prota->delete();
+
+            return back()->with('status', 'Prota dihapus');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }
