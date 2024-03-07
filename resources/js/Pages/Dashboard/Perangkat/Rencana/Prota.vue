@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, defineAsyncComponent } from "vue";
 import { usePage, router, Head, Link } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
 import { Calendar } from 'v-calendar'
@@ -9,7 +9,10 @@ import { weekOfMonth } from "@/helpers/ApeHelper";
 import Layout from "@/layouts/DashboardLayout.vue";
 import { cssLink } from "@/helpers/printHelper";
 
+const CetakProta = defineAsyncComponent(() => import('@/Components/Dashboard/Perangkat/Rencana/CetakProta.vue'))
+
 const page = usePage();
+const mode = ref('cetak')
 const layout = computed(() => {
     const width = window.innerWidth
     let cols = width < 414 ? 1 : (width <= 768 ? 2 : (width <= 1366 ? 3 : (width <= 1920 ? 4 : 6)))
@@ -229,7 +232,7 @@ const cetak = async() => {
 <template>
     <Layout title="Program Tahunan">
         <Head title="Program Tahunan" />
-        <el-row class="w-full" v-if="page.props.atps.length > 0">
+        <el-row class="w-full" v-if="page.props.atps.length > 0 && mode == 'list'">
         <el-col :span="24">
             <el-card :body-style="{background: '#efefef',}">
                 <template #header>
@@ -241,7 +244,7 @@ const cetak = async() => {
                             Prota {{ sekolah.nama }} | {{ page.props.tapel.label }} | Kelas {{ page.props.rombel.label }}
                         </h3>
                         <div class="items flex items-center gap-2">
-                            <el-button type="primary" @click="cetak">
+                            <el-button type="" circle @click="mode='cetak'">
                                 <Icon icon="mdi:printer" />
                             </el-button>
                         </div>
@@ -258,54 +261,55 @@ const cetak = async() => {
                 </div>
             </el-card>
         </el-col>
-    </el-row>
-    <el-drawer direction="rtl" v-model="showFormProta" draggable @close="onDialogClose">
-        <template #header>
-            <div class="w-full flex justify-between items-center">
-                <h3>Form Program Tahunan</h3>
-                <div class="items flex items-center gap-2" v-if="prota.id">
-                    <el-popconfirm title="Yakin menghapus Prota ini?" @confirm="hapusProta">
-                        <template #reference>
-                            <el-button type="danger">Hapus</el-button>
-                        </template>
-                    </el-popconfirm>
+        </el-row>
+        <CetakProta :protas="page.props.protas" @close="mode='list'" v-if="mode=='cetak'"  />
+        <el-drawer direction="rtl" v-model="showFormProta" draggable @close="onDialogClose">
+            <template #header>
+                <div class="w-full flex justify-between items-center">
+                    <h3>Form Program Tahunan</h3>
+                    <div class="items flex items-center gap-2" v-if="prota.id">
+                        <el-popconfirm title="Yakin menghapus Prota ini?" @confirm="hapusProta">
+                            <template #reference>
+                                <el-button type="danger">Hapus</el-button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
                 </div>
+            </template>
+            <div class="dialog-body">
+                <el-form v-model="prota" label-position="top" :inline=true>
+                    <el-form-item label="Tanggal" class="w-[50%]">
+                        <el-date-picker v-model="prota.tanggal" disabled />
+                    </el-form-item>
+                    <el-form-item label="Semester" class="w-[30%]">
+                        <el-select v-model="prota.semester" placeholder="Pilih Semester">
+                            <el-option value="1">Semester 1</el-option>
+                            <el-option value="2">Semester 2</el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="Pilih Materi ATP" width="100%" class="w-[100%]">
+                        <el-select v-model="prota.atp_id" @change="onAtpChanged" filterable>
+                            <el-option value="PTS">PTS</el-option>
+                            <el-option value="PAS">PAS</el-option>
+                            <el-option value="CADANGAN">CADANGAN</el-option>
+                            <el-option v-for="(atp, a) in page.props.atps" :key="atp.kode" :value="atp.kode">
+                                <div>{{atp.materi +' | '+atp.konten }}</div>
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="AW (JP)">
+                        <el-input type="number" v-model="prota.aw" placeholder="Alokasi Waktu" />
+                    </el-form-item>
+                    <el-form-item label="Minggu Ke" class="w-[25%]">
+                        <el-select v-model="prota.minggu_ke" placeholder="Pilih Minggu">
+                            <el-option v-for="m in 5" :key="m" :value="m">{{m}}</el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="&nbsp;">
+                        <el-button type="primary" :loading="loading" @click="simpan">Simpan</el-button>
+                    </el-form-item>
+                </el-form>
             </div>
-        </template>
-        <div class="dialog-body">
-            <el-form v-model="prota" label-position="top" :inline=true>
-                <el-form-item label="Tanggal" class="w-[50%]">
-                    <el-date-picker v-model="prota.tanggal" disabled />
-                </el-form-item>
-                <el-form-item label="Semester" class="w-[30%]">
-                    <el-select v-model="prota.semester" placeholder="Pilih Semester">
-                        <el-option value="1">Semester 1</el-option>
-                        <el-option value="2">Semester 2</el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="Pilih Materi ATP" width="100%" class="w-[100%]">
-                    <el-select v-model="prota.atp_id" @change="onAtpChanged" filterable>
-                        <el-option value="PTS">PTS</el-option>
-                        <el-option value="PAS">PAS</el-option>
-                        <el-option value="CADANGAN">CADANGAN</el-option>
-                        <el-option v-for="(atp, a) in page.props.atps" :key="atp.kode" :value="atp.kode">
-                            <div>{{atp.materi +' | '+atp.konten }}</div>
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="AW (JP)">
-                    <el-input type="number" v-model="prota.aw" placeholder="Alokasi Waktu" />
-                </el-form-item>
-                <el-form-item label="Minggu Ke" class="w-[25%]">
-                    <el-select v-model="prota.minggu_ke" placeholder="Pilih Minggu">
-                        <el-option v-for="m in 5" :key="m" :value="m">{{m}}</el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="&nbsp;">
-                    <el-button type="primary" :loading="loading" @click="simpan">Simpan</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
-    </el-drawer>
+        </el-drawer>
     </Layout>
 </template>

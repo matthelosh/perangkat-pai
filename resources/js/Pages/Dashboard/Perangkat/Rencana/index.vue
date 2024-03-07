@@ -73,6 +73,15 @@ const close = () => {
                                 <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`5-${r+1}`" @click="buka('prosem.index', fase,rombel.kode)">{{ rombel.label }}</el-menu-item>
                             </el-menu-item-group>
                         </el-sub-menu>
+                        <el-sub-menu index="6" v-if="page.props.rombels && page.props.rombels.length > 0">
+                            <template #title>
+                                <Icon icon="mdi:book" />
+                                <span>&nbsp;Modul Ajar</span>
+                            </template>
+                            <el-menu-item-group>
+                                <el-menu-item v-for="(rombel, r) in rombels[fase]" :key="rombel.kode" :index="`5-${r+1}`" @click="buka('modulajar.index', fase,rombel.kode)">{{ rombel.label }}</el-menu-item>
+                            </el-menu-item-group>
+                        </el-sub-menu>
                     </el-menu>
                 </div>
             </el-card>

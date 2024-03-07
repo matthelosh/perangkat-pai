@@ -88,12 +88,15 @@ Route::middleware("auth")->group(function () {
         Route::resource("prota", ProtaController::class);
         Route::get("/prosem/cetak", [ProsemController::class, 'cetak'])->name('prosem.cetak');
         Route::resource("prosem", ProsemController::class);
-        
+        Route::resource("modulajar", ModulAjarController::class);
     });
 
     // Pelaksanaan
     Route::prefix('pelaksanaan')->group(function() {
         Route::get('/', [PerangkatControler::class, 'pelaksanaan'])->name('pelaksanaan');
+        Route::get('/jurnal', [PerangkatControler::class, 'jurnal'])->name('perangkat.jurnal');
+        Route::get('/modul-ajar', [PerangkatControler::class, 'modulajar'])->name('perangkat.modulajar');
+        Route::get('/presensi', [PerangkatControler::class, 'presensi'])->name('perangkat.presensi');
     });
 
     // Settings

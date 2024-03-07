@@ -106,6 +106,7 @@ class AtpController extends Controller
                     'tps' => implode(";", $data['tps']),
                     'konten' => implode(";",$data['konten']),
                     'asesmen' => $data['asesmen'],
+                    'p5' => $data['p5']
                 ]
             );
 

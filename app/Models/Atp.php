@@ -21,6 +21,7 @@ class Atp extends Model
         'tps',
         'konten',
         'asesmen',
+        'p5'
     ];
 
     function elemen() {
@@ -32,6 +33,10 @@ class Atp extends Model
     }
     function protas() {
         return $this->hasMany(Prota::class, 'atp_id', 'kode');
+    }
+
+    function mas() {
+        return $this->hasMany(ModulAjar::class, 'atp_id', 'id');
     }
 
 

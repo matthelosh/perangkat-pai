@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
+use App\Models\Prota;
 use App\Models\Tapel;
 use App\Models\Jadwal;
 use App\Models\Kaldik;
@@ -33,11 +34,46 @@ class PerangkatControler extends Controller
         try {
             return Inertia::render("Dashboard/Perangkat/Pelaksanaan/index", [
                 'rombels' => $this->rombelku(),
-                'jadwals' => $this->jadwalku()
+                'jadwals' => $this->jadwalku(),
             ]);
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
+
+    // Jurnal
+    public function jurnal(Request $request) {
+        return Inertia::render("Dashboard/Perangkat/Pelaksanaan/Jurnal", [
+            'protas' => Prota::whereGuruId(auth()->user()->userable->nip)
+                            ->whereRombelId($request->query('rombel'))
+                            ->whereSemester($this->semester()->kode)
+                            ->whereHas('atp')
+                            ->with('atp.elemen')
+                            ->get(),
+            'rombel' => Rombel::whereKode($request->query('rombel'))->with('siswas')->first(),
+        ]);
+    }
+    public function modulajar(Request $request) {
+        return Inertia::render("Dashboard/Perangkat/Pelaksanaan/Ma", [
+            'protas' => Prota::whereGuruId(auth()->user()->userable->nip)
+                            ->whereRombelId($request->query('rombel'))
+                            ->whereSemester($this->semester()->kode)
+                            ->whereHas('atp')
+                            ->with('atp.elemen')
+                            ->get(),
+            'rombel' => Rombel::whereKode($request->query('rombel'))->with('siswas')->first(),
+        ]);
+    }
+    public function presensi(Request $request) {
+        return Inertia::render("Dashboard/Perangkat/Pelaksanaan/Jurnal", [
+            'protas' => Prota::whereGuruId(auth()->user()->userable->nip)
+                            ->whereRombelId($request->query('rombel'))
+                            ->whereSemester($this->semester()->kode)
+                            ->whereHas('atp')
+                            ->with('atp.elemen')
+                            ->get(),
+            'rombel' => Rombel::whereKode($request->query('rombel'))->with('siswas')->first(),
+        ]);
     }
 
     // Misc
