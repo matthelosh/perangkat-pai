@@ -14,7 +14,7 @@ const rombels = computed(() => {
 })
 
 const buka = (doc, fase, rombel=null) => {
-    router.get(route(doc, {_query: {fase: fase, rombel: rombel, mine: '1'}}))
+    router.get(route(doc, {_query: {fase: fase, rombel: rombel, mine: 'true'}}))
 }
 
 const close = () => {

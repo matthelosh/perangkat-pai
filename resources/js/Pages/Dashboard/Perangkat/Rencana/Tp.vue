@@ -108,6 +108,7 @@ const onMineChanged = (e) => {
     
     router.get('/rencana/tp', {fase: params.fase, mine: mine.value}, { preserveState: true, only: ['elemens']}
     )
+    // router.reload({only: ['elemens'], preserveState: true})
 }
 
 const groupMe = (datas, key) => {

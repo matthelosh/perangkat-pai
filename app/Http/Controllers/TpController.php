@@ -23,7 +23,9 @@ class TpController extends Controller
                         $q->where('guru_id', $nip);
                     })->get();
                 } else {
-                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps')->get();
+                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps', function($q) {
+                        $q->where('guru_id', null);
+                    })->get();
                 }
                 
             }

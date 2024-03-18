@@ -18,9 +18,9 @@ class GuruController extends Controller
         $role = auth()->user()->roles[0]['name']; 
         try {
             if($role == 'admin') {
-                $gurus = Guru::with('sekolah', 'account')->get();
+                $gurus = Guru::with('sekolahs', 'account')->get();
             } else if($role=='gpai') {
-                $gurus = Guru::where('id', auth()->user()->userable_id)->with('sekolah','account')->get();
+                $gurus = Guru::where('id', auth()->user()->userable_id)->with('sekolahs','account')->get();
             }
 
             return Inertia::render("Dashboard/Utama/Guru", [
@@ -46,8 +46,8 @@ class GuruController extends Controller
             // dd($request->all());
             $data = json_decode($request->data);
             $foto = $request->file("fileFoto") ? $this->storeFoto($request->file("fileFoto"), $data->nama) : ($data->foto ?? null);
-            // dd($foto);
-            Guru::updateOrCreate(
+            // dd($data);
+            $guru = Guru::updateOrCreate(
                 [
                     'id' => $data->id ?? null,
                 ],
@@ -63,13 +63,19 @@ class GuruController extends Controller
                     'foto' => $foto,
                     'hp' => $data->hp??null,
                     'alamat' => $data->alamat??null,
-                    'sekolah_id' => $data->sekolah_id,
+                    'sekolah_id' => implode(";", $data->sekolah_id),
                     'status_kepegawaian' => $data->status_kepegawaian,
                     'belajar_id' => $data->belajar_id
                 ]
             );
 
-            return back();
+            // $sekolah_ids = [];
+            foreach($data->sekolah_id as $npsn) {
+                $sekolah = Sekolah::whereNpsn($npsn)->first();
+                $sekolah->gurus()->attach($guru->id);
+            }
+
+            return back()->with('status', 'Data Guru Disimpan');
         } catch (\Throwable $th) {
             throw $th;
         }

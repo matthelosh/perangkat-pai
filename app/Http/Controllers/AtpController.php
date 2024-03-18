@@ -27,7 +27,7 @@ class AtpController extends Controller
         try {
             $kaldiks = Kaldik::whereIsLibur(true)->where('tapel_id', $this->tapel())->get();
             if ($request->query('fase')) {
-                if ($request->query('mine') == '1') {
+                if ($request->query('mine') == 'true') {
                     $nip = auth()->user()->userable->nip;
                     $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function($q) use($nip) {
                         $q->where('guru_id', $nip);
@@ -67,7 +67,7 @@ class AtpController extends Controller
 
             $babs = MateriAjar::where('tingkat', $tingkat[0])->orWhere('tingkat', $tingkat[1])->with('kontens')->get();
             return Inertia::render('Dashboard/Perangkat/Rencana/Atp', [
-                'elemens' => $elemens, 
+                // 'elemens' => $elemens, 
                 'babs' => $babs, 
                 'cp' => $cp, 
                 'kaldiks' => $kaldiks, 

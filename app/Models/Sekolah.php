@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Sekolah extends Model
 {
@@ -33,6 +34,11 @@ class Sekolah extends Model
     }
 
     function gurus() {
+        return $this->belongsToMany(Guru::class, 'guru_sekolah', 'sekolah_id', 'guru_id');
+    }
+
+    function teachers() {
         return $this->hasMany(Guru::class, 'sekolah_id','npsn');
+
     }
 }

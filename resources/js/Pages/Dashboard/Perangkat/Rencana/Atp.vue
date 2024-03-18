@@ -19,7 +19,7 @@ const Ttd = defineAsyncComponent(() => import('@/components/Umum/Ttd.vue'))
 const selectedMateri = ref(null)
 const loading = ref(false)
 const atps = computed (() => page.props.atps.filter(at => at.tingkat == atp.value.tingkat))
-const mine = ref('1')
+const mine = ref(true)
 const tingkat = ref(null)
 const kembali = () => {
     router.get(route('rencana'))
@@ -38,9 +38,11 @@ const extensions = [
 const params = computed(() => route().params)
 const onMineChanged = (e) => {
     // let params = route().params;
-    
+    // alert('tes')
     router.get('/rencana/atp', {fase: params.value.fase, mine: mine.value}, { preserveState: true, only: ['elemens']}
     )
+
+    // atps.value = page.props.atps
 }
 
 
@@ -159,7 +161,7 @@ const onMateriChanged = (e) => {
 
 onBeforeMount(() => {
     // atps.value = page.props.atps
-    // mine.value = params.mine
+    // mine.value = params.value.mine
     // parseTpAtp()
 })
 </script>
@@ -175,6 +177,7 @@ onBeforeMount(() => {
 
                     <h3>Form Alur Tujuan Pembelajaran</h3>
                     <div class="items flex items-center gap-2">
+                        <el-switch v-model="mine" @change="onMineChanged" />
                         <el-button type="primary">{{ totalAw }} JP</el-button>
                         <el-select placeholder="Pilih Kelas" v-model="atp.tingkat">
                             <el-option v-for="(t) in tingkats" :key="t" :value="t" :label="'Kelas '+t" />

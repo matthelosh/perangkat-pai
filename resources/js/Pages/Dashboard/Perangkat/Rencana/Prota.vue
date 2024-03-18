@@ -12,7 +12,7 @@ import { cssLink } from "@/helpers/printHelper";
 const CetakProta = defineAsyncComponent(() => import('@/Components/Dashboard/Perangkat/Rencana/CetakProta.vue'))
 
 const page = usePage();
-const mode = ref('cetak')
+const mode = ref('list')
 const layout = computed(() => {
     const width = window.innerWidth
     let cols = width < 414 ? 1 : (width <= 768 ? 2 : (width <= 1366 ? 3 : (width <= 1920 ? 4 : 6)))

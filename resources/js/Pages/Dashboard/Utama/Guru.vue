@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Head, usePage, router } from '@inertiajs/vue3';
 import { Icon } from '@iconify/vue';
 import Layout from '@/layouts/DashboardLayout.vue';
+import { ElNotification } from 'element-plus'
 
 const page = usePage()
 const loading=ref(false)
@@ -48,7 +49,9 @@ const simpan = async() => {
     
     router.post(route('guru.store'), fd, {
         onStart: ()=> {loading.value = true},
-        onSuccess: (page) => {router.reload({only: ['gurus']})},
+        onSuccess: (page) => {
+            ElNotification({title: 'Info', message: 'Data Guru Disimpan', type: 'success'})
+        },
         onFinish: () => {
             loading.value = false
             showDialog.value = false
@@ -82,6 +85,7 @@ const defaultImg = () => fotoUrl.value
 
 const edit = (item) => {
     guru.value = item
+    guru.value.sekolah_id = ''
     if(item.foto) {
         fotoUrl.value = item.foto
     }
@@ -143,7 +147,7 @@ const hapus = async(id) => {
                     <el-table-column prop="hp" label="No. HP"></el-table-column>
                     <el-table-column label="Satmikal">
                         <template #default="scope">
-                            <small>{{ scope.row.sekolah.nama }}</small>
+                            <small>{{ scope.row.sekolahs?.map(s => s.nama) }}</small>
                         </template>
                     </el-table-column>
                     <el-table-column label="Opsi">
@@ -244,8 +248,8 @@ const hapus = async(id) => {
                     </el-col>
                     <el-col :span="8">
                         <el-form-item label="Satmikal">
-                            <el-select v-model="guru.sekolah_id" placeholder="Pilih Sekolah">
-                                <el-option v-for="sekolah in page.props.sekolahs" :key="sekolah.npsn" :value="sekolah.npsn">{{sekolah.nama}}</el-option>
+                            <el-select v-model="guru.sekolah_id" placeholder="Pilih Sekolah" multiple>
+                                <el-option v-for="sekolah in page.props.sekolahs" :key="sekolah.npsn" :value="sekolah.npsn" :label="sekolah.nama">{{sekolah.nama}}</el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>

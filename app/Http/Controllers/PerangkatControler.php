@@ -65,24 +65,49 @@ class PerangkatControler extends Controller
         ]);
     }
     public function presensi(Request $request) {
-        return Inertia::render("Dashboard/Perangkat/Pelaksanaan/Jurnal", [
+
+        return Inertia::render("Dashboard/Perangkat/Pelaksanaan/Presensi", [
+            'rombel' => Rombel::whereKode($request->query('rombel'))->with('siswas')->first(),
             'protas' => Prota::whereGuruId(auth()->user()->userable->nip)
                             ->whereRombelId($request->query('rombel'))
                             ->whereSemester($this->semester()->kode)
                             ->whereHas('atp')
                             ->with('atp.elemen')
                             ->get(),
-            'rombel' => Rombel::whereKode($request->query('rombel'))->with('siswas')->first(),
         ]);
     }
 
+    // Evaluasi
+    public function evaluasi(Request $request)
+    {
+        return Inertia::render("Dashboard/Perangkat/Evaluasi/index", [
+            'rombels' => Rombel::
+                            whereGuruId(auth()->user()->userable->nip)
+                            ->whereTapel($this->tapel()->kode)
+                            ->get(),
+            'protas' => Prota::whereGuruId(auth()->user()->userable->nip)
+                            ->whereRombelId($request->query('rombel'))
+                            ->whereSemester($this->semester()->kode)
+                            ->whereHas('atp')
+                            ->with('atp.elemen')
+                            ->get(),
+        ]);
+    }
+
+    public function nilaiFormatif(Request $request)
+    {
+        $rombel = $this->rombel($request->query('rombel'));
+        dd($rombel);
+    }
+
     // Misc
+
 
     private function kaldiks() {
         return Kaldik::whereIsLibur(true)->whereTapelId($this->tapel()->kode)->get();
     }
 
-    private function rombel($kode) {
+    private function rombel($kode, ) {
         return Rombel::whereKode($kode)->with('jadwals')->first();
     }
 

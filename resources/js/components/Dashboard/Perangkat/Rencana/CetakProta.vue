@@ -2,6 +2,7 @@
 import { ref, computed, defineAsyncComponent } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { Icon } from '@iconify/vue'
+import { cssLink } from '@/helpers/printHelper.js'
 
 const Kop = defineAsyncComponent(() => import('@/Components/Umum/Kop.vue'))
 const Ttd = defineAsyncComponent(() => import('@/Components/Umum/Ttd.vue'))
@@ -16,6 +17,29 @@ const kode = (teks) => {
     teks = teks?.split("-").splice(1,3) ?? ['U','H']
     return teks.join("")
 }
+
+const cetak = () => {
+    let el = document.querySelector(".cetak")
+
+    let html = `
+            <!doctype html>
+            <html>
+                <head>
+                    <title>Program Tahunan</title>
+                    <link href="${cssLink(page.props.app_env)}" rel="stylesheet" />
+                </head>
+                <body>
+                    ${el.outerHTML}
+                </body>
+            </html>
+    `
+    let win = window.open("","_blank","width=800,height=700")
+    win.document.write(html)
+    setTimeout(() => {
+        win.print()
+    }, 500)    
+}
+
 </script>
 
 <template>
@@ -28,7 +52,7 @@ const kode = (teks) => {
                         Program Tahunan
                     </h1>
                     <div class="items flex items-center gap-2">
-                        <el-button circle>
+                        <el-button circle @click="cetak">
                             <Icon icon="mdi:printer" />
                         </el-button>
                     </div>

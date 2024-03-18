@@ -99,6 +99,12 @@ Route::middleware("auth")->group(function () {
         Route::get('/presensi', [PerangkatControler::class, 'presensi'])->name('perangkat.presensi');
     });
 
+    // Evaluasi
+    Route::prefix('evaluasi')->group(function() {
+        Route::get("/", [PerangkatControler::class, 'evaluasi'])->name('evaluasi');
+        Route::get("/formatif", [PerangkatControler::class, 'nilaiFormatif'])->name('perangkat.evaluasi.formatif');
+    });
+
     // Settings
     Route::prefix("setting")->group(function () {
         Route::resource("user", UserController::class)->name(

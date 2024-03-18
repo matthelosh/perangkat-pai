@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('modul_ajars', function (Blueprint $table) {
             $table->id();
             $table->integer('atp_id');
-            $table->string('guru_id', 30);
-            $table->string('rombel_id', 50);
+            $table->string('guru_id', 30)->nullable();
+            $table->string('kode', 30);
+            $table->string('rombel_id', 50)->nullable();
             $table->text('kompetensi_awal');
             $table->text('p5');
             $table->text('sarpras');
             $table->string('target_siswa', 191);
             $table->string('model', 191);
             $table->text('tps');
-            $table->text('cps');
             $table->text('pemahaman');
             $table->text('pertanyaan');
             $table->text('persiapan');
@@ -33,6 +33,7 @@ return new class extends Migration
             $table->text('pengayaan');
             $table->text('refleksi_guru');
             $table->text('refleksi_siswa');
+            $table->text('asesmen');
             $table->timestamps();
         });
     }
