@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('asesmen_id');
             $table->string('siswa_id');
             $table->float('skor');
-
+            $table->integer('rombel_id');
             $table->timestamps();
         });
     }

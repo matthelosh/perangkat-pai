@@ -12,6 +12,7 @@ class Nilai extends Model
     protected $fillable = [
         'asesmen_id',
         'siswa_id',
+        'rombel_id',
         'skor'
     ];
 

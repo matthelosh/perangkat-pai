@@ -113,6 +113,7 @@ class PerangkatControler extends Controller
     public function nilaiPas(Request $request)
     {
         $rombel = $this->rombel($request->query('rombel'));
+        $rombelId = $rombel->id;
         return Inertia::render('Dashboard/Perangkat/Evaluasi/Pas', [
             'rombel' => $rombel,
             'asesmen' => Asesmen::where(
@@ -122,7 +123,15 @@ class PerangkatControler extends Controller
                     ['tingkat', '=', $rombel->tingkat],
                     ['tipe', '=', 'pas']
                 ]
-            )->first()
+            )
+                ->with([
+                    'analises'
+                    => function ($a) use ($rombelId) {
+                        $a->whereRombelId($rombelId);
+                        $a->with('siswa');
+                    }
+                ])
+                ->first()
         ]);
     }
 

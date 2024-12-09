@@ -5,6 +5,7 @@ import { Icon } from "@iconify/vue";
 
 import DashLayout from "@/layouts/DashboardLayout.vue";
 
+const loading = ref(false);
 const page = usePage();
 const answers = ref([]);
 const isLetter = (e, index) => {
@@ -37,11 +38,11 @@ const skor = (index) => {
     let pg = 0;
     let skor = 0;
     let isian = answers.value[index].isians.reduce(
-        (a, c) => parseFloat(a) + parseFloat(c),
+        (a, c) => a + parseFloat(c),
         0.0
     );
     let uraian = answers.value[index].uraians.reduce(
-        (a, c) => parseFloat(a) + parseFloat(c),
+        (a, c) => a + parseFloat(c),
         0.0
     );
     for (let i = 0; i < page.props.asesmen.kunci.length; i++) {
@@ -59,6 +60,7 @@ const skor = (index) => {
         parseInt(soals[2]) * 3;
     skor = pg + isian * 2 + uraian * 3;
     return parseFloat(((skor / max) * 100).toFixed(2));
+    // return isian;
 };
 
 const cetak = () => {
@@ -196,19 +198,83 @@ const back = () => {
     window.history.back();
 };
 
-onBeforeMount(() => {
-    page.props.rombel.siswas.forEach((siswa) => {
-        answers.value.push({
-            siswa_id: siswa.nisn,
-            nama: siswa.nama,
-            jk: siswa.jk,
-            pgs: "",
-            isians: [],
-            uraians: [],
-            resPgs: "",
-            skor: 0,
+// Simpan Jawaban
+const simpan = async () => {
+    let datas = []; //siswa_id, asesmen_id, pgs, isians, uraians, skor
+    answers.value.forEach((siswa, s) => {
+        datas.push({
+            siswa_id: siswa.siswa_id,
+            asesmen_id: page.props.asesmen.id,
+            pgs:
+                siswa.pgs !== ""
+                    ? siswa.pgs
+                    : Array(parseInt(page.props.asesmen.jml_soal.split(",")[0]))
+                          .fill("x")
+                          .join(""),
+            isians:
+                siswa.isians.length > 0
+                    ? siswa.isians.join(",")
+                    : Array(parseInt(page.props.asesmen.jml_soal.split(",")[1]))
+                          .fill(0)
+                          .join(","),
+            uraians:
+                siswa.uraians.length > 0
+                    ? siswa.uraians.join(",")
+                    : Array(parseInt(page.props.asesmen.jml_soal.split(",")[2]))
+                          .fill(0)
+                          .join(","),
+            skor: skor(s),
         });
     });
+    // console.log(datas);
+    router.post(
+        route("perangkat.evaluasi.nilai.store", {
+            _query: {
+                tipe: page.props.asesmen.tipe,
+                rombel_id: page.props.rombel.id,
+            },
+        }),
+        { datas: datas },
+        {
+            onStart: () => (loading.value = true),
+            onSuccess: () => {
+                router.reload({ only: ["asesmen"] });
+            },
+            onError: (err) => {
+                console.log(err);
+            },
+            onFinish: () => (loading.value = false),
+        }
+    );
+};
+
+onBeforeMount(() => {
+    if (page.props.asesmen.analises.length < 1) {
+        page.props.rombel.siswas.forEach((siswa) => {
+            answers.value.push({
+                siswa_id: siswa.nisn,
+                nama: siswa.nama,
+                jk: siswa.jk,
+                pgs: "",
+                isians: [],
+                uraians: [],
+                resPgs: "",
+                skor: 0,
+            });
+        });
+    } else {
+        page.props.asesmen.analises.forEach((nilai) => {
+            answers.value.push({
+                siswa_id: nilai.siswa_id,
+                nama: nilai.siswa.nama,
+                jk: nilai.siswa.jk,
+                pgs: nilai.pgs,
+                isians: [...nilai.isians.split(",")].filter((n) => n !== ""),
+                uraians: [...nilai.uraians.split(",")].filter((n) => n !== ""),
+                resPgs: "",
+            });
+        });
+    }
 });
 </script>
 
@@ -241,7 +307,7 @@ onBeforeMount(() => {
                             <Icon icon="mdi:printer" />
                             Cetak
                         </el-button>
-                        <el-button>
+                        <el-button @click="simpan">
                             <Icon icon="mdi:hdd" />
                             Simpan
                         </el-button>
@@ -291,6 +357,7 @@ onBeforeMount(() => {
                         </el-table-column>
                         <el-table-column
                             label="Isian (Bobot 2)"
+                            width="550"
                             #default="scope"
                         >
                             <div class="flex gap-1">
@@ -303,7 +370,9 @@ onBeforeMount(() => {
                                             ','
                                         )[1]
                                     )"
-                                    v-model="answers[scope.$index].isians[is]"
+                                    v-model="
+                                        answers[scope.$index].isians[is - 1]
+                                    "
                                     @blur="isNumber($event)"
                                 ></el-input>
                             </div>
@@ -323,8 +392,10 @@ onBeforeMount(() => {
                                             ','
                                         )[2]
                                     )"
-                                    v-model="answers[scope.$index].uraians[ur]"
-                                    @change="isNumber($event)"
+                                    v-model="
+                                        answers[scope.$index].uraians[ur - 1]
+                                    "
+                                    @blur="isNumber($event)"
                                 ></el-input>
                             </div>
                         </el-table-column>
@@ -337,6 +408,8 @@ onBeforeMount(() => {
                             {{ skor(scope.$index) }}
                         </el-table-column>
                     </el-table>
+
+                    <!-- {{ page.props.asesmen }} -->
                 </div>
             </el-col>
         </el-row>

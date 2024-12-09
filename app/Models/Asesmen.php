@@ -24,4 +24,9 @@ class Asesmen extends Model
     {
         return $this->hasMany(Nilai::class);
     }
+
+    public function analises()
+    {
+        return $this->hasMany(Analisis::class);
+    }
 }

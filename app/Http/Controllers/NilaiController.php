@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Analisis;
 use App\Models\Nilai;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,39 @@ class NilaiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            foreach ($request->datas as $data) {
+                $nilai = Nilai::updateOrCreate(
+                    [
+                        'id' => $data['id'] ?? null,
+                        'siswa_id' => $data['siswa_id'],
+                        'asesmen_id' => $data['asesmen_id'],
+                        'rombel_id' => $request->rombel_id
+                    ],
+                    [
+                        'skor' => $data['skor']
+                    ]
+                );
+
+                $analisis = Analisis::updateOrCreate(
+                    [
+                        'asesmen_id' => $data['asesmen_id'],
+                        'siswa_id' => $data['siswa_id'],
+                        'rombel_id' => $request->rombel_id
+                    ],
+                    [
+
+                        'pgs' => $data['pgs'],
+                        'isians' => $data['isians'],
+                        'uraians' => $data['uraians']
+                    ]
+                );
+            };
+
+            return back()->with('message', 'Nilai dan Analisis disimpan');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
