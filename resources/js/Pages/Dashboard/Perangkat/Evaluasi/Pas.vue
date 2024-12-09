@@ -1,0 +1,332 @@
+<script setup>
+import { ref, computed, onBeforeMount } from "vue";
+import { usePage, Link, router } from "@inertiajs/vue3";
+import { Icon } from "@iconify/vue";
+
+import DashLayout from "@/layouts/DashboardLayout.vue";
+
+const page = usePage();
+const answers = ref([]);
+const isLetter = (e, index) => {
+    let char = String.fromCharCode(e.keyCode);
+    if (/^[A-Da-d]+$/.test(char)) {
+        if (
+            answers.value[index].pgs.length >= page.props.asesmen.kunci.length
+        ) {
+            e.preventDefault();
+            alert("Jumlah Jawaban sudah penuh");
+        }
+        return true;
+    } else {
+        e.preventDefault();
+        alert("Hanya boleh A|B|C|D");
+    }
+};
+
+const isNumber = (e) => {
+    // console.log(e);
+    if (e.target.value > 1 || e.target.value < 0) {
+        alert("Masukkan nilai desimal antara 0 sampai 1. Contoh: 0,7");
+        e.target.focus();
+        e.target.value = 0;
+    }
+};
+
+const skor = (index) => {
+    let res = [];
+    let pg = 0;
+    let skor = 0;
+    let isian = answers.value[index].isians.reduce(
+        (a, c) => parseFloat(a) + parseFloat(c),
+        0.0
+    );
+    let uraian = answers.value[index].uraians.reduce(
+        (a, c) => parseFloat(a) + parseFloat(c),
+        0.0
+    );
+    for (let i = 0; i < page.props.asesmen.kunci.length; i++) {
+        pg +=
+            page.props.asesmen.kunci[i]?.toLowerCase() ==
+            answers.value[index].pgs[i]?.toLowerCase()
+                ? 1
+                : 0;
+    }
+
+    let soals = page.props.asesmen.jml_soal.split(",");
+    let max =
+        parseInt(soals[0]) * 1 +
+        parseInt(soals[1]) * 2 +
+        parseInt(soals[2]) * 3;
+    skor = pg + isian * 2 + uraian * 3;
+    return parseFloat(((skor / max) * 100).toFixed(2));
+};
+
+const cetak = () => {
+    let win = window.open("", "_blank", "width=1200,height=900");
+    const cssUrl =
+        page.props.app_env == "local"
+            ? page.props.app_url + ":5173/resources/css/app.css"
+            : page.props.app_url + "/build/assets/app.css";
+
+    const soals = page.props.asesmen.jml_soal.split(",");
+    let pgTh = "";
+    let isianTh = "";
+    let uraianTh = "";
+    let tr = "";
+
+    answers.value.forEach((siswa, s) => {
+        let pgTd = "";
+        let isianTd = "";
+        let uraianTd = "";
+        for (
+            let p = 0;
+            p < parseInt(page.props.asesmen.jml_soal.split(",")[0]);
+            p++
+        ) {
+            pgTd += `
+                <td class="border text-center ${
+                    siswa.pgs[p]?.toLowerCase() !==
+                    page.props.asesmen.kunci[p]?.toLowerCase()
+                        ? "bg-red-100 text-red-600"
+                        : ""
+                }" >
+                ${siswa.pgs[p] ?? 0}
+                </td>
+            `;
+        }
+
+        for (
+            let is = 0;
+            is < parseInt(page.props.asesmen.jml_soal.split(",")[1]);
+            is++
+        ) {
+            isianTd += `
+                <td class="border text-center">${
+                    answers.value[s].isians[is + 1] ?? 0
+                }</td>
+            `;
+            // isianTd += `<td class="border">${is}</td>`;
+        }
+        for (
+            let ur = 0;
+            ur < parseInt(page.props.asesmen.jml_soal.split(",")[2]);
+            ur++
+        ) {
+            uraianTd += `
+                <td class="border text-center">${
+                    answers.value[s].uraians[ur + 1] ?? 0
+                }</td>
+            `;
+        }
+
+        tr += `
+            <tr>
+                <td class="border text-center">${s + 1}</td>
+                <td class="border">${siswa.siswa_id}</td>
+                <td class="border text-center">${siswa.nama}</td>
+                <td class="border text-center">${siswa.jk}</td>
+                ${pgTd}
+                ${isianTd}
+                ${uraianTd}
+                <td class="border text-center">${skor(s)}</td>
+            </tr>
+        `;
+    });
+
+    for (let i = 0; i < parseInt(soals[0]); i++) {
+        pgTh += `<th class="border">${i + 1}</th>`;
+    }
+    for (let i = 0; i < parseInt(soals[1]); i++) {
+        isianTh += `<th class="border">${i + 1}</th>`;
+    }
+    for (let i = 0; i < parseInt(soals[2]); i++) {
+        uraianTh += `<th class="border">${i + 1}</th>`;
+    }
+
+    let html = `
+        <!doctype html>
+        <html>
+            <head>
+                <title>${page.props.asesmen.label}</title>
+                <link rel="stylesheet" href="${cssUrl}" />
+            </head>
+            <body>
+                <h3 class="text-center">Hasil ${page.props.asesmen.label}</h3>
+
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="border" rowspan="2">No</th>
+                            <th class="border" rowspan="2">NISN</th>
+                            <th class="border" rowspan="2">Nama</th>
+                            <th class="border" rowspan="2">JK</th>
+                            <th class="border" colspan="${parseInt(
+                                page.props.asesmen.jml_soal.split(",")[0]
+                            )}">Pilihan Ganda</th>
+                            <th class="border" colspan="${parseInt(
+                                page.props.asesmen.jml_soal.split(",")[1]
+                            )}">Isian</th>
+                            <th class="border" colspan="${parseInt(
+                                page.props.asesmen.jml_soal.split(",")[2]
+                            )}">Uraian</th>
+                            <th class="border" rowspan="2">Skor</th>
+                        </tr>
+                        <tr>
+                            ${pgTh}
+                            ${isianTh}
+                            ${uraianTh}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tr}
+                    </tbody>
+                </table>
+            </body>
+        </html>
+    `;
+
+    win.document.write(html);
+
+    setTimeout(() => {
+        win.print();
+    }, 500);
+};
+
+onBeforeMount(() => {
+    page.props.rombel.siswas.forEach((siswa) => {
+        answers.value.push({
+            siswa_id: siswa.nisn,
+            nama: siswa.nama,
+            jk: siswa.jk,
+            pgs: "",
+            isians: [],
+            uraians: [],
+            resPgs: "",
+            skor: 0,
+        });
+    });
+});
+</script>
+
+<template>
+    <DashLayout title="Perangkat Evaluasi">
+        <el-row class="w-full">
+            <el-col>
+                <div class="p-3 flex items-center justify-between bg-slate-400">
+                    <h3
+                        class="text-white flex justify-between items-center gap-4"
+                    >
+                        <span> Analisis {{ page.props.asesmen.label }} </span>
+                        <span
+                            >Kunci Jawaban:
+                            <span class="tracking-widest border p-2 rounded">
+                                {{ page.props.asesmen.kunci.toUpperCase() }}
+                            </span>
+                        </span>
+                    </h3>
+                    <div class="tools">
+                        <el-button @click="cetak">
+                            <Icon icon="mdi:printer" />
+                            Cetak
+                        </el-button>
+                        <el-button>
+                            <Icon icon="mdi:hdd" />
+                            Simpan
+                        </el-button>
+                    </div>
+                </div>
+                <div class="p-3 bg-white">
+                    <el-table
+                        :data="page.props.rombel.siswas"
+                        max-height="86vh"
+                    >
+                        <el-table-column
+                            label="No"
+                            type="index"
+                            fixed="left"
+                        ></el-table-column>
+                        <el-table-column
+                            label="NISN"
+                            prop="nisn"
+                            width="100"
+                            fixed="left"
+                        ></el-table-column>
+                        <el-table-column
+                            label="Nama"
+                            prop="nama"
+                            fixed="left"
+                            width="300"
+                        ></el-table-column>
+                        <el-table-column
+                            label="JK"
+                            prop="jk"
+                            width="100"
+                        ></el-table-column>
+                        <el-table-column
+                            label="Pilihan Ganda (Bobot 1)"
+                            #default="scope"
+                            width="250"
+                        >
+                            <el-input
+                                v-model="answers[scope.$index].pgs"
+                                placeholder="Masukkan Jawaban Siswa"
+                                @keypress="isLetter($event, scope.$index)"
+                            >
+                                <template #suffix
+                                    >{{ answers[scope.$index].pgs.length }}
+                                </template>
+                            </el-input>
+                        </el-table-column>
+                        <el-table-column
+                            label="Isian (Bobot 2)"
+                            #default="scope"
+                        >
+                            <div class="flex gap-1">
+                                <el-input
+                                    type="number"
+                                    min="0"
+                                    max="1"
+                                    v-for="is in parseInt(
+                                        page.props.asesmen.jml_soal.split(
+                                            ','
+                                        )[1]
+                                    )"
+                                    v-model="answers[scope.$index].isians[is]"
+                                    @blur="isNumber($event)"
+                                ></el-input>
+                            </div>
+                        </el-table-column>
+                        <el-table-column
+                            label="Uraian (Bobot 3)"
+                            #default="scope"
+                            width="300"
+                        >
+                            <div class="flex gap-1">
+                                <el-input
+                                    type="number"
+                                    min="0"
+                                    max="1"
+                                    v-for="ur in parseInt(
+                                        page.props.asesmen.jml_soal.split(
+                                            ','
+                                        )[2]
+                                    )"
+                                    v-model="answers[scope.$index].uraians[ur]"
+                                    @change="isNumber($event)"
+                                ></el-input>
+                            </div>
+                        </el-table-column>
+                        <el-table-column
+                            label="Skor"
+                            #default="scope"
+                            fixed="right"
+                            width="80"
+                        >
+                            {{ skor(scope.$index) }}
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </el-col>
+        </el-row>
+    </DashLayout>
+</template>

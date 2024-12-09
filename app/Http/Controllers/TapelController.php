@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tapel;
 use Illuminate\Http\Request;
 
 class TapelController extends Controller
@@ -17,9 +18,23 @@ class TapelController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function toggle(Request $request, $id)
     {
-        //
+        try {
+            $tapel = Tapel::findOrFail($id);
+            if ($request->status == 'inactive') {
+                $tapels = Tapel::get()->filter(fn ($q) => $q->status == 'active');
+                if (count($tapels) === 1) {
+                    return back()->withErrors(['error' => 'Tapel harus ada yang aktif']);
+                }
+            } else {
+                Tapel::where('status', 'active')->update(['status' => 'inactive']);
+                $tapel->update(['status' => $request->status]);
+                return back()->with('message', 'Tapel ' . ($request->status == 'active' ? 'Diaktifkan' : 'Dinonaktifkan'));
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

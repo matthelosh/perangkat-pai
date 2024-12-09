@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rombel;
+use App\Models\Tapel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,32 +14,47 @@ class RombelController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
+        $tapel = Tapel::where('status', 'active')->first();
         try {
             if (
-                auth()
-                    ->user()
-                    ->hasRole("admin")
+                $user
+                ->hasRole("admin")
             ) {
                 $rombels = Rombel::whereIsActive(true)
                     ->with("sekolah")
                     ->get();
             } elseif (
-                auth()
-                    ->user()
-                    ->hasRole("gpai")
+                $user
+                ->hasRole("gpai")
             ) {
                 $rombels = Rombel::where(
                     "guru_id",
-                    auth()->user()->userable->nip
+                    $user->userable->nip
                 )
+                    ->where('tapel', $tapel->kode)
                     ->with("sekolah", "siswas")
-                    ->whereIsActive(true)
+                    // ->whereIsActive(true)
                     ->get();
             }
 
             return Inertia::render("Dashboard/Utama/Rombel", [
                 "rombels" => $rombels,
             ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function prevRombel(Request $request)
+    {
+        try {
+            $sekolahId = $request->query('sekolah_id');
+            $currentTapel = $request->query('currentTapel');
+            $prevTapel = Tapel::where('id', '<', $currentTapel)->orderBy('id', 'DESC')->first();
+            $prevRombels = Rombel::where('tapel', $prevTapel->kode)->where('sekolah_id',  $sekolahId)->with('siswas')->get();
+
+            return response()->json(['rombels' => $prevRombels]);
         } catch (\Throwable $th) {
             throw $th;
         }

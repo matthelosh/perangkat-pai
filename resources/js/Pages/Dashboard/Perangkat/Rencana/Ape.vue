@@ -14,7 +14,8 @@ import { uppercase, weeksPerMonth, unefektif, weekPerSemester, sumUnEfektif, sum
 
 const page = usePage()
 const rombel = page.props.rombel
-const semester = ref('2')
+// const semester = computed(() => page.props.semester.id)
+const semester = ref('1')
 
 const bulans = computed(() => {
     let months = dayjs.months()

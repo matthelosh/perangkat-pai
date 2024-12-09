@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nilais', function (Blueprint $table) {
-            $table->id();
-            $table->integer('asesmen_id');
-            $table->string('siswa_id');
-            $table->float('skor');
-
-            $table->timestamps();
+        Schema::table('kaldiks', function (Blueprint $table) {
+            $table->enum('pelaksana', ['kkg', 'lembaga'])->default('lembaga');
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('nilais');
+        Schema::table('kaldiks', function (Blueprint $table) {
+            //
+        });
     }
 };

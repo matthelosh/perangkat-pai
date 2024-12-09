@@ -15,12 +15,12 @@ class GuruController extends Controller
      */
     public function index(Request $request)
     {
-        $role = auth()->user()->roles[0]['name']; 
+        $role = auth()->user()->roles[0]['name'];
         try {
-            if($role == 'admin') {
-                $gurus = Guru::with('sekolahs', 'account')->get();
-            } else if($role=='gpai') {
-                $gurus = Guru::where('id', auth()->user()->userable_id)->with('sekolahs','account')->get();
+            if ($role == 'admin') {
+                $gurus = Guru::with('sekolahs', 'account')->paginate(10);
+            } else if ($role == 'gpai') {
+                $gurus = Guru::where('id', auth()->user()->userable_id)->with('sekolahs', 'account')->get();
             }
 
             return Inertia::render("Dashboard/Utama/Guru", [
@@ -31,8 +31,9 @@ class GuruController extends Controller
         }
     }
 
-    function storeFoto($foto, $nama) {
-        $store = $foto->storePubliclyAs('perangkat-pai/img/guru', $nama.'.'.$foto->extension(), 's3');
+    function storeFoto($foto, $nama)
+    {
+        $store = $foto->storePubliclyAs('perangkat-pai/img/guru', $nama . '.' . $foto->extension(), 's3');
 
         return Storage::disk('s3')->url($store);
     }
@@ -53,27 +54,33 @@ class GuruController extends Controller
                 ],
                 [
                     'nip'  => $data->nip,
-                    'nuptk' => $data->nuptk??null,
-                    'no_sertifikat' => $data->no_sertifikat??null,
-                    'nrg' => $data->nrg??null,
-                    'gelar_depan' => $data->gelar_depan??null,
+                    'nuptk' => $data->nuptk ?? null,
+                    'no_sertifikat' => $data->no_sertifikat ?? null,
+                    'nrg' => $data->nrg ?? null,
+                    'gelar_depan' => $data->gelar_depan ?? null,
                     'nama' => $data->nama,
-                    'gelar_belakang' => $data->gelar_belakang??null,
+                    'gelar_belakang' => $data->gelar_belakang ?? null,
                     'jk' => $data->jk,
                     'foto' => $foto,
-                    'hp' => $data->hp??null,
-                    'alamat' => $data->alamat??null,
-                    'sekolah_id' => implode(";", $data->sekolah_id),
+                    'hp' => $data->hp ?? null,
+                    'alamat' => $data->alamat ?? null,
+                    'sekolah_id' => count($data->sekolahs) > 0 ? $data->sekolahs[0]->npsn : $data->sekolah_id[0],
                     'status_kepegawaian' => $data->status_kepegawaian,
                     'belajar_id' => $data->belajar_id
                 ]
             );
-
-            // $sekolah_ids = [];
-            foreach($data->sekolah_id as $npsn) {
-                $sekolah = Sekolah::whereNpsn($npsn)->first();
-                $sekolah->gurus()->attach($guru->id);
+            if (count($data->sekolahs) > 1) {
+                foreach ($data->sekolahs as $sekola) {
+                    $sekolah = Sekolah::whereId($sekola->id)->first();
+                    $sekolah->gurus()->attach($guru->id);
+                }
+            } else {
+                foreach ($data->sekolah_id as $npsn) {
+                    $sekolah = Sekolah::whereNpsn($npsn)->first();
+                    $sekolah->gurus()->attach($guru->id);
+                }
             }
+            // $sekolah_ids = [];
 
             return back()->with('status', 'Data Guru Disimpan');
         } catch (\Throwable $th) {
@@ -84,27 +91,27 @@ class GuruController extends Controller
     /**
      * Bulk Store resource
      */
-    public function import(Request $request) {
+    public function import(Request $request)
+    {
         try {
             $datas = json_decode($request->datas);
-            foreach($datas as $data)
-            {
+            foreach ($datas as $data) {
                 Guru::updateOrCreate(
                     [
                         'id' => $data->id ?? null,
                     ],
                     [
                         'nip'  => $data->nip,
-                        'nuptk' => $data->nuptk??null,
-                        'no_sertifikat' => $data->no_sertifikat??null,
-                        'nrg' => $data->nrg??null,
-                        'gelar_depan' => $data->gelar_depan??null,
+                        'nuptk' => $data->nuptk ?? null,
+                        'no_sertifikat' => $data->no_sertifikat ?? null,
+                        'nrg' => $data->nrg ?? null,
+                        'gelar_depan' => $data->gelar_depan ?? null,
                         'nama' => $data->nama,
-                        'gelar_belakang' => $data->gelar_belakang??null,
+                        'gelar_belakang' => $data->gelar_belakang ?? null,
                         'jk' => $data->jk,
-                        'foto' => $data->foto??null,
-                        'hp' => $data->hp??null,
-                        'alamat' => $data->alamat??null,
+                        'foto' => $data->foto ?? null,
+                        'hp' => $data->hp ?? null,
+                        'alamat' => $data->alamat ?? null,
                         'sekolah_id' => $data->sekolah_id,
                         'status_kepegawaian' => $data->status_kepegawaian,
                         'belajar_id' => $data->belajar_id
@@ -115,7 +122,7 @@ class GuruController extends Controller
             throw $th;
         }
     }
-    
+
 
     /**
      * Update the specified resource in storage.

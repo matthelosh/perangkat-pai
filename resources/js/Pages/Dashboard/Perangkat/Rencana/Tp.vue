@@ -8,7 +8,7 @@ import { ElNotification } from 'element-plus';
 
 const page = usePage()
 const CetakTp = defineAsyncComponent(() => import('@/components/Dashboard/Perangkat/Rencana/CetakTp.vue'))
-const mine = ref(false)
+const mine = ref(true)
 const elemens = computed(() => page.props.elemens)
 const fase = computed(() => route().params.fase)
 const mode = ref('form')

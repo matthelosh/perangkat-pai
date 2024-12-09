@@ -44,10 +44,11 @@ class KaldikController extends Controller
                     "selesai" => $data['selesai'],
                     "deskripsi" => $data['deskripsi'],
                     "is_libur" => $data['is_libur'],
-                    "warna" => $data['is_libur'] ? 'red': 'blue',
+                    "pelaksana" => $data['pelaksana'],
+                    "warna" => $data['is_libur'] ? 'red' : 'blue',
                 ]
             );
-            return back()->with('message','Kaldik disimpan');
+            return back()->with('message', 'Kaldik disimpan');
         } catch (\Throwable $th) {
             throw $th;
         }

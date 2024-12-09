@@ -28,7 +28,20 @@ class ElemenController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        Elemen::updateOrCreate(
+            [
+                'id' => $request['id'] ?? null,
+            ],
+            [
+                'fase' => $request['fase'],
+                'cp_id' => $request['cp_id'],
+                'kode' => $request['kode'],
+                'label' => $request['label'],
+                'deskripsi_cp' => $request['deskripsi_cp'],
+            ]
+        );
+        return back()->with('message', 'Deskripsi Cp diperbarui');
     }
 
     /**

@@ -17,8 +17,13 @@ class Siswa extends Model
         'sekolah_id'
     ];
 
-    public function rombels() : BelongsToMany
+    public function rombels(): BelongsToMany
     {
         return $this->belongsToMany(Rombel::class);
+    }
+
+    public function nilais()
+    {
+        return $this->hasMany(Nilai::class, 'siswa_id', 'nisn');
     }
 }

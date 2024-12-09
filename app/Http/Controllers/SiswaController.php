@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SiswaRequest;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SiswaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $siswas = Siswa::where('sekolah_id', $request->user()->userable->sekolah_id)->with('rombels')->get();
+        return Inertia::render('Dashboard/Utama/Siswa', [
+            'siswas' => $siswas,
+        ]);
     }
 
     /**
@@ -46,6 +50,8 @@ class SiswaController extends Controller
     public function impor(Request $request)
     {
         try {
+            $user = $request->user();
+            // dd($request->all());
             $datas = json_decode($request->datas);
             foreach ($datas as $data) {
                 $siswa = Siswa::updateOrCreate(
@@ -58,10 +64,10 @@ class SiswaController extends Controller
                         "sekolah_id" => $request->sekolah_id,
                     ]
                 );
-
-                if (!$siswa->rombels()->exists()) {
-                    $siswa->rombels()->attach($request->rombel_id);
-                }
+                $siswa->rombels()->sync([$request->rombel_id]);
+                // if (!$siswa->rombels()->exists()) {
+                //     $siswa->rombels()->attach($request->rombel_id);
+                // }
             }
 
             return back();

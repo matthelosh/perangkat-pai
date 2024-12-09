@@ -18,9 +18,23 @@ class SemesterController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function toggle(Request $request, $id)
     {
-        //
+        try {
+            $semester = Semester::findOrFail($id);
+            if ($request->status == 'inactive') {
+                $semesters = Semester::get()->filter(fn ($q) => $q->status == 'active');
+                if (count($semesters) === 1) {
+                    return back()->withErrors(['errors' => 'Semester harus ada yang aktif']);
+                }
+            } else {
+                Semester::where('status', 'active')->update(['status' => 'inactive']);
+                $semester->update(['status' => $request->status]);
+                return back()->with('message', 'Semester ' . ($request->status == 'active' ? 'Diaktifkan' : 'Dinonaktifkan'));
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

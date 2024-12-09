@@ -15,7 +15,15 @@ Route::prefix("masuk")->group(function () {
 
 Route::middleware("auth")->group(function () {
     Route::prefix("dashboard")->group(function () {
-        Route::inertia("/", "Dashboard/Home")->name("home");
+        Route::get("/", [DashboardController::class, 'home'])->name("home");
+        // Route::inertia("/", "Dashboard/Home")->name("home");
+    });
+
+    Route::prefix('tapel')->group(function () {
+        Route::put('/{id}/toggle', [TapelController::class, 'toggle'])->name('tapel.toggle');
+    });
+    Route::prefix('semester')->group(function () {
+        Route::put('/{id}/toggle', [SemesterController::class, 'toggle'])->name('semester.toggle');
     });
 
     Route::inertia("/about", "Dashboard/About")->name("about");
@@ -44,12 +52,21 @@ Route::middleware("auth")->group(function () {
         "guru.import"
     );
 
+    // ASesmen
+    Route::prefix('asesmen')->group(
+        function () {
+            Route::get('/', [AsesmenController::class, 'index'])->name('asesmen.index');
+            Route::post('/store', [AsesmenController::class, 'store'])->name('asesmen.store');
+        }
+    );
+
     // Rombel
     Route::resource("rombel", RombelController::class);
     Route::post("/rombel/siswa/detach/{id}/{siswa}", [
         RombelController::class,
         "detachSiswa",
     ])->name("rombel.detach.siswa");
+    Route::post('/rombel/prev', [RombelController::class, 'prevRombel'])->name('rombel.prev');
 
     // Siswa
     Route::resource("siswa", SiswaController::class);
@@ -57,20 +74,21 @@ Route::middleware("auth")->group(function () {
         "siswa.impor"
     );
     // Rencana
-    Route::prefix("rencana")->group(function() {
+    Route::prefix("rencana")->group(function () {
 
         Route::get("/", [PerangkatControler::class, 'rencana'])->name('rencana');
         // Kurikulum
-        Route::prefix('kurikulum')->group(function() {
+        Route::prefix('kurikulum')->group(function () {
             Route::get("/", [KurikulumController::class, 'index'])->name('kurikulum.index');
             Route::resource("cp", CpController::class);
+            Route::resource("elemen", ElemenController::class);
             Route::resource("materi", MateriAjarController::class);
             Route::resource('submateri', SubMateriController::class);
         });
-        
+
         // Tujuan Pembelajaran
         Route::resource('tp', TpController::class);
-        
+
         // alur Tujuan Pembelajaran
         Route::resource("atp", AtpController::class);
         Route::post('/atp/destroy/all', [AtpController::class, 'destroyAll'])->name('atp.destroy.all');
@@ -92,7 +110,7 @@ Route::middleware("auth")->group(function () {
     });
 
     // Pelaksanaan
-    Route::prefix('pelaksanaan')->group(function() {
+    Route::prefix('pelaksanaan')->group(function () {
         Route::get('/', [PerangkatControler::class, 'pelaksanaan'])->name('pelaksanaan');
         Route::get('/jurnal', [PerangkatControler::class, 'jurnal'])->name('perangkat.jurnal');
         Route::get('/modul-ajar', [PerangkatControler::class, 'modulajar'])->name('perangkat.modulajar');
@@ -100,9 +118,11 @@ Route::middleware("auth")->group(function () {
     });
 
     // Evaluasi
-    Route::prefix('evaluasi')->group(function() {
+    Route::prefix('evaluasi')->group(function () {
         Route::get("/", [PerangkatControler::class, 'evaluasi'])->name('evaluasi');
         Route::get("/formatif", [PerangkatControler::class, 'nilaiFormatif'])->name('perangkat.evaluasi.formatif');
+        Route::get("/pts", [PerangkatControler::class, 'nilaiPts'])->name('perangkat.evaluasi.sumatif.pts');
+        Route::get("/pas", [PerangkatControler::class, 'nilaiPas'])->name('perangkat.evaluasi.sumatif.pas');
     });
 
     // Settings
@@ -113,6 +133,17 @@ Route::middleware("auth")->group(function () {
         );
         Route::resource("/menu", MenuController::class);
     });
+
+    // KKG
+    Route::prefix("kkg")->group(
+        function () {
+            Route::prefix("kegiatan")->group(
+                function () {
+                    Route::get("/", [KkgController::class, 'kegiatan'])->name('kkg.kegiatan');
+                }
+            );
+        }
+    );
 
     // Logout
     Route::post("/logout", function () {

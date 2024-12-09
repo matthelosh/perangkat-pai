@@ -28,7 +28,21 @@ class CpController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            Cp::updateOrCreate(
+                [
+                    'id' => $request['id'] ?? null,
+                ],
+                [
+                    'fase' => $request['fase'],
+                    'teks' => $request['teks']
+                ]
+            );
+
+            return back()->with('message', 'Cp Disimpan');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

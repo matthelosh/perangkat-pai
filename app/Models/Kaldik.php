@@ -17,5 +17,6 @@ class Kaldik extends Model
         "deskripsi",
         "is_libur",
         "warna",
+        'pelaksana'
     ];
 }

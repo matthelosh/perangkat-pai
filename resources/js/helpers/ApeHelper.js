@@ -55,6 +55,7 @@ export const allUnefektif = (months, day) => {
 }
 
 export const unefektif = (month, day) => {
+    console.log(month, day)
     let events = [];
      page.props.kaldiks.forEach(kaldik => {
         let rentang = dayjs(kaldik.selesai).date() - dayjs(kaldik.mulai).date()

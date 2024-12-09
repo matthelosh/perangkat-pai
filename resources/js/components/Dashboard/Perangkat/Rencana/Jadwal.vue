@@ -75,7 +75,7 @@ const jams = computed(() => {
 })
 
 const cetak = async() => {
-    let cssLink = page.props.app_env == 'local' ? 'https://perpai.test:5173/resources/css/app.css' : '/build/assets/app.css'
+    let cssLink = page.props.app_env == 'local' ? 'http://localhost:5173/resources/css/app.css' : '/build/assets/app.css'
     let element = document.querySelector(".cetak")
     let html = `
             <!doctype html>
@@ -95,7 +95,7 @@ const cetak = async() => {
     win.document.write(html)
     setTimeout(() => {
         win.print()
-        win.close()
+        // win.close()
     }, 500)
 }
 

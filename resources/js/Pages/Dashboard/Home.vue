@@ -1,20 +1,20 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, computed } from "vue";
+import { Link, usePage } from "@inertiajs/vue3";
 
-import Layout from '@/layouts/DashboardLayout.vue'
+import Layout from "@/layouts/DashboardLayout.vue";
+import Admin from "@/components/Dashboard/Home/Admin.vue";
+import Gpai from "@/components/Dashboard/Home/Gpai.vue";
 
+const page = usePage();
+const role = computed(() => page.props.roles[0]);
+const is = computed(() => {
+    return role.value == "admin" ? Admin : Gpai;
+});
 </script>
 
 <template>
     <Layout title="Dashboard">
-            <el-row class="w-full">
-                <el-col :span="24">
-                    <el-card width="100%">
-                        <h1>Dashboard</h1>
-                        {{ $page.props.user }}
-                    </el-card>
-                </el-col>
-            </el-row>
+        <component :is="is"> </component>
     </Layout>
 </template>

@@ -33,7 +33,7 @@ const params = computed(() => route().params)
 
 const cetak = async() => {
     let lembar = document.querySelector(".cetak").outerHTML
-    let cssLink = page.props.app_env == 'local' ? 'https://perpai.test:5173/resources/css/app.css' : '/build/aseets/app.css'
+    let cssLink = page.props.app_env == 'local' ? 'http://localhost:5173/resources/css/app.css' : '/build/aseets/app.css'
     let html = `
             <!doctype html>
             <html>

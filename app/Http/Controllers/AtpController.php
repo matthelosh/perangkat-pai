@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\DB;
 class AtpController extends Controller
 {
 
-    private function tapel() {
+    private function tapel()
+    {
         return Tapel::whereStatus('active')->pluck('kode')->first();
     }
     /**
@@ -29,33 +30,28 @@ class AtpController extends Controller
             if ($request->query('fase')) {
                 if ($request->query('mine') == 'true') {
                     $nip = auth()->user()->userable->nip;
-                    $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function($q) use($nip) {
+                    $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function ($q) use ($nip) {
                         $q->where('guru_id', $nip);
-                    })->with('atps', function($q) use ($nip) {
+                    })->with('atps', function ($q) use ($nip) {
                         $q->where('guru_id', $nip);
                         $q->orderBy('semester', 'ASC');
                     })->get();
 
-                    // $rombels = Rombel::whereGuruId($nip)
-                    //                     ->whereTapel($this->tapel())
-                    //                     ->whereFase($request->query('fase'))
-                    //                     ->get();
 
-                    $atps = Atp::
-                                whereFase($request->query('fase'))
-                                ->whereGuruId($nip)
-                                ->with('elemen')
-                                ->get();
+                    $atps = Atp::whereFase($request->query('fase'))
+                        ->whereGuruId($nip)
+                        ->with('elemen')
+                        ->get();
                 } else {
-                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps')->with('atps', function($q) {
+                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps')->with('atps', function ($q) {
                         $q->whereNull('guru_id');
                         $q->orderBy('semester', 'ASC');
                     })->get();
 
                     $atps = Atp::whereFase($request->query('fase'))
-                                ->whereNull('guru_id')
-                                ->with('elemen')
-                                ->get();
+                        ->whereNull('guru_id')
+                        ->with('elemen')
+                        ->get();
 
                     // $rombels = null;
                 }
@@ -63,15 +59,15 @@ class AtpController extends Controller
                 $cp = Cp::where('fase', $request->query('fase'))->first();
             }
 
-            $tingkat = $request->query('fase') == 'A' ? ['1','2'] : ($request->query('fase') == 'B' ? ['3','4'] : ['5', '6']);
+            $tingkat = $request->query('fase') == 'A' ? ['1', '2'] : ($request->query('fase') == 'B' ? ['3', '4'] : ['5', '6']);
 
             $babs = MateriAjar::where('tingkat', $tingkat[0])->orWhere('tingkat', $tingkat[1])->with('kontens')->get();
             return Inertia::render('Dashboard/Perangkat/Rencana/Atp', [
-                // 'elemens' => $elemens, 
-                'babs' => $babs, 
-                'cp' => $cp, 
-                'kaldiks' => $kaldiks, 
-                'atps' => $atps, 
+                'elemens' => $elemens,
+                'babs' => $babs,
+                'cp' => $cp,
+                'kaldiks' => $kaldiks,
+                'atps' => $atps,
                 // 'rombels' => $rombels
             ]);
         } catch (\Throwable $th) {
@@ -92,11 +88,11 @@ class AtpController extends Controller
             Atp::updateOrCreate(
                 [
                     'id' => $data['id'] ?? null,
-                    'kode' => $this->kode($request->query('mine'), $data['elemen_id']) ,
+                    'kode' => $this->kode($request->query('mine'), $data['elemen_id']),
                 ],
                 [
                     'guru_id' => $request->query('mine') ? auth()->user()->userable->nip : null,
-                    
+
                     'elemen_id' => $data['elemen_id'],
                     'tingkat' => $data['tingkat'],
                     'fase' => (int) $data['tingkat'] > 4 ? 'C' : ($data['tingkat'] > 2 ? 'B' : 'A'),
@@ -104,7 +100,7 @@ class AtpController extends Controller
                     'aw' => $data['aw'],
                     'materi' => $data['materi'],
                     'tps' => implode(";", $data['tps']),
-                    'konten' => implode(";",$data['konten']),
+                    'konten' => implode(";", $data['konten']),
                     'asesmen' => $data['asesmen'],
                     'p5' => $data['p5']
                 ]
@@ -117,34 +113,24 @@ class AtpController extends Controller
         }
     }
 
-    private function kode($mine, $elemen_id) {
+    private function kode($mine, $elemen_id)
+    {
         if ($mine) {
             $latest = Atp::where('guru_id', auth()->user()->userable->nip)->where('elemen_id', $elemen_id)->pluck('kode')->last();
-
         } else {
             $latest = Atp::whereNull('guru_id')->where('elemen_id', $elemen_id)->pluck('kode')->last();
         }
 
         if ($latest) {
-            $kode = explode("-",$latest);
-            $no = intval($kode[count($kode)-1]);
-            
+            $kode = explode("-", $latest);
+            $no = intval($kode[count($kode) - 1]);
         } else {
-            $no=0;
+            $no = 0;
         }
 
-        return !$mine ? $elemen_id.'-'.$no+1 : auth()->user()->userable->nip.'-'.$elemen_id.'-'.$no+1;
+        return !$mine ? $elemen_id . '-' . $no + 1 : auth()->user()->userable->nip . '-' . $elemen_id . '-' . $no + 1;
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Atp $atp)
-    {
-        //
-    }
-
-    /**
+    /*
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
@@ -174,17 +160,17 @@ class AtpController extends Controller
         }
     }
 
-    public function destroyAll(Request $request) {
+    public function destroyAll(Request $request)
+    {
         try {
             if ($request->query('mine')) {
-                
-                DB::table('atps')->where('guru_id','=',auth()->user()->userable->nip)->delete();
-                
+
+                DB::table('atps')->where('guru_id', '=', auth()->user()->userable->nip)->delete();
+
                 return back()->with('message', 'Atp dibersihkan');
             }
         } catch (\Throwable $th) {
             throw $th;
         }
     }
-
 }
