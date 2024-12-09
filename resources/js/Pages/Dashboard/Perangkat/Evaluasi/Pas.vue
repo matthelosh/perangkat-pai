@@ -192,6 +192,10 @@ const cetak = () => {
     }, 500);
 };
 
+const back = () => {
+    window.history.back();
+};
+
 onBeforeMount(() => {
     page.props.rombel.siswas.forEach((siswa) => {
         answers.value.push({
@@ -216,7 +220,15 @@ onBeforeMount(() => {
                     <h3
                         class="text-white flex justify-between items-center gap-4"
                     >
-                        <span> Analisis {{ page.props.asesmen.label }} </span>
+                        <span class="flex items-center gap-2">
+                            <Icon
+                                @click="back"
+                                icon="mdi:arrow-left"
+                                class="text-lg hover:cursor-pointer text-red-200"
+                            />
+                            Analisis
+                            {{ page.props.asesmen.label }}
+                        </span>
                         <span
                             >Kunci Jawaban:
                             <span class="tracking-widest border p-2 rounded">
