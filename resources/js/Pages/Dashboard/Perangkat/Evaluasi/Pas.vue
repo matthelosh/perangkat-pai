@@ -2,6 +2,7 @@
 import { ref, computed, onBeforeMount } from "vue";
 import { usePage, Link, router } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
+import { writeFile, utils } from "xlsx";
 
 import DashLayout from "@/layouts/DashboardLayout.vue";
 
@@ -194,6 +195,59 @@ const cetak = () => {
     }, 500);
 };
 
+const unduh = async () => {
+    let res = [];
+    answers.value.forEach((ans, a) => {
+        let bio = {
+            no: a + 1,
+            nisn: ans.siswa_id,
+            nama: ans.nama,
+            jk: ans.jk,
+        };
+
+        let pg = [...ans.pgs].map((o, i) =>
+            o == page.props.asesmen.kunci[i] ? 1 : 0
+        );
+        let r = [...pg, ...ans.isians, ...ans.uraians];
+        let ana = r.reduce(
+            (obj, value, index) => ({
+                ...obj,
+                ["s#" + (index + 1).toString()]: value,
+            }),
+            {}
+        );
+        let item = Object.assign({}, bio, ana, { skor: skor(a) });
+        res.push(item);
+    });
+
+    // console.log(res);
+    const ws = utils.json_to_sheet(res);
+    const range = utils.decode_range(ws["!ref"]);
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            const cellAddress = utils.encode_cell({ r: R, c: C });
+            if (!ws[cellAddress]) continue;
+
+            ws[cellAddress].s = {
+                border: {
+                    top: { style: "thin", color: { rgb: "000000" } },
+                    bottom: { style: "thin", color: { rgb: "000000" } },
+                    left: { style: "thin", color: { rgb: "000000" } },
+                    right: { style: "thin", color: { rgb: "000000" } },
+                },
+            };
+        }
+    }
+
+    const wb = utils.book_new();
+
+    utils.book_append_sheet(wb, ws, ` ${page.props.rombel.label}`);
+
+    writeFile(wb, `Analisis ${page.props.asesmen.label}.xlsx`, {
+        compression: true,
+    });
+};
+
 const back = () => {
     window.history.back();
 };
@@ -239,6 +293,7 @@ const simpan = async () => {
             onStart: () => (loading.value = true),
             onSuccess: () => {
                 router.reload({ only: ["asesmen"] });
+                init();
             },
             onError: (err) => {
                 console.log(err);
@@ -248,10 +303,11 @@ const simpan = async () => {
     );
 };
 
-onBeforeMount(() => {
+const init = () => {
     if (page.props.asesmen.analises.length < 1) {
+        let ans = [];
         page.props.rombel.siswas.forEach((siswa) => {
-            answers.value.push({
+            ans.push({
                 siswa_id: siswa.nisn,
                 nama: siswa.nama,
                 jk: siswa.jk,
@@ -262,19 +318,26 @@ onBeforeMount(() => {
                 skor: 0,
             });
         });
+        answers.value = ans;
     } else {
+        let ans = [];
         page.props.asesmen.analises.forEach((nilai) => {
-            answers.value.push({
+            ans.push({
                 siswa_id: nilai.siswa_id,
                 nama: nilai.siswa.nama,
                 jk: nilai.siswa.jk,
-                pgs: nilai.pgs,
+                pgs: nilai.pgs.replaceAll(",", ""),
                 isians: [...nilai.isians.split(",")].filter((n) => n !== ""),
                 uraians: [...nilai.uraians.split(",")].filter((n) => n !== ""),
                 resPgs: "",
             });
         });
+        answers.value = ans;
     }
+};
+
+onBeforeMount(() => {
+    init();
 });
 </script>
 
@@ -303,6 +366,10 @@ onBeforeMount(() => {
                         </span>
                     </h3>
                     <div class="tools">
+                        <el-button @click="unduh">
+                            <Icon icon="mdi:file-excel-box" />
+                            Unduh
+                        </el-button>
                         <el-button @click="cetak">
                             <Icon icon="mdi:printer" />
                             Cetak
