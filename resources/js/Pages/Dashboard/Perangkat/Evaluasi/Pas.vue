@@ -303,6 +303,20 @@ const simpan = async () => {
     );
 };
 
+const fileExcel = ref(null);
+const impor = async () => {
+    loading.value = true;
+    fileExcel.value.click();
+
+    fileExcel.value.onchange = () => {
+        const files = fileExcel.value.files;
+
+        if (files.length > 0) {
+            console.log(files[0]);
+        }
+    };
+};
+
 const init = () => {
     if (page.props.asesmen.analises.length < 1) {
         let ans = [];
@@ -366,6 +380,16 @@ onBeforeMount(() => {
                         </span>
                     </h3>
                     <div class="tools">
+                        <input
+                            type="file"
+                            ref="fileExcel"
+                            accept=".xls, .xlsx, .ods"
+                            class="hidden"
+                        />
+                        <el-button @click="impor">
+                            <Icon icon="mdi:file-upload" />
+                            Impor
+                        </el-button>
                         <el-button @click="unduh">
                             <Icon icon="mdi:file-excel-box" />
                             Unduh

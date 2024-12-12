@@ -15,6 +15,6 @@ class Cp extends Model
     ];
 
     function elemens() {
-        return $this->hasMany(ELemen::class, 'cp_id', 'id');
+        return $this->hasMany(Elemen::class, 'cp_id', 'id');
     }
 }
