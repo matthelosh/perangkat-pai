@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+button.el-button, [type=button].el-button {
+    background-color: inherit !important;
+    background-image: inherit !important;
+    -webkit-appearance: none; /* Nonaktifkan pengaruh global */
+}
