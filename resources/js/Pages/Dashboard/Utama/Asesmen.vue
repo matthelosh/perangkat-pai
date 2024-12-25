@@ -10,6 +10,7 @@ const mode = ref("list");
 
 const asesmen = ref({});
 const openForm = () => {
+    asesmen.value.jml_soal = [0, 0, 0];
     mode.value = "form";
 };
 
@@ -46,11 +47,25 @@ const simpan = async () => {
 };
 
 const edit = (item) => {
+    item.jml_soal = item.jml_soal.split(",");
     asesmen.value = item;
+
     mode.value = "form";
 };
-const hapus = (item) => {
-    console.log(item);
+const hapus = async (id) => {
+    // console.log(id);
+    // router.post(route("asesmen.destroy", { id: id, _method: "delete" }), null, {
+    //     onSuccess: () => {
+    //         router.reload({ only: ["asesmens"] });
+    //     },
+    //     onError: (err) => console.log(err),
+    // });
+    axios
+        .post(route("asesmen.destroy", { id: id, _method: "DELETE" }))
+        .then((res) => {
+            console.log(res);
+            router.reload({ only: ["asesmens"] });
+        });
 };
 </script>
 
@@ -114,10 +129,10 @@ const hapus = (item) => {
                         label-position="top"
                         @submit.prevent="simpan"
                     >
-                        <el-form-item label="Label">
+                        <el-form-item label="Judul">
                             <el-input
                                 v-model="asesmen.label"
-                                placeholder="Label Asesmen"
+                                placeholder="Judul Asesmen"
                             ></el-input>
                         </el-form-item>
                         <el-row :gutter="20">
@@ -156,13 +171,33 @@ const hapus = (item) => {
                                     </el-select>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="Jml Soal">
-                                    <el-input
-                                        placeholder="Soal"
-                                        v-model="asesmen.jml_soal"
-                                    ></el-input>
-                                </el-form-item>
+                            <el-col :span="24">
+                                <el-row :gutter="10">
+                                    <el-col :span="8">
+                                        <el-form-item label="Jml Soal PG">
+                                            <el-input
+                                                placeholder="Soal"
+                                                v-model="asesmen.jml_soal[0]"
+                                            ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="Jml Soal Uraian">
+                                            <el-input
+                                                placeholder="Soal"
+                                                v-model="asesmen.jml_soal[1]"
+                                            ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="Jml Soal Essay">
+                                            <el-input
+                                                placeholder="Soal"
+                                                v-model="asesmen.jml_soal[2]"
+                                            ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
                             </el-col>
                         </el-row>
                         <el-row>

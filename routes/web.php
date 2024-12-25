@@ -14,6 +14,20 @@ Route::prefix("masuk")->group(function () {
 });
 
 Route::middleware("auth")->group(function () {
+    // Sinkron RaporSD
+    Route::prefix('rapor')->group(function () {
+        // Siswa 
+        Route::prefix('siswa')->group(function () {
+            Route::get('/', [RaporController::class, 'getSiswa'])->name('rapor.siswa.get');
+        });
+        Route::prefix('rombel')->group(function () {
+            Route::get('/', [RaporController::class, 'getRombel'])->name('rapor.rombel.get');
+            Route::post('/sync', [RaporController::class, 'syncRombel'])->name('rapor.rombel.sync');
+        });
+    });
+
+
+
     Route::prefix("dashboard")->group(function () {
         Route::get("/", [DashboardController::class, 'home'])->name("home");
         // Route::inertia("/", "Dashboard/Home")->name("home");
@@ -57,6 +71,7 @@ Route::middleware("auth")->group(function () {
         function () {
             Route::get('/', [AsesmenController::class, 'index'])->name('asesmen.index');
             Route::post('/store', [AsesmenController::class, 'store'])->name('asesmen.store');
+            Route::delete('/{id}', [AsesmenController::class, 'destroy'])->name('asesmen.destroy');
         }
     );
 
@@ -73,6 +88,7 @@ Route::middleware("auth")->group(function () {
     Route::post("/siswa/impor", [SiswaController::class, "impor"])->name(
         "siswa.impor"
     );
+
     // Rencana
     Route::prefix("rencana")->group(function () {
 
@@ -133,7 +149,7 @@ Route::middleware("auth")->group(function () {
     });
 
     // Settings
-    Route::prefix("setting")->group(function () {
+    Route::prefix('setting')->middleware(['role:admin'])->group(function () {
         Route::resource("user", UserController::class)->name(
             "index",
             "setting.account"

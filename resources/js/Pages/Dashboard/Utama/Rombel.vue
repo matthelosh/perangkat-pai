@@ -2,8 +2,8 @@
 import { ref, computed, defineAsyncComponent, watch } from "vue";
 import { usePage, Head, router } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-
+import { ElAlert, ElMessage, ElMessageBox } from "element-plus";
+import NProgress from "nprogress";
 import Layout from "@/layouts/DashboardLayout.vue";
 
 const FormRombel = defineAsyncComponent(() =>
@@ -101,6 +101,47 @@ const onFormImportHide = () => {
     showDialogImpor.value = false;
     rombel.value = {};
 };
+
+// Ambil Rombel dan Siswa dari Rapor
+const rombels = ref([]);
+const syncRapor = ref(false);
+const getFromRapor = async () => {
+    syncRapor.value = true;
+    axios
+        .get(
+            route("rapor.rombel.get", {
+                _query: { npsn: page.props.sekolahs[0].npsn },
+            })
+        )
+        .then((res) => {
+            // (rombels.value = res.data)
+            rombels.value = res.data;
+            console.log(res.data);
+        });
+};
+const progress = ref(null);
+const syncRombel = async () => {
+    router.post(
+        route("rapor.rombel.sync"),
+        { datas: rombels.value },
+        {
+            onStart: () => {
+                // NProgress.start();
+                progress.value = 0;
+            },
+            onProgress: (event) => {
+                progress.value = event.detail.progress.percentage;
+            },
+            onFinish: () => {
+                progress.value = 100;
+                ElMessageBox({
+                    title: "Info",
+                    message: page.props.flash.message,
+                });
+            },
+        }
+    );
+};
 </script>
 
 <template>
@@ -108,7 +149,7 @@ const onFormImportHide = () => {
         <el-card>
             <template #header>
                 <div class="toolbar flex items-center justify-between">
-                    <h3>Data Rombel</h3>
+                    <h3>Data Rombel {{ page.props.tapel.label }}</h3>
                     <div class="toolbar-items flex gap-1">
                         <el-button-group>
                             <el-tooltip
@@ -117,6 +158,16 @@ const onFormImportHide = () => {
                             >
                                 <el-button @click="showFormPlus = true">
                                     <Icon icon="mdi:plus" />
+                                    Buat
+                                </el-button>
+                            </el-tooltip>
+                            <el-tooltip
+                                content="Impor dari Rapor SD"
+                                placement="top-end"
+                            >
+                                <el-button @click="getFromRapor">
+                                    <Icon icon="mdi:sync" />
+                                    Ambil
                                 </el-button>
                             </el-tooltip>
                             <el-tooltip content="Cetak" placement="top-end">
@@ -284,5 +335,104 @@ const onFormImportHide = () => {
             </template>
             <FormRombel :selectedRombel="rombel" @close="onFormPlusClose" />
         </el-dialog>
+
+        <el-dialog v-model="syncRapor" :show-close="false">
+            <template #header>
+                <div class="header flex p-0 justify-between">
+                    <h3>Data Rombel di Rapor SD</h3>
+                    <el-button type="danger" @click="syncRapor = !syncRapor">
+                        <Icon icon="mdi:close" />
+                    </el-button>
+                </div>
+            </template>
+            <template #default>
+                <div class="dialog-content">
+                    <el-table :data="rombels" stripe>
+                        <el-table-column
+                            label="#"
+                            type="index"
+                        ></el-table-column>
+                        <el-table-column
+                            label="Kode"
+                            prop="kode"
+                        ></el-table-column>
+                        <el-table-column
+                            label="Label"
+                            prop="label"
+                        ></el-table-column>
+                        <el-table-column label="Jml Siswa">
+                            <template #default="{ row }">
+                                <span class="flex gap-2 items-center">
+                                    <span
+                                        class="flex items-center gap-1 bg-teal-100 py-1 px-2 w-[50px] font-bold"
+                                    >
+                                        <Icon
+                                            icon="mdi-account-group"
+                                            class="text-lg"
+                                        />
+                                        {{ row.siswas?.length }}
+                                    </span>
+                                    <span
+                                        class="flex gap-1 items-center bg-sky-100 py-1 px-2 w-[50px] font-bold"
+                                    >
+                                        <Icon
+                                            icon="mdi-human-female"
+                                            class="text-lg"
+                                        />
+                                        {{
+                                            row.siswas?.filter(
+                                                (siswa) =>
+                                                    siswa.jk == "Laki-laki"
+                                            ).length
+                                        }}
+                                    </span>
+                                    <span
+                                        class="flex items-center gap-1 bg-pink-100 py-1 px-2 w-[50px] font-bold"
+                                    >
+                                        <Icon
+                                            icon="mdi-human-female"
+                                            class="text-lg"
+                                        />
+                                        {{
+                                            row.siswas?.filter(
+                                                (siswa) =>
+                                                    siswa.jk == "Perempuan"
+                                            ).length
+                                        }}
+                                    </span>
+                                </span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </template>
+            <template #footer>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="progress flex-grow h-6">
+                        <el-progress
+                            v-if="progress"
+                            status="success"
+                            :percentage="progress"
+                            class="w-full"
+                        ></el-progress>
+                    </div>
+                    <div>
+                        <el-button type="primary" @click="syncRombel"
+                            >Sinkron</el-button
+                        >
+                    </div>
+                </div>
+            </template>
+        </el-dialog>
     </Layout>
 </template>
+
+<style>
+.el-dialog {
+    padding: 0 !important;
+}
+header.el-dialog__header {
+    /* padding: 10px; */
+    margin: 0;
+}
+</style>

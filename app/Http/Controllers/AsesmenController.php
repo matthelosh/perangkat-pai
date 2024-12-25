@@ -36,12 +36,29 @@ class AsesmenController extends Controller
                     'tingkat' => $request->tingkat,
                     'tapel' => \tapel()->kode,
                     'semester' => \semester()->kode,
-                    'jml_soal' => $request->jml_soal,
+                    'jml_soal' => implode(",", $request->jml_soal),
                     'kunci' => $request->kunci
                 ]
             );
 
             return back()->with('message', 'Asesmen disimpan');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        try {
+            $asesmen = Asesmen::findOrFail($id);
+            // dd($asesmen);
+            $delAnalisis = $asesmen->analises()->delete();
+            // dd($delAnalisis);
+            $delNilai = $asesmen->nilais()->delete();
+            // dd($delNilai);
+            $asesmen->delete();
+
+            return response()->json(['message' => 'Asesmen dihapus']);
         } catch (\Throwable $th) {
             throw $th;
         }

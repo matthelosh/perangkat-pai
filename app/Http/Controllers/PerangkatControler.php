@@ -87,23 +87,47 @@ class PerangkatControler extends Controller
     // Evaluasi
     public function evaluasi(Request $request)
     {
-        return Inertia::render("Dashboard/Perangkat/Evaluasi/index", [
-            'rombels' => Rombel::whereGuruId(auth()->user()->userable->nip)
-                ->whereTapel($this->tapel()->kode)
-                ->get(),
-            'protas' => Prota::whereGuruId(auth()->user()->userable->nip)
-                ->whereRombelId($request->query('rombel'))
-                ->whereSemester($this->semester()->kode)
-                ->whereHas('atp')
-                ->with('atp.elemen')
-                ->get(),
-        ]);
+        try {
+            return Inertia::render("Dashboard/Perangkat/Evaluasi/index", [
+                'rombels' => Rombel::whereGuruId(auth()->user()->userable->nip)
+                    ->whereTapel($this->tapel()->kode)
+                    ->get(),
+                'protas' => Prota::whereGuruId(auth()->user()->userable->nip)
+                    ->whereRombelId($request->query('rombel'))
+                    ->whereSemester($this->semester()->kode)
+                    ->whereHas('atp')
+                    ->with('atp.elemen')
+                    ->get(),
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function nilaiFormatif(Request $request)
     {
         $rombel = $this->rombel($request->query('rombel'));
-        dd($rombel);
+        $rombelId = $rombel->id;
+        $asesmens = Asesmen::where([
+            ['tingkat', '=', $rombel->tingkat],
+            ['tapel', '=', tapel()->kode],
+            ['semester', '=', semester()->kode],
+            ['tipe', '=', 'uh']
+        ])
+            ->with([
+                'analises'
+                => function ($a) use ($rombelId) {
+                    $a->whereRombelId($rombelId);
+                    $a->with('siswa');
+                }
+            ])->get();
+        return Inertia::render(
+            'Dashboard/Perangkat/Evaluasi/Formatif',
+            [
+                'asesmens' => $asesmens,
+                'rombel' => $rombel
+            ]
+        );
     }
     public function nilaiPts(Request $request)
     {
@@ -112,27 +136,31 @@ class PerangkatControler extends Controller
     }
     public function nilaiPas(Request $request)
     {
-        $rombel = $this->rombel($request->query('rombel'));
-        $rombelId = $rombel->id;
-        return Inertia::render('Dashboard/Perangkat/Evaluasi/Pas', [
-            'rombel' => $rombel,
-            'asesmen' => Asesmen::where(
-                [
-                    ['tapel', '=', tapel()->kode],
-                    ['semester', '=', semester()->kode],
-                    ['tingkat', '=', $rombel->tingkat],
-                    ['tipe', '=', 'pas']
-                ]
-            )
-                ->with([
-                    'analises'
-                    => function ($a) use ($rombelId) {
-                        $a->whereRombelId($rombelId);
-                        $a->with('siswa');
-                    }
-                ])
-                ->first()
-        ]);
+        try {
+            $rombel = $this->rombel($request->query('rombel'));
+            $rombelId = $rombel->id;
+            return Inertia::render('Dashboard/Perangkat/Evaluasi/Pas', [
+                'rombel' => $rombel,
+                'asesmen' => Asesmen::where(
+                    [
+                        ['tapel', '=', tapel()->kode],
+                        ['semester', '=', semester()->kode],
+                        ['tingkat', '=', $rombel->tingkat],
+                        ['tipe', '=', 'pas']
+                    ]
+                )
+                    ->with([
+                        'analises'
+                        => function ($a) use ($rombelId) {
+                            $a->whereRombelId($rombelId);
+                            $a->with('siswa');
+                        }
+                    ])
+                    ->first()
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     // Misc

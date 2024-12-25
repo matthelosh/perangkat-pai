@@ -11,6 +11,7 @@ import VueExcelEditor from 'vue3-excel-editor';
 import { setupCalendar } from 'v-calendar';
 
 createInertiaApp({
+    progress: false, 
     resolve: name => {
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true})
         return pages[`./Pages/${name}.vue`]

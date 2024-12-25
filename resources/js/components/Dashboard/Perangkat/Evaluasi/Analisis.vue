@@ -4,17 +4,18 @@ import { usePage, Link, router } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
 import { writeFile, utils } from "xlsx";
 
-import DashLayout from "@/layouts/DashboardLayout.vue";
-
 const loading = ref(false);
 const page = usePage();
 const answers = ref([]);
+
+const props = defineProps({ asesmen: Object, open: Boolean, rombel: Object });
+const emit = defineEmits(["close"]);
+const show = props.open;
+
 const isLetter = (e, index) => {
     let char = String.fromCharCode(e.keyCode);
     if (/^[A-Da-d]+$/.test(char)) {
-        if (
-            answers.value[index].pgs.length >= page.props.asesmen.kunci.length
-        ) {
+        if (answers.value[index].pgs.length >= props.asesmen.kunci.length) {
             e.preventDefault();
             alert("Jumlah Jawaban sudah penuh");
         }
@@ -46,15 +47,15 @@ const skor = (index) => {
         (a, c) => a + parseFloat(c),
         0.0
     );
-    for (let i = 0; i < page.props.asesmen.kunci.length; i++) {
+    for (let i = 0; i < props.asesmen.kunci.length; i++) {
         pg +=
-            page.props.asesmen.kunci[i]?.toLowerCase() ==
+            props.asesmen.kunci[i]?.toLowerCase() ==
             answers.value[index].pgs[i]?.toLowerCase()
                 ? 1
                 : 0;
     }
 
-    let soals = page.props.asesmen.jml_soal.split(",");
+    let soals = props.asesmen.jml_soal.split(",");
     let max =
         parseInt(soals[0]) * 1 +
         parseInt(soals[1]) * 2 +
@@ -68,10 +69,10 @@ const cetak = () => {
     let win = window.open("", "_blank", "width=1200,height=900");
     const cssUrl =
         page.props.app_env == "local"
-            ? page.props.app_url + ":5173/resources/css/app.css"
-            : page.props.app_url + "/build/assets/app.css";
+            ? window.location.origin + ":5173/resources/css/app.css"
+            : window.location.origin + "/build/assets/app.css";
 
-    const soals = page.props.asesmen.jml_soal.split(",");
+    const soals = props.asesmen.jml_soal.split(",");
     let pgTh = "";
     let isianTh = "";
     let uraianTh = "";
@@ -83,13 +84,13 @@ const cetak = () => {
         let uraianTd = "";
         for (
             let p = 0;
-            p < parseInt(page.props.asesmen.jml_soal.split(",")[0]);
+            p < parseInt(props.asesmen.jml_soal.split(",")[0]);
             p++
         ) {
             pgTd += `
-                <td class="border text-center ${
+                <td class="border text-center p-2 ${
                     siswa.pgs[p]?.toLowerCase() !==
-                    page.props.asesmen.kunci[p]?.toLowerCase()
+                    props.asesmen.kunci[p]?.toLowerCase()
                         ? "bg-red-100 text-red-600"
                         : ""
                 }" >
@@ -100,11 +101,11 @@ const cetak = () => {
 
         for (
             let is = 0;
-            is < parseInt(page.props.asesmen.jml_soal.split(",")[1]);
+            is < parseInt(props.asesmen.jml_soal.split(",")[1]);
             is++
         ) {
             isianTd += `
-                <td class="border text-center">${
+                <td class="border text-center p-2">${
                     answers.value[s].isians[is + 1] ?? 0
                 }</td>
             `;
@@ -112,11 +113,11 @@ const cetak = () => {
         }
         for (
             let ur = 0;
-            ur < parseInt(page.props.asesmen.jml_soal.split(",")[2]);
+            ur < parseInt(props.asesmen.jml_soal.split(",")[2]);
             ur++
         ) {
             uraianTd += `
-                <td class="border text-center">${
+                <td class="border text-center p-2">${
                     answers.value[s].uraians[ur + 1] ?? 0
                 }</td>
             `;
@@ -124,14 +125,14 @@ const cetak = () => {
 
         tr += `
             <tr>
-                <td class="border text-center">${s + 1}</td>
-                <td class="border">${siswa.siswa_id}</td>
-                <td class="border text-center">${siswa.nama}</td>
-                <td class="border text-center">${siswa.jk}</td>
+                <td class="border p-2 text-center">${s + 1}</td>
+                <td class="border p-2 text-center">${siswa.siswa_id}</td>
+                <td class="border p-2 ">${siswa.nama}</td>
+                <td class="border p-2 text-center">${siswa.jk}</td>
                 ${pgTd}
                 ${isianTd}
                 ${uraianTd}
-                <td class="border text-center">${skor(s)}</td>
+                <td class="border p-2 text-center">${skor(s)}</td>
             </tr>
         `;
     });
@@ -150,11 +151,11 @@ const cetak = () => {
         <!doctype html>
         <html>
             <head>
-                <title>${page.props.asesmen.label}</title>
+                <title>${props.asesmen.label}</title>
                 <link rel="stylesheet" href="${cssUrl}" />
             </head>
             <body>
-                <h3 class="text-center">Hasil ${page.props.asesmen.label}</h3>
+                <h3 class="text-center">Hasil ${props.asesmen.label}</h3>
 
                 <table class="w-full">
                     <thead>
@@ -164,14 +165,22 @@ const cetak = () => {
                             <th class="border" rowspan="2">Nama</th>
                             <th class="border" rowspan="2">JK</th>
                             <th class="border" colspan="${parseInt(
-                                page.props.asesmen.jml_soal.split(",")[0]
+                                props.asesmen.jml_soal.split(",")[0]
                             )}">Pilihan Ganda</th>
-                            <th class="border" colspan="${parseInt(
-                                page.props.asesmen.jml_soal.split(",")[1]
-                            )}">Isian</th>
-                            <th class="border" colspan="${parseInt(
-                                page.props.asesmen.jml_soal.split(",")[2]
-                            )}">Uraian</th>
+                            ${
+                                props.asesmen.jml_soal.split(",")[1] > 0
+                                    ? '<th class="border" colspan="' +
+                                      props.asesmen.jml_soal.split(",")[1] +
+                                      '">Isian</th>'
+                                    : ""
+                            }
+                            ${
+                                props.asesmen.jml_soal.split(",")[2] > 0
+                                    ? '<th class="border" colspan="' +
+                                      props.asesmen.jml_soal.split(",")[2] +
+                                      '">Uraian</th>'
+                                    : ""
+                            }
                             <th class="border" rowspan="2">Skor</th>
                         </tr>
                         <tr>
@@ -206,7 +215,7 @@ const unduh = async () => {
         };
 
         let pg = [...ans.pgs].map((o, i) =>
-            o == page.props.asesmen.kunci[i] ? 1 : 0
+            o == props.asesmen.kunci[i] ? 1 : 0
         );
         let r = [...pg, ...ans.isians, ...ans.uraians];
         let ana = r.reduce(
@@ -241,15 +250,11 @@ const unduh = async () => {
 
     const wb = utils.book_new();
 
-    utils.book_append_sheet(wb, ws, ` ${page.props.rombel.label}`);
+    utils.book_append_sheet(wb, ws, ` ${props.rombel.label}`);
 
-    writeFile(wb, `Analisis ${page.props.asesmen.label}.xlsx`, {
+    writeFile(wb, `Analisis ${props.asesmen.label}.xlsx`, {
         compression: true,
     });
-};
-
-const back = () => {
-    window.history.back();
 };
 
 // Simpan Jawaban
@@ -258,23 +263,23 @@ const simpan = async () => {
     answers.value.forEach((siswa, s) => {
         datas.push({
             siswa_id: siswa.siswa_id,
-            asesmen_id: page.props.asesmen.id,
+            asesmen_id: props.asesmen.id,
             pgs:
                 siswa.pgs !== ""
                     ? siswa.pgs
-                    : Array(parseInt(page.props.asesmen.jml_soal.split(",")[0]))
+                    : Array(parseInt(props.asesmen.jml_soal.split(",")[0]))
                           .fill("x")
                           .join(""),
             isians:
                 siswa.isians.length > 0
                     ? siswa.isians.join(",")
-                    : Array(parseInt(page.props.asesmen.jml_soal.split(",")[1]))
+                    : Array(parseInt(props.asesmen.jml_soal.split(",")[1]))
                           .fill(0)
                           .join(","),
             uraians:
                 siswa.uraians.length > 0
                     ? siswa.uraians.join(",")
-                    : Array(parseInt(page.props.asesmen.jml_soal.split(",")[2]))
+                    : Array(parseInt(props.asesmen.jml_soal.split(",")[2]))
                           .fill(0)
                           .join(","),
             skor: skor(s),
@@ -284,8 +289,8 @@ const simpan = async () => {
     router.post(
         route("perangkat.evaluasi.nilai.store", {
             _query: {
-                tipe: page.props.asesmen.tipe,
-                rombel_id: page.props.rombel.id,
+                tipe: props.asesmen.tipe,
+                rombel_id: props.rombel.id,
             },
         }),
         { datas: datas },
@@ -318,9 +323,9 @@ const impor = async () => {
 };
 
 const init = () => {
-    if (!page.props.asesmen || page.props.asesmen.analises.length < 1) {
+    if (props.asesmen.analises.length < 1) {
         let ans = [];
-        page.props.rombel.siswas.forEach((siswa) => {
+        props.rombel.siswas.forEach((siswa) => {
             ans.push({
                 siswa_id: siswa.nisn,
                 nama: siswa.nama,
@@ -335,7 +340,7 @@ const init = () => {
         answers.value = ans;
     } else {
         let ans = [];
-        page.props.asesmen.analises.forEach((nilai) => {
+        props.asesmen.analises.forEach((nilai) => {
             ans.push({
                 siswa_id: nilai.siswa_id,
                 nama: nilai.siswa.nama,
@@ -360,59 +365,59 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <DashLayout title="Perangkat Evaluasi">
-        <el-row class="w-full" v-if="page.props.asesmen">
-            <el-col>
-                <div class="p-3 flex items-center justify-between bg-slate-400">
-                    <h3
-                        class="text-white flex justify-between items-center gap-4"
-                    >
-                        <span class="flex items-center gap-2">
-                            <Icon
-                                @click="back"
-                                icon="mdi:arrow-left"
-                                class="text-lg hover:cursor-pointer text-red-200"
-                            />
-                            Analisis
-                            {{ page.props.asesmen.label }}
+    <el-dialog
+        fullscreen
+        v-model="show"
+        @close="emit('close')"
+        :show-close="false"
+    >
+        <template #header>
+            <div class="p-3 flex items-center justify-between bg-slate-400">
+                <h3 class="text-white flex justify-between items-center gap-4">
+                    <span class="flex items-center gap-2">
+                        Analisis
+                        {{ props.asesmen.label }}
+                    </span>
+                    <span
+                        >Kunci Jawaban:
+                        <span class="tracking-widest border p-2 rounded">
+                            {{ props.asesmen.kunci.toUpperCase() }}
                         </span>
-                        <span
-                            >Kunci Jawaban:
-                            <span class="tracking-widest border p-2 rounded">
-                                {{ page.props.asesmen.kunci.toUpperCase() }}
-                            </span>
-                        </span>
-                    </h3>
-                    <div class="tools">
-                        <input
-                            type="file"
-                            ref="fileExcel"
-                            accept=".xls, .xlsx, .ods"
-                            class="hidden"
-                        />
-                        <el-button @click="impor">
-                            <Icon icon="mdi:file-upload" />
-                            Impor
-                        </el-button>
-                        <el-button @click="unduh">
-                            <Icon icon="mdi:file-excel-box" />
-                            Unduh
-                        </el-button>
-                        <el-button @click="cetak">
-                            <Icon icon="mdi:printer" />
-                            Cetak
-                        </el-button>
-                        <el-button @click="simpan">
-                            <Icon icon="mdi:hdd" />
-                            Simpan
-                        </el-button>
-                    </div>
+                    </span>
+                </h3>
+                <div class="tools">
+                    <input
+                        type="file"
+                        ref="fileExcel"
+                        accept=".xls, .xlsx, .ods"
+                        class="hidden"
+                    />
+                    <el-button @click="impor">
+                        <Icon icon="mdi:file-upload" />
+                        Impor
+                    </el-button>
+                    <el-button @click="unduh">
+                        <Icon icon="mdi:file-excel-box" />
+                        Unduh
+                    </el-button>
+                    <el-button @click="cetak">
+                        <Icon icon="mdi:printer" />
+                        Cetak
+                    </el-button>
+                    <el-button @click="simpan">
+                        <Icon icon="mdi:hdd" />
+                        Simpan
+                    </el-button>
+                    <el-button type="danger" @click="emit('close')">
+                        <Icon icon="mi:close" />
+                    </el-button>
                 </div>
+            </div>
+        </template>
+        <el-row class="w-full">
+            <el-col>
                 <div class="p-3 bg-white">
-                    <el-table
-                        :data="page.props.rombel.siswas"
-                        max-height="86vh"
-                    >
+                    <el-table :data="props.rombel.siswas" max-height="86vh">
                         <el-table-column
                             label="No"
                             type="index"
@@ -453,7 +458,7 @@ onBeforeMount(() => {
                         <el-table-column
                             label="Isian (Bobot 2)"
                             :width="
-                                page.props.asesmen.jml_soal.split(',')[1] > 5
+                                props.asesmen.jml_soal.split(',')[1] > 5
                                     ? '550'
                                     : '350'
                             "
@@ -465,9 +470,7 @@ onBeforeMount(() => {
                                     min="0"
                                     max="1"
                                     v-for="is in parseInt(
-                                        page.props.asesmen.jml_soal.split(
-                                            ','
-                                        )[1]
+                                        props.asesmen.jml_soal.split(',')[1]
                                     )"
                                     v-model="
                                         answers[scope.$index].isians[is - 1]
@@ -480,7 +483,7 @@ onBeforeMount(() => {
                             label="Uraian (Bobot 3)"
                             #default="scope"
                             :width="
-                                page.props.asesmen.jml_soal.split(',')[2] > 5
+                                props.asesmen.jml_soal.split(',')[2] > 5
                                     ? '550'
                                     : '300'
                             "
@@ -491,9 +494,7 @@ onBeforeMount(() => {
                                     min="0"
                                     max="1"
                                     v-for="ur in parseInt(
-                                        page.props.asesmen.jml_soal.split(
-                                            ','
-                                        )[2]
+                                        props.asesmen.jml_soal.split(',')[2]
                                     )"
                                     v-model="
                                         answers[scope.$index].uraians[ur - 1]
@@ -511,20 +512,19 @@ onBeforeMount(() => {
                             {{ skor(scope.$index) }}
                         </el-table-column>
                     </el-table>
-
-                    <!-- {{ page.props.asesmen }} -->
                 </div>
             </el-col>
         </el-row>
-        <el-alert type="error" :closable="false">
-            <template #title>
-                <h3 class="text-lg mb-4">Belum Ada Asesmen PAS</h3>
-            </template>
-            <template #default>
-                <el-button @click="goto('asesmen.index')"
-                    >Buat Asesmen</el-button
-                >
-            </template>
-        </el-alert>
-    </DashLayout>
+    </el-dialog>
 </template>
+
+<style>
+.el-dialog {
+    padding: 0 !important;
+}
+
+.el-ialog__header {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+</style>
