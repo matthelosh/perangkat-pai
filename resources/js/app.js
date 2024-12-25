@@ -1,12 +1,13 @@
 
 import './bootstrap';
+import '../css/app.css';
+import 'element-tiptap-vue3-fixed/lib/style.css'
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 // import { ZiggyVue } from 'ziggy-js'
 import ElemenPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import ELementTiptapPlugin from 'element-tiptap-vue3-fixed';
-import 'element-tiptap-vue3-fixed/lib/style.css'
 import VueExcelEditor from 'vue3-excel-editor';
 import { setupCalendar } from 'v-calendar';
 
