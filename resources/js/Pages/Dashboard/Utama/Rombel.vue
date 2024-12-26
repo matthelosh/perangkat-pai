@@ -156,7 +156,10 @@ const syncRombel = async () => {
                                 content="Tambah Rombel"
                                 placement="top-end"
                             >
-                                <el-button @click="showFormPlus = true">
+                                <el-button
+                                    @click="showFormPlus = true"
+                                    :native-type="null"
+                                >
                                     <Icon icon="mdi:plus" />
                                     Buat
                                 </el-button>
@@ -165,13 +168,16 @@ const syncRombel = async () => {
                                 content="Impor dari Rapor SD"
                                 placement="top-end"
                             >
-                                <el-button @click="getFromRapor">
+                                <el-button
+                                    @click="getFromRapor"
+                                    :native-type="null"
+                                >
                                     <Icon icon="mdi:sync" />
                                     Ambil
                                 </el-button>
                             </el-tooltip>
                             <el-tooltip content="Cetak" placement="top-end">
-                                <el-button>
+                                <el-button :native-type="null">
                                     <Icon icon="mdi:printer" />
                                 </el-button>
                             </el-tooltip>
@@ -195,6 +201,7 @@ const syncRombel = async () => {
                         class="my-4"
                         size="large"
                         @click="showFormPlus = true"
+                        :native-type="null"
                         >Buat Rombel</el-button
                     >
                 </el-alert>
@@ -257,6 +264,7 @@ const syncRombel = async () => {
                                         >
                                             <el-button
                                                 type="primary"
+                                                :native-type="null"
                                                 @click="addSiswa(item, r)"
                                             >
                                                 <Icon icon="mdi:account-plus" />
@@ -268,6 +276,7 @@ const syncRombel = async () => {
                                         >
                                             <el-button
                                                 type="success"
+                                                :native-type="null"
                                                 @click="showFormImport(item)"
                                             >
                                                 <Icon
@@ -292,7 +301,11 @@ const syncRombel = async () => {
                                         "
                                     >
                                         <template #reference>
-                                            <el-button text type="danger">
+                                            <el-button
+                                                text
+                                                type="danger"
+                                                :native-type="null"
+                                            >
                                                 <Icon
                                                     icon="mdi:close-circle"
                                                     class="text-2xl"
@@ -420,7 +433,11 @@ const syncRombel = async () => {
                         ></el-progress>
                     </div>
                     <div>
-                        <el-button type="primary" @click="syncRombel">
+                        <el-button
+                            type="primary"
+                            @click="syncRombel"
+                            :native-type="null"
+                        >
                             Sinkron
                         </el-button>
                     </div>

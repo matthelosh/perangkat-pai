@@ -1,7 +1,7 @@
 
 import './bootstrap';
 // import 'normalize.css';
-import '../css/preflight.css';
+// import '../css/preflight.css';
 import '../css/app.css';
 import 'element-plus/dist/index.css'
 import 'element-tiptap-vue3-fixed/lib/style.css'

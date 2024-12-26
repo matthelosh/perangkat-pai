@@ -86,7 +86,7 @@ const cetak = async () => {
     let cssLink =
         page.props.app_env == "local"
             ? "https://localhost:5173/resources/css/app.css"
-            : "/build/assets/app.css";
+            : "/build/assets/app2.css";
     let element = document.querySelector(".cetak");
     let html = `
             <!doctype html>
@@ -142,7 +142,7 @@ const cetak = async () => {
             </div>
         </div>
         <div class="content p-3 bg-white cetak">
-            <Kop class="hidden print:flex" />
+            <Kop class="print:flex" />
             <div class="title my-4">
                 <h3 class="font-bold text-xl text-center uppercase">
                     jadwal Pelajaran Pendidikan Agama Islam (PAI)
@@ -373,3 +373,13 @@ const cetak = async () => {
         </div>
     </div>
 </template>
+
+<style>
+@media print {
+    button {
+        border: none;
+        outline: none;
+        background: white;
+    }
+}
+</style>
