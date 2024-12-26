@@ -340,9 +340,12 @@ const syncRombel = async () => {
             <template #header>
                 <div class="header flex p-0 justify-between">
                     <h3>Data Rombel di Rapor SD</h3>
-                    <el-button type="danger" @click="syncRapor = !syncRapor">
+                    <button
+                        class="p-1 bg-red-400 text-white hover:bg-red-300 focus:bg-red-500"
+                        @click="syncRapor = !syncRapor"
+                    >
                         <Icon icon="mdi:close" />
-                    </el-button>
+                    </button>
                 </div>
             </template>
             <template #default>
@@ -417,9 +420,9 @@ const syncRombel = async () => {
                         ></el-progress>
                     </div>
                     <div>
-                        <el-button type="primary" @click="syncRombel"
-                            >Sinkron</el-button
-                        >
+                        <el-button type="primary" @click="syncRombel">
+                            Sinkron
+                        </el-button>
                     </div>
                 </div>
             </template>

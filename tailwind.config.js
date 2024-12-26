@@ -3,14 +3,20 @@ export default {
   content: [
         './resources/**/*.blade.php',
         './resources/**/*.js',
-        './resources/**/*.vue'
+        './resources/**/*.vue',
+        './node_modules/element-plus/**/*.js',
       ],
   theme: {
     extend: {},
   },
-  corePlugins: {
-    // preflight: false
-  },
   plugins: [],
+  corePlugins: {
+    preflight: false,
+  },
+  safelist: [
+    {
+      pattern: /el-.*/,
+    }
+  ]
 }
 
