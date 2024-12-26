@@ -1,5 +1,6 @@
 
 import './bootstrap';
+// import 'normalize.css';
 import '../css/app.css';
 import 'element-tiptap-vue3-fixed/lib/style.css'
 import { createApp, h } from 'vue';
