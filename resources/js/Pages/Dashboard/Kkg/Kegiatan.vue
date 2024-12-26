@@ -95,7 +95,10 @@ const daftarHadir = (item) => {
             >
                 <h3>Agenda Kegiatan</h3>
                 <div class="flex items-center gap-2">
-                    <el-button :disabled="!page.props.roles.includes('admin')">
+                    <el-button
+                        :native-type="null"
+                        :disabled="!page.props.roles.includes('admin')"
+                    >
                         <Icon icon="mdi-plus" />
                     </el-button>
                 </div>
@@ -112,7 +115,10 @@ const daftarHadir = (item) => {
                     ></el-table-column>
                     <el-table-column label="Opsi">
                         <template #default="scope">
-                            <el-button @click="daftarHadir(scope.row)">
+                            <el-button
+                                :native-type="null"
+                                @click="daftarHadir(scope.row)"
+                            >
                                 <Icon icon="mdi:list-box" />
                             </el-button>
                         </template>

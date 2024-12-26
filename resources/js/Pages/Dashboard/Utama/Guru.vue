@@ -134,13 +134,16 @@ const changePage = (e) => {
                                 :total="page.props.gurus.total"
                                 @change="changePage($event)"
                             />
-                            <el-button-group>
+                            <el-button-group :native-type="null">
                                 <el-popover
                                     placement="top-end"
                                     content="Impor data"
                                 >
                                     <template #reference>
-                                        <el-button @click="importDialog = true">
+                                        <el-button
+                                            :native-type="null"
+                                            @click="importDialog = true"
+                                        >
                                             <Icon
                                                 icon="mdi:text-box-multiple"
                                             />
@@ -152,7 +155,10 @@ const changePage = (e) => {
                                     content="Tambah baru"
                                 >
                                     <template #reference>
-                                        <el-button @click="showDialog = true">
+                                        <el-button
+                                            :native-type="null"
+                                            @click="showDialog = true"
+                                        >
                                             <Icon icon="mdi:plus" />
                                         </el-button>
                                     </template>
@@ -225,7 +231,11 @@ const changePage = (e) => {
                                         @confirm="hapus(scope.row.id)"
                                     >
                                         <template #reference>
-                                            <el-button text type="danger">
+                                            <el-button
+                                                :native-type="null"
+                                                text
+                                                type="danger"
+                                            >
                                                 <Icon icon="mdi:delete" />
                                             </el-button>
                                         </template>
@@ -235,7 +245,11 @@ const changePage = (e) => {
                                         placement="top-end"
                                         v-if="scope.row.account"
                                     >
-                                        <el-button text type="warning">
+                                        <el-button
+                                            :native-type="null"
+                                            text
+                                            type="warning"
+                                        >
                                             <Icon
                                                 icon="mdi:account-sync-outline"
                                             />
@@ -247,6 +261,7 @@ const changePage = (e) => {
                                         v-if="!scope.row.account"
                                     >
                                         <el-button
+                                            :native-type="null"
                                             text
                                             type="info"
                                             @click="addAccount(scope.row)"
@@ -453,6 +468,7 @@ const changePage = (e) => {
                     </el-row>
                     <el-row class="w-full mt-4" align="middle" justify="center">
                         <el-button
+                            :native-type="null"
                             type="primary"
                             :loading="loading"
                             @click="simpan"
@@ -468,7 +484,11 @@ const changePage = (e) => {
                 <h3>Impor Data guru</h3>
             </template>
             <div class="dialog-body">
-                <el-button type="primary" :loading="loading" @click="impor"
+                <el-button
+                    :native-type="null"
+                    type="primary"
+                    :loading="loading"
+                    @click="impor"
                     >Impor</el-button
                 >
                 <vue-excel-editor v-model="importedData" class="w-full">
@@ -550,7 +570,10 @@ const changePage = (e) => {
                         ></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="createAccount"
+                        <el-button
+                            :native-type="null"
+                            type="primary"
+                            @click="createAccount"
                             >Buat Akun</el-button
                         >
                     </el-form-item>

@@ -58,10 +58,10 @@ onBeforeMount(() => {
                 </h3>
                 <div class="items flex items-center gap-3">
                     <el-switch v-model="edit" :inactive-text="edit ? 'Edit' : 'Edit?'" />
-                    <el-button circle v-if="!edit">
+                    <el-button :native-type="null"  circle v-if="!edit">
                         <Icon icon="mdi:printer" />
                     </el-button>
-                    <el-button circle class="ml-4" @click="info = !info">
+                    <el-button :native-type="null"  circle class="ml-4" @click="info = !info">
                         <Icon icon="mdi:info" />
                     </el-button>
                 </div>
@@ -176,7 +176,7 @@ onBeforeMount(() => {
                 <el-tiptap v-model="ma.asesmen" :extensions="extensions" v-if="edit" />
                 <div v-else v-html="ma.asesmen" />
                 <el-row class="w-full" align="middle" justify="center">
-                    <el-button type="primary" class="my-4 mx-auto uppercase" :loading="loading" @click="simpan">Simpan</el-button>
+                    <el-button :native-type="null"  type="primary" class="my-4 mx-auto uppercase" :loading="loading" @click="simpan">Simpan</el-button>
                 </el-row>
             </div>
 

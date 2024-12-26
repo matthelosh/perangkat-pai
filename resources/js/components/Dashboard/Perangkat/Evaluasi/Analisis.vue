@@ -392,23 +392,27 @@ onBeforeMount(() => {
                         accept=".xls, .xlsx, .ods"
                         class="hidden"
                     />
-                    <el-button @click="impor">
+                    <el-button :native-type="null" @click="impor">
                         <Icon icon="mdi:file-upload" />
                         Impor
                     </el-button>
-                    <el-button @click="unduh">
+                    <el-button :native-type="null" @click="unduh">
                         <Icon icon="mdi:file-excel-box" />
                         Unduh
                     </el-button>
-                    <el-button @click="cetak">
+                    <el-button :native-type="null" @click="cetak">
                         <Icon icon="mdi:printer" />
                         Cetak
                     </el-button>
-                    <el-button @click="simpan">
+                    <el-button :native-type="null" @click="simpan">
                         <Icon icon="mdi:hdd" />
                         Simpan
                     </el-button>
-                    <el-button type="danger" @click="emit('close')">
+                    <el-button
+                        :native-type="null"
+                        type="danger"
+                        @click="emit('close')"
+                    >
                         <Icon icon="mi:close" />
                     </el-button>
                 </div>

@@ -390,19 +390,19 @@ onBeforeMount(() => {
                             accept=".xls, .xlsx, .ods"
                             class="hidden"
                         />
-                        <el-button @click="impor">
+                        <el-button :native-type="null" @click="impor">
                             <Icon icon="mdi:file-upload" />
                             Impor
                         </el-button>
-                        <el-button @click="unduh">
+                        <el-button :native-type="null" @click="unduh">
                             <Icon icon="mdi:file-excel-box" />
                             Unduh
                         </el-button>
-                        <el-button @click="cetak">
+                        <el-button :native-type="null" @click="cetak">
                             <Icon icon="mdi:printer" />
                             Cetak
                         </el-button>
-                        <el-button @click="simpan">
+                        <el-button :native-type="null" @click="simpan">
                             <Icon icon="mdi:hdd" />
                             Simpan
                         </el-button>
@@ -521,7 +521,7 @@ onBeforeMount(() => {
                 <h3 class="text-lg mb-4">Belum Ada Asesmen PAS</h3>
             </template>
             <template #default>
-                <el-button @click="goto('asesmen.index')"
+                <el-button :native-type="null" @click="goto('asesmen.index')"
                     >Buat Asesmen</el-button
                 >
             </template>

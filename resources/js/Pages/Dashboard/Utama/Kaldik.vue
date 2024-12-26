@@ -161,12 +161,14 @@ const hapus = () => {
                     <span>Form Agenda</span>
                     <div class="toolbar flex gap-1">
                         <el-button
+                            :native-type="null"
                             type="danger"
                             :loading="loading"
                             @click="hapus"
                             >Hapus</el-button
                         >
                         <el-button
+                            :native-type="null"
                             type="primary"
                             :loading="loading"
                             @click="simpan"

@@ -81,10 +81,15 @@ const hapus = async (id) => {
                         {{ page.props.tapel.label }}
                     </h3>
                     <div class="tool-items flex items-center">
-                        <el-button @click="openForm" v-if="mode == 'list'">
+                        <el-button
+                            :native-type="null"
+                            @click="openForm"
+                            v-if="mode == 'list'"
+                        >
                             <Icon icon="mdi-plus" />
                         </el-button>
                         <el-button
+                            :native-type="null"
                             @click="closeForm"
                             type="danger"
                             v-if="mode == 'form'"
@@ -109,11 +114,18 @@ const hapus = async (id) => {
                     ></el-table-column>
                     <el-table-column label="Opsi">
                         <template #default="{ row }">
-                            <el-button-group>
-                                <el-button @click="edit(row)">
+                            <el-button-group :native-type="null">
+                                <el-button
+                                    :native-type="null"
+                                    @click="edit(row)"
+                                >
                                     <Icon icon="mdi:pencil" />
                                 </el-button>
-                                <el-button type="danger" @click="hapus(row.id)">
+                                <el-button
+                                    :native-type="null"
+                                    type="danger"
+                                    @click="hapus(row.id)"
+                                >
                                     <Icon icon="mdi:delete" />
                                 </el-button>
                             </el-button-group>
@@ -219,7 +231,10 @@ const hapus = async (id) => {
                             </el-col>
                         </el-row>
                         <el-row justify="center">
-                            <el-button type="primary" @click="simpan"
+                            <el-button
+                                :native-type="null"
+                                type="primary"
+                                @click="simpan"
                                 >Simpan</el-button
                             >
                         </el-row>

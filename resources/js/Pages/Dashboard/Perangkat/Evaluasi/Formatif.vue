@@ -78,7 +78,10 @@ const closeAnalisis = (item) => {
                             </el-table-column>
                             <el-table-column label="Opsi">
                                 <template #default="{ row }">
-                                    <el-button @click="openAnalisis(row)">
+                                    <el-button
+                                        :native-type="null"
+                                        @click="openAnalisis(row)"
+                                    >
                                         <Icon icon="mdi:magnify" />
                                         Analisis</el-button
                                     >

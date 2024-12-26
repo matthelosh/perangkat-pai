@@ -84,7 +84,12 @@ onMounted(() => {
                     required
                 ></el-input>
             </el-form-item>
-            <el-button @click="onSubmit" :disabled="loading" type="primary">
+            <el-button
+                :native-type="null"
+                @click="onSubmit"
+                :disabled="loading"
+                type="primary"
+            >
                 <Icon v-if="loading" icon="mdi:loading" class="animate-spin" />
                 Masuk
             </el-button>

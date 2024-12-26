@@ -140,6 +140,7 @@ onBeforeMount(() => {
                 <el-col :span="8">
                     <el-form-item label="&nbsp;">
                         <el-button
+                            :native-type="null"
                             type="primary"
                             :loading="loading"
                             @click="simpan"

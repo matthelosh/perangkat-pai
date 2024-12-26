@@ -30,8 +30,8 @@ const onFilePicked = async (e) => {
     // console.log(data)
 };
 
-const prevRombels = ref([])
-const prevRombel = ref({})
+const prevRombels = ref([]);
+const prevRombel = ref({});
 
 const impor = async () => {
     let data = {
@@ -51,21 +51,29 @@ const impor = async () => {
     });
 };
 
-const getPrevRombel = async() => {
-    axios.post(route('rombel.prev', { _query: {currentTapel: page.props.tapel.id, sekolah_id: page.props.sekolahs[0].npsn}}))
-            .then(res => {
-                prevRombels.value = res.data.rombels
+const getPrevRombel = async () => {
+    axios
+        .post(
+            route("rombel.prev", {
+                _query: {
+                    currentTapel: page.props.tapel.id,
+                    sekolah_id: page.props.sekolahs[0].npsn,
+                },
             })
-}
+        )
+        .then((res) => {
+            prevRombels.value = res.data.rombels;
+        });
+};
 
 const onRombelSelected = (e) => {
-    importedData.value = prevRombels.value[e].siswas
-}
+    importedData.value = prevRombels.value[e].siswas;
+};
 
 onBeforeMount(() => {
     // console.log(props.selectedRombel);
     rombel.value = props.selectedRombel;
-    getPrevRombel()
+    getPrevRombel();
 });
 </script>
 
@@ -76,9 +84,19 @@ onBeforeMount(() => {
         >
             {{ props.selectedRombel.label }}
             <div class="flex items-center gap-2">
-                    <el-select placeholder="Dari Rombel Sebelumnya" width="250" style="width: 200px" @change="onRombelSelected">
-                        <el-option v-for="(rombel, r) in prevRombels" :key="r" :value="r" :label="rombel.label"></el-option>
-                    </el-select>
+                <el-select
+                    placeholder="Dari Rombel Sebelumnya"
+                    width="250"
+                    style="width: 200px"
+                    @change="onRombelSelected"
+                >
+                    <el-option
+                        v-for="(rombel, r) in prevRombels"
+                        :key="r"
+                        :value="r"
+                        :label="rombel.label"
+                    ></el-option>
+                </el-select>
                 <form id="formFile">
                     <input
                         type="file"
@@ -88,6 +106,7 @@ onBeforeMount(() => {
                     />
                 </form>
                 <el-button
+                    :native-type="null"
                     type="primary"
                     @click="impor"
                     v-if="importedData.length > 0"

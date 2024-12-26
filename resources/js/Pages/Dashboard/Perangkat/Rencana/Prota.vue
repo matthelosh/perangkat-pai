@@ -335,6 +335,7 @@ const cetak = async () => {
                             </h3>
                             <div class="items flex items-center gap-2">
                                 <el-button
+                                    :native-type="null"
                                     type=""
                                     circle
                                     @click="mode = 'cetak'"
@@ -395,7 +396,9 @@ const cetak = async () => {
                             @confirm="hapusProta"
                         >
                             <template #reference>
-                                <el-button type="danger">Hapus</el-button>
+                                <el-button :native-type="null" type="danger"
+                                    >Hapus</el-button
+                                >
                             </template>
                         </el-popconfirm>
                     </div>
@@ -456,6 +459,7 @@ const cetak = async () => {
                     </el-form-item>
                     <el-form-item label="&nbsp;">
                         <el-button
+                            :native-type="null"
                             type="primary"
                             :loading="loading"
                             @click="simpan"

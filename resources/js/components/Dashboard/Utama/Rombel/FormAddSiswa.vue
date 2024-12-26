@@ -56,7 +56,9 @@ onBeforeMount(() => {
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button @click="onSiswaAdded">Tambah</el-button>
+                <el-button :native-type="null" @click="onSiswaAdded"
+                    >Tambah</el-button
+                >
             </el-form-item>
         </el-form>
         <el-table :data="rombel.siswas">

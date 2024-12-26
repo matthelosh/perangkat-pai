@@ -151,14 +151,14 @@ const syncRombel = async () => {
                 <div class="toolbar flex items-center justify-between">
                     <h3>Data Rombel {{ page.props.tapel.label }}</h3>
                     <div class="toolbar-items flex gap-1">
-                        <el-button-group>
+                        <el-button-group :native-type="null">
                             <el-tooltip
                                 content="Tambah Rombel"
                                 placement="top-end"
                             >
                                 <el-button
-                                    @click="showFormPlus = true"
                                     :native-type="null"
+                                    @click="showFormPlus = true"
                                 >
                                     <Icon icon="mdi:plus" />
                                     Buat
@@ -169,8 +169,8 @@ const syncRombel = async () => {
                                 placement="top-end"
                             >
                                 <el-button
-                                    @click="getFromRapor"
                                     :native-type="null"
+                                    @click="getFromRapor"
                                 >
                                     <Icon icon="mdi:sync" />
                                     Ambil
@@ -195,13 +195,13 @@ const syncRombel = async () => {
                     </template>
                     <p>Anda belum membuat Rombongan Belajar</p>
                     <el-button
+                        :native-type="null"
                         type="warning"
                         plain
                         round
                         class="my-4"
                         size="large"
                         @click="showFormPlus = true"
-                        :native-type="null"
                         >Buat Rombel</el-button
                     >
                 </el-alert>
@@ -257,14 +257,14 @@ const syncRombel = async () => {
                                     </p>
                                 </el-col>
                                 <el-col :span="12" justify="end">
-                                    <el-button-group>
+                                    <el-button-group :native-type="null">
                                         <el-tooltip
                                             content="Tambah Peserta Didik Baru"
                                             placement="top-end"
                                         >
                                             <el-button
-                                                type="primary"
                                                 :native-type="null"
+                                                type="primary"
                                                 @click="addSiswa(item, r)"
                                             >
                                                 <Icon icon="mdi:account-plus" />
@@ -275,8 +275,8 @@ const syncRombel = async () => {
                                             placement="top-start"
                                         >
                                             <el-button
-                                                type="success"
                                                 :native-type="null"
+                                                type="success"
                                                 @click="showFormImport(item)"
                                             >
                                                 <Icon
@@ -302,9 +302,9 @@ const syncRombel = async () => {
                                     >
                                         <template #reference>
                                             <el-button
+                                                :native-type="null"
                                                 text
                                                 type="danger"
-                                                :native-type="null"
                                             >
                                                 <Icon
                                                     icon="mdi:close-circle"
@@ -434,9 +434,9 @@ const syncRombel = async () => {
                     </div>
                     <div>
                         <el-button
+                            :native-type="null"
                             type="primary"
                             @click="syncRombel"
-                            :native-type="null"
                         >
                             Sinkron
                         </el-button>

@@ -57,7 +57,7 @@ const cetak = () => {
                         Program Tahunan
                     </h1>
                     <div class="items flex items-center gap-2">
-                        <el-button circle @click="cetak">
+                        <el-button :native-type="null" circle @click="cetak">
                             <Icon icon="mdi:printer" />
                         </el-button>
                     </div>
