@@ -19,9 +19,9 @@ watch(
             newV.tingkat >= 5 ? "C" : newV.tingkat >= 3 ? "B" : "A";
         rombel.value.kode =
             typeof newV.pararel === "undefined" || newV.pararel == "0"
-                ? page.props.tapel.kode +
+                ? page.props.sekolahs[0].npsn +
                   "-" +
-                  page.props.sekolahs[0].npsn +
+                  page.props.tapel.kode +
                   "-" +
                   newV.tingkat
                 : page.props.tapel.kode +
