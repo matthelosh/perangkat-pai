@@ -39,7 +39,7 @@ const cetak = async () => {
     let cssLink =
         page.props.app_env == "local"
             ? "https://localhost:5173/resources/css/app.css"
-            : "/build/aseets/app.css";
+            : "/build/assets/app.css";
     let html = `
             <!doctype html>
             <html>
