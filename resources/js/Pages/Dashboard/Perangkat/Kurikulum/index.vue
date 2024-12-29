@@ -16,7 +16,7 @@ const showRasio = ref(false);
 </script>
 
 <template>
-    <Layout title="Kurikulum">
+    <div title="Kurikulum">
         <div>
             <el-row>
                 <el-col :span="24" class="mb-4">
@@ -188,5 +188,5 @@ const showRasio = ref(false);
                 </el-col>
             </el-row>
         </div>
-    </Layout>
+    </div>
 </template>

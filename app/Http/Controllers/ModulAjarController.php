@@ -17,31 +17,30 @@ class ModulAjarController extends Controller
     {
         try {
             $rombel = Rombel::where('kode', $request->query('rombel'))->with('jadwals')->first();
-            
+
             if ($request->query('mine')) {
                 $nip = auth()->user()->userable->nip;
-                $atps = Atp::where('guru_id', $nip)    
-                            ->where('tingkat', $rombel->tingkat)
-                            ->with('elemen')
-                            ->with('protas', function($q) use($nip) {
-                                $q->where('guru_id', $nip);
-                            })
-                            ->with('mas')
-                            ->get();
+                $atps = Atp::where('guru_id', $nip)
+                    ->where('tingkat', $rombel->tingkat)
+                    ->with('elemen')
+                    ->with('protas', function ($q) use ($nip) {
+                        $q->where('guru_id', $nip);
+                    })
+                    ->with('mas')
+                    ->get();
             } else {
                 $atps = Atp::where('tingkat', $rombel->tingkat)
-                            ->whereNull('guru_id')
-                            ->with('elemen')
-                            ->with('protas', function($q) {
-                                $q->whereNull('guru_id');
-                            })
-                            ->get();
+                    ->whereNull('guru_id')
+                    ->with('elemen')
+                    ->with('protas', function ($q) {
+                        $q->whereNull('guru_id');
+                    })
+                    ->get();
             }
-            return Inertia::render("Dashboard/Perangkat/Rencana/Modulajar",[
+            return Inertia::render("Dashboard/Perangkat/Rencana/Modulajar", [
                 'atps' => $atps,
                 'rombel' => $rombel
             ]);
-
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -60,7 +59,28 @@ class ModulAjarController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $data = $request->data;
+            $store = ModulAjar::updateOrCreate(
+                [
+                    'id' => $data['id'] ?? null,
+                    'atp_id' => $data['atp_id'],
+                    'p5' => $data['p5'],
+                    'tps' => $data['tps'],
+                    'media' => $data['media'],
+                    'pemahaman' => $data['pemahaman'],
+                    'pertanyaan' => $data['pertanyaan'],
+                    'pendahuluan' => $data['pendahuluan'],
+                    'inti' => $data['inti'],
+                    'penutup' => $data['penutup'],
+                    'asesmen' => $data['asesmen'],
+                    'referensi' => $data['referensi']
+                ]
+            );
+            return back()->with('message', 'Modul Ajar Disimpan');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

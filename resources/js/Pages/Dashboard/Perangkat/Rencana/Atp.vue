@@ -69,7 +69,7 @@ const cetak = async () => {
     let el = document.querySelector(".cetak");
     let cssLink =
         page.props.app_env == "local"
-            ? "https://perpai.test:5173/resources/css/app.css"
+            ? "https://perangkat.test:5173/resources/css/app.css"
             : "/build/assets/app.css";
     let html = `<html>
                 <head>
@@ -85,7 +85,7 @@ const cetak = async () => {
     win.document.write(html);
     setTimeout(() => {
         win.print();
-        win.close();
+        // win.close();
     }, 1000);
 };
 
@@ -215,6 +215,15 @@ const onMateriChanged = (e) => {
     }
 };
 
+const p5s = ref([
+    "Beriman, bertakwa kepada Tuhan Yang Maha Esa, dan berakhlak mulia",
+    "Mandiri",
+    "Bergotong-royong",
+    "Berkebhinekaan global",
+    "Bernalar kritis",
+    "Kreatif",
+]);
+
 onBeforeMount(() => {
     // atps.value = page.props.atps
     // mine.value = params.value.mine
@@ -223,7 +232,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <Layout title="Alur Tujuan Pembelajaran">
+    <div title="Alur Tujuan Pembelajaran">
         <Head title="Alur Tujuan Pembelajaran" />
 
         <el-card class="relative">
@@ -298,60 +307,62 @@ onBeforeMount(() => {
                         <td>{{ page.props.sekolahs[0].nama }}</td>
                     </tr>
                 </table>
-                <el-collapse>
-                    <el-collapse-item>
-                        <template #title>
-                            <div class="print:hidden">
-                                Lihat Capaian Pembelajaran
-                            </div>
-                        </template>
-                        <table class="w-full my-2">
-                            <thead>
-                                <tr>
-                                    <th
-                                        class="border border-black p-2"
-                                        rowspan="2"
-                                    >
-                                        Capaian Umum PAI
-                                    </th>
-                                    <th
-                                        class="border border-black p-2"
-                                        :colspan="page.props.elemens.length"
-                                    >
-                                        Capaian Per Elemen
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th
-                                        class="border border-black p-2"
-                                        v-for="(elemen, e) in page.props
-                                            .elemens"
-                                        :key="e"
-                                    >
-                                        {{ elemen.label }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td
-                                        class="border border-black p-2 text-justify align-top"
-                                    >
-                                        {{ page.props.cp.teks }}
-                                    </td>
-                                    <td
-                                        class="border border-black p-2 text-justify align-top"
-                                        v-for="(elemen, e) in page.props
-                                            .elemens"
-                                        :key="e"
-                                    >
-                                        {{ elemen.deskripsi_cp }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </el-collapse-item>
-                </el-collapse>
+                <div class="print:hidden">
+                    <el-collapse>
+                        <el-collapse-item>
+                            <template #title>
+                                <div class="print:hidden">
+                                    Lihat Capaian Pembelajaran
+                                </div>
+                            </template>
+                            <table class="w-full my-2">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="border border-black p-2"
+                                            rowspan="2"
+                                        >
+                                            Capaian Umum PAI
+                                        </th>
+                                        <th
+                                            class="border border-black p-2"
+                                            :colspan="page.props.elemens.length"
+                                        >
+                                            Capaian Per Elemen
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th
+                                            class="border border-black p-2"
+                                            v-for="(elemen, e) in page.props
+                                                .elemens"
+                                            :key="e"
+                                        >
+                                            {{ elemen.label }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td
+                                            class="border border-black p-2 text-justify align-top"
+                                        >
+                                            {{ page.props.cp.teks }}
+                                        </td>
+                                        <td
+                                            class="border border-black p-2 text-justify align-top"
+                                            v-for="(elemen, e) in page.props
+                                                .elemens"
+                                            :key="e"
+                                        >
+                                            {{ elemen.deskripsi_cp }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </el-collapse-item>
+                    </el-collapse>
+                </div>
                 <div
                     class="w-full flex h-10 bg-slate-100 justify-between items-center px-2 print:hidden"
                 >
@@ -396,6 +407,9 @@ onBeforeMount(() => {
                                 </th>
                                 <th class="border border-black p-2">
                                     Alur Konten (Lingkup Materi)
+                                </th>
+                                <th class="border border-black p-2">
+                                    Dimensi P5
                                 </th>
                                 <th class="border border-black p-2">Asesmen</th>
                                 <th
@@ -459,7 +473,25 @@ onBeforeMount(() => {
                                         </ul>
                                     </div>
                                 </td>
-                                <td class="border border-black p-2 align-top">
+                                <td class="border border-black align-top p-2">
+                                    <div v-if="atp.p5 !== ''">
+                                        <ul class="pl-4 list-disc">
+                                            <li
+                                                v-for="(
+                                                    p5, p
+                                                ) in typeof atp.p5 === 'string'
+                                                    ? atp.p5.split(';')
+                                                    : atp.p5"
+                                                :key="p"
+                                            >
+                                                {{ p5 }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td
+                                    class="border border-black pl-6 py-2 align-top"
+                                >
                                     <span
                                         v-html="atp.asesmen"
                                         class="asesmen"
@@ -558,6 +590,9 @@ onBeforeMount(() => {
                                     {{ totalAw }} JP <br />
                                     ({{ totalAw / 4 }} TM)
                                 </td>
+                                <td
+                                    class="border border-black p-2 text-center font-bold"
+                                ></td>
                                 <td
                                     class="border border-black p-2 text-center font-bold"
                                 ></td>
@@ -727,6 +762,26 @@ onBeforeMount(() => {
                     </el-row>
                     <el-row v-if="tps.length > 0">
                         <el-col :span="24">
+                            <el-form-item label="Dimensi P5">
+                                <!-- <el-input type="textarea" v-model="atp.asesmen" placeholder="Asesmen" /> -->
+                                <el-select
+                                    v-model="atp.p5"
+                                    placeholder="Bisa pilih lebih dari satu"
+                                    multiple
+                                    filterable
+                                >
+                                    <el-option
+                                        v-for="(p5, p) in p5s"
+                                        :key="p"
+                                        :value="p5"
+                                        >{{ p + 1 + ". " + p5 }}</el-option
+                                    >
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if="tps.length > 0">
+                        <el-col :span="24">
                             <el-form-item label="Asesmen">
                                 <!-- <el-input type="textarea" v-model="atp.asesmen" placeholder="Asesmen" /> -->
                                 <el-tiptap
@@ -748,7 +803,7 @@ onBeforeMount(() => {
                 </el-form>
             </div>
         </el-dialog>
-    </Layout>
+    </div>
 </template>
 
 <style>

@@ -360,7 +360,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <DashLayout title="Perangkat Evaluasi">
+    <div title="Perangkat Evaluasi">
         <el-row class="w-full" v-if="page.props.asesmen">
             <el-col>
                 <div class="p-3 flex items-center justify-between bg-slate-400">
@@ -526,5 +526,5 @@ onBeforeMount(() => {
                 >
             </template>
         </el-alert>
-    </DashLayout>
+    </div>
 </template>

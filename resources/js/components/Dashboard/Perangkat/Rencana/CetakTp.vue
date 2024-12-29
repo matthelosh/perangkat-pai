@@ -38,7 +38,7 @@ const cetak = async () => {
     let lembar = document.querySelector(".cetak").outerHTML;
     let cssLink =
         page.props.app_env == "local"
-            ? "http://localhost:5173/resources/css/app.css"
+            ? "https://localhost:5173/resources/css/app.css"
             : "/build/aseets/app.css";
     let html = `
             <!doctype html>
@@ -76,7 +76,7 @@ onMounted(() => {
                 Lembar Cetak Tujuan Pembelajaran Fase {{ props.fase }}
             </title>
         </Head>
-        <el-card class="cetak">
+        <el-card>
             <template #header>
                 <div class="flex justify-between items-center print:hidden">
                     <span class="text-xl font-bold text-blue-900"
@@ -108,9 +108,9 @@ onMounted(() => {
                     </div>
                 </div>
             </template>
-            <div class="card-body">
+            <div class="card-body cetak">
                 <h3 class="text-xl font-bold text-blue-900 text-center mb-4">
-                    Tujuan Pembelajaran Fase {{ params.fase }}
+                    Analisis Tujuan Pembelajaran Fase {{ params.fase }}
                 </h3>
                 <table>
                     <tr>

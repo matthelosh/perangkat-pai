@@ -13,23 +13,16 @@ class ModulAjar extends Model
         'atp_id',
         'guru_id',
         'rombel_id',
-        'kompetensi_awal',
         'p5',
-        'sarpras',
-        'target_siswa',
-        'model',
         'tps',
+        'media',
         'pemahaman',
         'pertanyaan',
-        'persiapan',
         'pendahuluan',
         'inti',
         'penutup',
-        'remidial',
-        'pengayaan',
-        'refleksi_guru',
-        'refleksi_siswa',
-        'asesmen'
+        'asesmen',
+        'referensi'
     ];
 
     public function atp()
@@ -39,7 +32,7 @@ class ModulAjar extends Model
 
     public function guru()
     {
-        return $this->belongsTo(Guru::class, 'guru_id','nip');
+        return $this->belongsTo(Guru::class, 'guru_id', 'nip');
     }
 
     public function rombel()

@@ -60,7 +60,7 @@ const onSubmit = async () => {
 </script>
 
 <template>
-    <Layout title="Pengaturan Menu">
+    <div title="Pengaturan Menu">
         <Head title="Pengaturan Menu" />
 
         <el-row width="100%" class="py-2" justify="end">
@@ -175,5 +175,5 @@ const onSubmit = async () => {
                 </el-form-item>
             </el-form>
         </el-dialog>
-    </Layout>
+    </div>
 </template>

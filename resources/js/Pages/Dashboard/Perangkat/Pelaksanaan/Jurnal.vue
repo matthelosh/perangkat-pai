@@ -46,7 +46,7 @@ const cetak = () => {
 </script>
 
 <template>
-    <DashLayout title="Jurnal Pembelajaran">
+    <div title="Jurnal Pembelajaran">
         <el-card>
             <template #header>
                 <div class="toolbar flex items-center justify-between">
@@ -186,5 +186,5 @@ const cetak = () => {
         </el-card>
 
         <el-dialog v-model="formJurnal" fullscreen> </el-dialog>
-    </DashLayout>
+    </div>
 </template>

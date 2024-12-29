@@ -3,11 +3,14 @@ import { ref, computed } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
 import { ElNotification } from "element-plus";
 import { hasRole } from "@/helpers/authHelper";
+import { read, utils } from "xlsx";
+import { Icon } from "@iconify/vue";
 const page = usePage();
 const materis = computed(() =>
     Object.groupBy(page.props.materis, (materi) => materi.tingkat)
 );
 
+const loading = ref(false);
 const selectedMateri = ref(null);
 const formKonten = ref(false);
 const newKonten = ref({});
@@ -57,6 +60,33 @@ const hapusKonten = (konten) => {
         },
     });
 };
+
+// IMpor Sub Materi
+const onFileSubmateriPicke = async (e) => {
+    const file = e.target.files[0];
+    const ab = await file.arrayBuffer();
+
+    const wb = await read(ab);
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const datas = utils.sheet_to_json(ws);
+
+    router.post(
+        route("kurikulum.submateri.impor"),
+        { datas: datas },
+        {
+            onStart: () => (loading.value = true),
+            onSuccess: () => {
+                ElNotification({
+                    title: "Info",
+                    message: page.props.flash.message,
+                    type: "success",
+                });
+                router.reload();
+            },
+            onFinish: () => (loading.value = false),
+        }
+    );
+};
 </script>
 
 <template>
@@ -64,9 +94,26 @@ const hapusKonten = (konten) => {
         <el-card>
             <template #header>
                 <div class="toolbar flex justify-between items-center">
-                    <h3 class="font-bold text-blue-800 text-lg">
+                    <h3
+                        class="font-bold text-blue-800 text-lg flex justify-between"
+                    >
                         Materi Pembelajaran
                     </h3>
+                    <div class="left">
+                        <input
+                            type="file"
+                            ref="fileSubmateri"
+                            accept=".xlsx,.xls,.ods"
+                            @change="onFileSubmateriPicke"
+                            class="hidden"
+                        />
+                        <el-button
+                            :native-type="null"
+                            type="primary"
+                            @click="$refs.fileSubmateri.click()"
+                            >Impor Submateri</el-button
+                        >
+                    </div>
                 </div>
             </template>
             <div class="card-body">
@@ -90,10 +137,7 @@ const hapusKonten = (konten) => {
                                 <template #title>
                                     <div class="flex items-center gap-2 group">
                                         Bab {{ m + 1 }}. {{ materi.label }}
-                                        <span
-                                            class="hidden group-hover:inline"
-                                            v-if="hasRole('admin')"
-                                        >
+                                        <span class="group-hover:inline">
                                             <el-button
                                                 :native-type="null"
                                                 type="primary"
@@ -173,5 +217,19 @@ const hapusKonten = (konten) => {
                 </el-form>
             </div>
         </el-dialog>
+
+        <Teleport to="body" v-if="loading">
+            <div
+                class="loading fixed top-0 right-0 bottom-0 left-0 z-[99999] bg-slate-400 bg-opacity-70 backdrop-blur flex items-center justify-center"
+            >
+                <div class="content text-center text-white">
+                    <Icon
+                        icon="mdi-loading"
+                        class="animate-spin text-8xl mx-auto"
+                    />
+                    <p class="text-center mt-8">Tunggu sebentar</p>
+                </div>
+            </div>
+        </Teleport>
     </div>
 </template>

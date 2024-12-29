@@ -48,7 +48,7 @@ const kode = (teks, index) => {
 </script>
 
 <template>
-    <DashLayout title="Program Tahunan">
+    <div title="Program Tahunan">
         <Head title="Program Tahunan" />
 
         <el-row class="w-full" v-if="page.props.atps.length > 0">
@@ -240,5 +240,5 @@ const kode = (teks, index) => {
                 >
             </el-alert>
         </el-row>
-    </DashLayout>
+    </div>
 </template>

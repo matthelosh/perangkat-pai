@@ -43,7 +43,13 @@ const FormMa = defineAsyncComponent(() =>
 
 const mode = ref("list");
 const selectedAtp = ref(null);
+const selectedMa = ref(null);
 
+const editMa = (atp, ma) => {
+    selectedAtp.value = atp;
+    selectedMa.value = ma;
+    mode.value = "form";
+};
 const makeMa = (atp) => {
     selectedAtp.value = atp;
     mode.value = "form";
@@ -55,7 +61,7 @@ const closeForm = () => {
 };
 </script>
 <template>
-    <DashLayout title="Modul Ajar">
+    <div title="Modul Ajar">
         <el-card v-if="mode == 'list'">
             <template #header>
                 <div class="toolbar flex items-center justify-between">
@@ -97,14 +103,43 @@ const closeForm = () => {
                                 :native-type="null"
                                 type="primary"
                                 @click="makeMa(atp)"
-                                >Buat</el-button
                             >
+                                <Icon icon="mdi:plus" />
+                                Buat
+                            </el-button>
+                            <el-table :data="atp.mas">
+                                <el-table-column
+                                    label="#"
+                                    type="index"
+                                ></el-table-column>
+                                <el-table-column
+                                    label="TP"
+                                    prop="tps"
+                                ></el-table-column>
+                                <el-table-column label="Opsi">
+                                    <template #default="{ row }">
+                                        <el-button
+                                            :native-type="null"
+                                            type="primary"
+                                            @click="editMa(atp, row)"
+                                        >
+                                            <Icon icon="mdi:magnify" />
+                                            Lihat
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
                         </div>
                     </el-collapse-item>
                 </el-collapse>
             </div>
         </el-card>
 
-        <FormMa :atp="selectedAtp" @close="closeForm" v-if="mode == 'form'" />
-    </DashLayout>
+        <FormMa
+            :atp="selectedAtp"
+            :selectedMa="selectedMa"
+            @close="closeForm"
+            v-if="mode == 'form'"
+        />
+    </div>
 </template>

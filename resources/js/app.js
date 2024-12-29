@@ -13,11 +13,18 @@ import ELementTiptapPlugin from 'element-tiptap-vue3-fixed';
 import VueExcelEditor from 'vue3-excel-editor';
 import { setupCalendar } from 'v-calendar';
 
+import DashboardLayout from './layouts/DashboardLayout.vue';
 createInertiaApp({
-    progress: false, 
+    progress: true, 
     resolve: name => {
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true})
-        return pages[`./Pages/${name}.vue`]
+        const page = pages[`./Pages/${name}.vue`]
+        // return pages[`./Pages/${name}.vue`]
+        if (name.startsWith('Dashboard/')) {
+            page.default.layout = page.default.layout || DashboardLayout
+        }
+
+        return page
     },
     setup({ el, App, props, plugin}) {
         createApp({ render: () => h(App, props)})
@@ -27,7 +34,17 @@ createInertiaApp({
             .use(ELementTiptapPlugin)
             .use(VueExcelEditor)
             .use(setupCalendar, {})
-            .mixin({ methods: { appRoute: route }})
+            .mixin({ 
+                methods: {
+                     appRoute: route ,
+                     navigate(url) {
+                        router.get(url, {}, {
+                            preserveScroll: true,
+                            preserveState: false
+                        })
+                     }
+                    }
+                })
             .mount(el)
     }
 })

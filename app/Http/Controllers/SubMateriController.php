@@ -16,11 +16,31 @@ class SubMateriController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Import Submateri.
      */
-    public function create()
+    public function impor(Request $request)
     {
-        //
+        try {
+            $datas = $request->datas;
+
+            foreach ($datas as $data) {
+                SubMateri::updateOrCreate(
+                    [
+                        'id' => $data['id'] ?? null,
+                        'materi_id' => $data['materi_id'],
+                        'fase' => $data['fase'],
+                        'tingkat' => $data['tingkat'],
+                    ],
+                    [
+                        'label' => $data['label']
+                    ]
+                );
+            }
+
+            return \back()->with('message', 'Submateri diimpod');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

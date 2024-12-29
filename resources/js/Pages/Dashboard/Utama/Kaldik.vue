@@ -104,6 +104,10 @@ const simpan = () => {
     );
 };
 
+const closeDialog = () => {
+    showKaldik.value = !showKaldik.value;
+    onDialogClose();
+};
 const onDialogClose = () => {
     loading.value = false;
     kaldik.value = {
@@ -136,7 +140,7 @@ const hapus = () => {
 </script>
 
 <template>
-    <Layout title="Kalender Pendidikan">
+    <div title="Kalender Pendidikan">
         <Head title="Kalender Pendidikan" />
         <h3 class="text-center font-bold uppercase text-blue-900 text-2xl mb-8">
             KALENDER PENDIDIKAN {{ page.props.tapel.label }}
@@ -155,7 +159,11 @@ const hapus = () => {
             />
         </div>
 
-        <el-dialog v-model="showKaldik" @close="onDialogClose">
+        <el-dialog
+            v-model="showKaldik"
+            @close="onDialogClose"
+            :show-close="false"
+        >
             <template #header>
                 <div class="w-full flex justify-between">
                     <span>Form Agenda</span>
@@ -250,6 +258,16 @@ const hapus = () => {
                     </el-row>
                 </el-form>
             </div>
+            <template #footer>
+                <div class="flex items-center justify-end">
+                    <el-button
+                        type="info"
+                        :native-type="null"
+                        @click="closeDialog"
+                        >Batal</el-button
+                    >
+                </div>
+            </template>
         </el-dialog>
-    </Layout>
+    </div>
 </template>

@@ -15,25 +15,17 @@ return new class extends Migration
             $table->id();
             $table->integer('atp_id');
             $table->string('guru_id', 30)->nullable();
-            $table->string('kode', 30);
             $table->string('rombel_id', 50)->nullable();
-            $table->text('kompetensi_awal');
             $table->text('p5');
-            $table->text('sarpras');
-            $table->string('target_siswa', 191);
-            $table->string('model', 191);
             $table->text('tps');
+            $table->text('media');
             $table->text('pemahaman');
             $table->text('pertanyaan');
-            $table->text('persiapan');
             $table->text('pendahuluan');
             $table->text('inti');
             $table->text('penutup');
-            $table->text('remidial');
-            $table->text('pengayaan');
-            $table->text('refleksi_guru');
-            $table->text('refleksi_siswa');
             $table->text('asesmen');
+            $table->text('referensi');
             $table->timestamps();
         });
     }

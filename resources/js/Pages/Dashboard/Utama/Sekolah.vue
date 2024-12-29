@@ -34,10 +34,14 @@ const hapus = async (sekolah_id) => {
 const impor = async () => {
     router.post(route("sekolah.import"), { sekolahs: importedData.value });
 };
+defineOptions({
+    layout: Layout,
+});
 </script>
 
 <template>
-    <Layout title="Data Sekolah">
+    <!-- <Layout title="Data Sekolah"> -->
+    <div>
         <Head title="Data Sekolah" />
         <el-row class="w-full">
             <el-col :span="24">
@@ -354,7 +358,8 @@ const impor = async () => {
                 </vue-excel-editor>
             </div>
         </el-dialog>
-    </Layout>
+    </div>
+    <!-- </Layout> -->
 </template>
 <style>
 #form-sekolah .el-input {

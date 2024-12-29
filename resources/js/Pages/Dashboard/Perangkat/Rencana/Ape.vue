@@ -74,7 +74,7 @@ const cetak = async () => {
 </script>
 
 <template>
-    <DashLayout title="Analisis Pekan Efektif">
+    <div title="Analisis Pekan Efektif">
         <Head title="Analisis Pekan Efektif" />
         <div class="wrapper">
             <el-card>
@@ -388,5 +388,5 @@ const cetak = async () => {
                 </div>
             </el-card>
         </div>
-    </DashLayout>
+    </div>
 </template>

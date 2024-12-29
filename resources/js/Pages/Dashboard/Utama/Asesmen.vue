@@ -70,7 +70,7 @@ const hapus = async (id) => {
 </script>
 
 <template>
-    <DashLayout title="Data Asesmen">
+    <div title="Data Asesmen">
         <el-row>
             <el-col :span="24">
                 <div
@@ -242,5 +242,5 @@ const hapus = async (id) => {
                 </div>
             </el-col>
         </el-row>
-    </DashLayout>
+    </div>
 </template>

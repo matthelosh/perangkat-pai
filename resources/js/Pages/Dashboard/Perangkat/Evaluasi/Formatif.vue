@@ -21,7 +21,7 @@ const closeAnalisis = (item) => {
 </script>
 
 <template>
-    <DashLayout>
+    <div>
         <!-- {{ page.props.asesmens }} -->
         <Analisis
             :asesmen="selectedAsesmen"
@@ -92,5 +92,5 @@ const closeAnalisis = (item) => {
                 </el-card>
             </el-col>
         </el-row>
-    </DashLayout>
+    </div>
 </template>

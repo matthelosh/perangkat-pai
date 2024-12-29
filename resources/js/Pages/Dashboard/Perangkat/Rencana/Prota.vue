@@ -310,7 +310,7 @@ const cetak = async () => {
 </script>
 
 <template>
-    <Layout title="Program Tahunan">
+    <div title="Program Tahunan">
         <Head title="Program Tahunan" />
         <el-row
             class="w-full"
@@ -469,5 +469,5 @@ const cetak = async () => {
                 </el-form>
             </div>
         </el-drawer>
-    </Layout>
+    </div>
 </template>

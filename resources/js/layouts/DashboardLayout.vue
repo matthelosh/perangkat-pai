@@ -8,7 +8,7 @@ const props = defineProps({ title: String });
 import SideNav from "./SideNav.vue";
 const sideNav = ref(null);
 
-const showSide = ref(false);
+const showSide = ref(localStorage.getItem("menuCollapsed") !== "true");
 
 const viewPort = computed(() => {
     let width = window.innerWidth;
@@ -25,8 +25,11 @@ const viewPort = computed(() => {
 
 const toggleSideNav = () => {
     showSide.value = !showSide.value;
+    localStorage.setItem("menuCollapsed", (!showSide.value).toString());
     sideNav.value.toggleSide();
 };
+
+const processing = computed(() => page.props.processing);
 </script>
 
 <template>
@@ -46,7 +49,7 @@ const toggleSideNav = () => {
                 >
                     <span class="flex gap-1">
                         <Icon
-                            :icon="`mdi:${showSide ? 'close' : 'menu'}`"
+                            icon="mdi:menu"
                             class="text-white text-2xl cursor-pointer"
                             @click="toggleSideNav"
                         />
@@ -77,6 +80,12 @@ const toggleSideNav = () => {
                     </div>
                 </el-header>
                 <el-main class="bg-slate-200">
+                    <div
+                        v-show="processing"
+                        class="loading-overlay fixed top-0 right-0 bottom-0 left-0 bg-slate-200 bg-opacity-70 z-[999999999]"
+                    >
+                        Processing
+                    </div>
                     <slot />
                 </el-main>
             </el-container>

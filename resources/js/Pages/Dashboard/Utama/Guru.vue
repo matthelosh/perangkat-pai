@@ -123,17 +123,13 @@ const changePage = (e) => {
 </script>
 
 <template>
-    <Layout title="Data Guru PAI">
+    <div title="Data Guru PAI">
         <div class="wrapper w-full">
             <el-card>
                 <template #header>
                     <div class="toolbar flex items-center justify-between">
                         <h3>Data Guru PAI</h3>
                         <div class="flex items-center gap-8">
-                            <Pagination
-                                :total="page.props.gurus.total"
-                                @change="changePage($event)"
-                            />
                             <el-button-group :native-type="null">
                                 <el-popover
                                     placement="top-end"
@@ -274,6 +270,16 @@ const changePage = (e) => {
                         </el-table-column>
                     </el-table>
                 </div>
+                <template #footer>
+                    <div class="flex items-center justify-end">
+                        <Pagination
+                            :page-size="page.props.gurus.per_page"
+                            :total="page.props.gurus.total"
+                            @change="changePage($event)"
+                            layout="total, prev, pager, next"
+                        />
+                    </div>
+                </template>
             </el-card>
         </div>
 
@@ -580,5 +586,5 @@ const changePage = (e) => {
                 </el-form>
             </div>
         </el-dialog>
-    </Layout>
+    </div>
 </template>

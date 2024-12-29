@@ -100,6 +100,7 @@ Route::middleware("auth")->group(function () {
             Route::resource("elemen", ElemenController::class);
             Route::resource("materi", MateriAjarController::class);
             Route::resource('submateri', SubMateriController::class);
+            Route::post('/submateri/impor', [SubMateriController::class, 'impor'])->name('kurikulum.submateri.impor');
         });
 
         // Tujuan Pembelajaran

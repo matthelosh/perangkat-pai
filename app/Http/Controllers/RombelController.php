@@ -22,7 +22,7 @@ class RombelController extends Controller
                 ->hasRole("admin")
             ) {
                 $rombels = Rombel::whereIsActive(true)
-                    ->with("sekolah")
+                    ->with("sekolah", "siswas")
                     ->get();
             } elseif (
                 $user

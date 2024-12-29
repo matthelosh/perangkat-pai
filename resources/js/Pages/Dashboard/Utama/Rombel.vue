@@ -145,7 +145,7 @@ const syncRombel = async () => {
 </script>
 
 <template>
-    <Layout title="Data Rombel">
+    <div title="Data Rombel">
         <el-card>
             <template #header>
                 <div class="toolbar flex items-center justify-between">
@@ -444,7 +444,7 @@ const syncRombel = async () => {
                 </div>
             </template>
         </el-dialog>
-    </Layout>
+    </div>
 </template>
 
 <style>

@@ -9,7 +9,7 @@ const mode = ref("list");
 </script>
 
 <template>
-    <DashLayout title="Perangkat Evaluasi">
+    <div title="Perangkat Evaluasi">
         <el-row class="w-full" :gutter="20">
             <el-col
                 :span="8"
@@ -67,5 +67,5 @@ const mode = ref("list");
                 </el-card>
             </el-col>
         </el-row>
-    </DashLayout>
+    </div>
 </template>

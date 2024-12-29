@@ -14,7 +14,13 @@ class SiswaController extends Controller
      */
     public function index(Request $request)
     {
-        $siswas = Siswa::where('sekolah_id', $request->user()->userable->sekolah_id)->with('rombels')->get();
+        $tapel = \tapel()->kode;
+        $siswas = Siswa::with([
+            'rombels' => function ($rombel) use ($tapel) {
+                $rombel->where('tapel', $tapel);
+                $rombel->with('sekolah');
+            }
+        ])->get();
         return Inertia::render('Dashboard/Utama/Siswa', [
             'siswas' => $siswas,
         ]);

@@ -133,7 +133,7 @@ onBeforeMount(() => {});
 </script>
 
 <template>
-    <Layout title="Tujuan Pembelajaran">
+    <div title="Tujuan Pembelajaran">
         <el-card v-if="mode == 'form'">
             <template #header>
                 <div class="w-full flex items-center justify-between">
@@ -319,5 +319,5 @@ onBeforeMount(() => {});
             :elemens="elemens"
             @close="mode = 'form'"
         />
-    </Layout>
+    </div>
 </template>

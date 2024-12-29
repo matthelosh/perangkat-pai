@@ -16,7 +16,7 @@ const users = computed(() => {
 </script>
 
 <template>
-    <Layout title="Pengaturan Akun">
+    <div title="Pengaturan Akun">
         <!-- {{ page.props.users }} -->
         <el-table :data="users">
             <el-table-column
@@ -74,5 +74,5 @@ const users = computed(() => {
                 </ul>
             </el-col>
         </el-row>
-    </Layout>
+    </div>
 </template>

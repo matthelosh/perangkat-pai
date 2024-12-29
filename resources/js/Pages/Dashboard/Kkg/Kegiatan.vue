@@ -86,7 +86,7 @@ const daftarHadir = (item) => {
 </script>
 
 <template>
-    <Layout title="Kegiatan KKG">
+    <div title="Kegiatan KKG">
         <Head title="Kegiatan KKG" />
 
         <div class="content">
@@ -127,5 +127,5 @@ const daftarHadir = (item) => {
             </div>
             <!-- {{ page.props.roles }} -->
         </div>
-    </Layout>
+    </div>
 </template>

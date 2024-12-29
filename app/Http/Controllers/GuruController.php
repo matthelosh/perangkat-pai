@@ -18,7 +18,7 @@ class GuruController extends Controller
         $role = auth()->user()->roles[0]['name'];
         try {
             if ($role == 'admin') {
-                $gurus = Guru::with('sekolahs', 'account')->paginate(10);
+                $gurus = Guru::with('sekolahs', 'account')->paginate(25);
             } else if ($role == 'gpai') {
                 $gurus = Guru::where('id', auth()->user()->userable_id)->with('sekolahs', 'account')->get();
             }

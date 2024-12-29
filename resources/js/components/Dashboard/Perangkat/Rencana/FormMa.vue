@@ -1,8 +1,10 @@
 <script setup>
-import { ref, computed, onBeforeMount } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { ref, computed, onBeforeMount, defineAsyncComponent } from 'vue'
+import { router, usePage } from '@inertiajs/vue3'
 import { Icon } from '@iconify/vue'
 import { Doc, Text, Paragraph, Color,  Bold, Underline, Italic, BulletList, OrderedList, Strike, Highlight, Table } from 'element-tiptap-vue3-fixed'
+
+const Ttd = defineAsyncComponent(() => import('@/components/Umum/Ttd.vue'))
 const extensions = [
     Doc, Text, Paragraph,
     Color.configure({bubble: true}),
@@ -16,7 +18,7 @@ const extensions = [
     
 ]
 const page = usePage()
-const props = defineProps({atp: Object})
+const props = defineProps({atp: Object, selectedMa: Object})
 const emit = defineEmits(['close'])
 const loading = ref(false)
 const edit = ref(false)
@@ -32,18 +34,100 @@ const ma = ref({
                     <tbody>
                         <tr>
                             <td class="border border-black align-top p-2"></td>    
-                            <td class="border border-black align-top p-2">10 Menit</td>    
+                            <td class="border border-black align-top p-2">15 Menit</td>    
                         </tr>    
                     </tbody>
-        </table>`
+        </table>`,
+    inti: `<table class="w-full" width="100%" border="1" style="border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th class="border border-black align-top p-2">Kegiatan Pembelajaran</th>    
+                            <th class="border border-black align-top">Alokasi Waktu</th>    
+                        </tr>    
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-black align-top p-2"></td>    
+                            <td class="border border-black align-top p-2">11    0 Menit</td>    
+                        </tr>    
+                    </tbody>
+        </table>`,
+    penutup: `<table class="w-full" width="100%" border="1" style="border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th class="border border-black align-top p-2">Kegiatan Pembelajaran</th>    
+                            <th class="border border-black align-top">Alokasi Waktu</th>    
+                        </tr>    
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-black align-top p-2"></td>    
+                            <td class="border border-black align-top p-2">15 Menit</td>    
+                        </tr>    
+                    </tbody>
+        </table>`,
 })
 
 const simpan = async() => {
-    console.log(ma.value)
+    // console.log(ma.value)
+    let data = ma.value
+    data.p5 = props.atp.p5
+    data.tps = props.atp.tps
+    await router.post(route('modulajar.store'), {data: data}, {
+        onStart: () => loading.value = true,
+        onSuccess: () => {
+            router.reload()
+            edit.value = false
+        },
+        onFinish: () => loading.value = false
+    })
 }
 
+const cetak = () => {
+    const el = document.querySelector('.cetak')
+    let cssLink =
+        page.props.app_env == "local"
+            ? "https://perangkat.test:5173/resources/css/app.css"
+            : "/build/assets/app.css";
+    let html = `<html>
+                <head>
+                    <title>Madul Ajar</title>    
+                    <link href="${cssLink}" rel="stylesheet" />
+                    <style>
+                        ul.langkah table {
+                            border: 1px solid black;
+                            border-collapse: collapse;
+                            width: 100%;
+                        }
+                            ul.langkah table td,
+                            ul.langkah table th {
+                                border: 1px solid black;
+                                padding: 10px;
+                            }
+                    </style>
+                </head>
+                <body>
+                    ${el.outerHTML}
+                </body>
+            </html>`;
+
+    let win = window.open("", "_blank", "width=800,height=700");
+    win.document.write(html);
+    setTimeout(() => {
+        win.print();
+        // win.close();
+    }, 1000);
+}
+
+const tanggal = computed(() => {
+    const date = new Date()
+    return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()
+}
+)
+
 onBeforeMount(() => {
-    ma.value.atp_id = props.atp.kode
+    ma.value.atp_id = props.atp.id
+    if (props.selectedMa) {ma.value = props.selectedMa}
 })
 </script>
 
@@ -58,7 +142,7 @@ onBeforeMount(() => {
                 </h3>
                 <div class="items flex items-center gap-3">
                     <el-switch v-model="edit" :inactive-text="edit ? 'Edit' : 'Edit?'" />
-                    <el-button :native-type="null"  circle v-if="!edit">
+                    <el-button :native-type="null"  circle v-if="!edit" @click="cetak">
                         <Icon icon="mdi:printer" />
                     </el-button>
                     <el-button :native-type="null"  circle class="ml-4" @click="info = !info">
@@ -67,7 +151,7 @@ onBeforeMount(() => {
                 </div>
             </div>
         </template>
-        <div class="card-body font-serif">
+        <div class="card-body font-serif cetak">
             <div class="title text-center uppercase font-bold mb-6">
                 <h3 class="text-2xl">Modul Ajar</h3>
             </div>
@@ -114,28 +198,15 @@ onBeforeMount(() => {
                     </tr>
                 </table>
 
-                <h3 class="uppercase font-bold mt-4">B. Kompetensi Awal</h3>
-                <el-tiptap v-model:content="ma.kompetensi_awal" :extensions="extensions" v-if="edit" />
-                <div v-else v-html="ma.kompetensi_awal" />
-                <h3 class="uppercase font-bold mt-4">C. Profil Pelajar Pancasila</h3>
-                <el-tiptap v-model:content="ma.p5" :extensions="extensions" v-if="edit" />
-                <div v-else v-html="ma.p5" />
-                <h3 class="uppercase font-bold mt-4">D. Sarana dan Prasarana</h3>
-                <el-tiptap v-model:content="ma.sarpras" :extensions="extensions" v-if="edit" />
-                <div v-else v-html="ma.sarpras" />
-                <h3 class="uppercase font-bold mt-4">E. Target Peserta Didik</h3>
-                <el-select v-model="ma.target_siswa" placeholder="Pilih Target Siswa" v-if="edit">
-                    <el-option value="Peserta Didik Reguler" label="Peserta Didik Reguler" />
-                    <el-option value="Peserta Didik Berkebutuhan Khusus" label="Peserta Didik Berkebutuhan Khusus" />
-                </el-select>
-                <div v-else v-html="ma.target_siswa" />
-                <h3 class="uppercase font-bold mt-4">F. Model Pembelajaran</h3>
-                <el-select v-model="ma.model" placeholder="Pilih Model Pembelajaran" v-if="edit">
-                    <el-option value="Tatap Muka" label="Tatap Muka" />
-                    <el-option value="Daring" label="Daring" />
-                    <el-option value="Hybrid" label="Hybrid" />
-                </el-select>
-                <div v-else v-html="ma.model" />
+                <h3 class="uppercase font-bold mt-4">B. Profil Pelajar Pancasila</h3>
+                <div >
+                    <ul class="list-decimal pl-4 list-inside">
+                        <li v-for="p5 in props.atp.p5.split(';')">
+                            {{ p5 }}
+                        </li>
+                    </ul>
+                </div>
+                
             </div>
 
             <div class="inti">
@@ -148,14 +219,14 @@ onBeforeMount(() => {
                 <h3 class="uppercase font-bold mt-4">B. Pemahaman Bermakna</h3>
                 <el-tiptap v-model:content="ma.pemahaman" :extensions="extensions" v-if="edit" />
                 <div v-else v-html="ma.pemahaman" />
-                <h3 class="uppercase font-bold mt-4">C. Pertanyaan pemantik</h3>
+                <h3 class="uppercase font-bold mt-4">C. Media Pembelajaran</h3>
+                <el-tiptap v-model:content="ma.media" :extensions="extensions" v-if="edit" />
+                <div v-else v-html="ma.media" />
+                <h3 class="uppercase font-bold mt-4">D. Pertanyaan pemantik</h3>
                 <el-tiptap v-model:content="ma.pertanyaan" :extensions="extensions" v-if="edit" />
                 <div v-else v-html="ma.pertanyaan" />
-                <h3 class="uppercase font-bold mt-4">D. Persiapan Pembelajaran</h3>
-                <el-tiptap v-model:content="ma.persiapan" :extensions="extensions" v-if="edit" />
-                <div v-else v-html="ma.persiapan" />
                 <h3 class="uppercase font-bold mt-4">E. Kegiatan Pembelajaran</h3>
-                <ul class="list-[lower-alpha] pl-8">
+                <ul class="list-[lower-alpha] pl-8 langkah">
                     <li>
                         Kegiatan Pendahuluan
                         <el-tiptap v-model:content="ma.pendahuluan" :extensions="extensions" v-if="edit" />
@@ -173,13 +244,17 @@ onBeforeMount(() => {
                     </li>
                 </ul>
                 <h3 class="uppercase font-bold mt-4">F. Rencana Asesmen</h3>
-                <el-tiptap v-model="ma.asesmen" :extensions="extensions" v-if="edit" />
+                <el-tiptap v-model:content="ma.asesmen" :extensions="extensions" v-if="edit" />
                 <div v-else v-html="ma.asesmen" />
-                <el-row class="w-full" align="middle" justify="center">
+                <h3 class="uppercase font-bold mt-4">G. Referensi</h3>
+                <el-tiptap v-model:content="ma.referensi" :extensions="extensions" v-if="edit" />
+                <div v-else v-html="ma.referensi" />
+                <el-row class="w-full" align="middle" justify="center" v-if="edit">
                     <el-button :native-type="null"  type="primary" class="my-4 mx-auto uppercase" :loading="loading" @click="simpan">Simpan</el-button>
                 </el-row>
             </div>
 
+            <Ttd :tanggal="tanggal" v-if="!edit" />
         </div>
     </el-card>
 
@@ -254,3 +329,14 @@ onBeforeMount(() => {
     </el-drawer>
     </div>
 </template>
+
+<style>
+    ul.langkah table {
+        width: 100%;
+    }
+    ul.langkah table td, th {
+        border: 1px solid black;
+        padding: 10px;
+        /* border-collapse: collapse; */
+    }
+</style>

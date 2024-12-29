@@ -114,7 +114,7 @@ const cetak = () => {
 </script>
 
 <template>
-    <DashLayout title="Cetak Program Semester">
+    <div title="Cetak Program Semester">
         <el-row class="w-full">
             <el-col :span="24">
                 <el-card>
@@ -383,5 +383,5 @@ const cetak = () => {
                 </el-card>
             </el-col>
         </el-row>
-    </DashLayout>
+    </div>
 </template>
