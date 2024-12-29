@@ -36,16 +36,18 @@ const params = computed(() => route().params);
 
 const cetak = async () => {
     let lembar = document.querySelector(".cetak").outerHTML;
-    let cssLink =
-        page.props.app_env == "local"
-            ? "https://localhost:5173/resources/css/app.css"
-            : "/build/assets/app.css";
+    let style = "";
+    if (page.props.app_env == "local") {
+        style = `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`;
+    } else {
+        style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`;
+    }
     let html = `
             <!doctype html>
             <html>
                 <head>
                     <title>Cetak Tujuan Pembelajaran</title>
-                    <link href="${cssLink}" rel="stylesheet />
+                    ${style}
                 </head>
                 <body>
                     ${lembar}    

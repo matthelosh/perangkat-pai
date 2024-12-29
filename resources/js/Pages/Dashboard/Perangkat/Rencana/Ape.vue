@@ -45,18 +45,19 @@ const tanggal = computed(
 );
 
 const cetak = async () => {
-    let cssLink =
+    let style =
         page.props.app_env == "local"
-            ? "https://perpai.test:5173/resources/css/app.css"
-            : "/build/assets/app.css";
+            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
+            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let el = document.querySelector(".cetak");
     let html = `
         <!doctype html>
         <html>
             <head>
                 <title>Rencana Pekan Efektif Kelas ${page.props.rombel.label}</title>    
+                ${style}
             </head>
-            <link href="${cssLink}" rel="stylesheet" />
+            
             <body>
                 ${el.outerHTML}    
             </body>

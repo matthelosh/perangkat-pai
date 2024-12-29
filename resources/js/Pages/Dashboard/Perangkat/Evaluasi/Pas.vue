@@ -66,10 +66,10 @@ const skor = (index) => {
 
 const cetak = () => {
     let win = window.open("", "_blank", "width=1200,height=900");
-    const cssUrl =
+    let style =
         page.props.app_env == "local"
-            ? page.props.app_url + ":5173/resources/css/app.css"
-            : page.props.app_url + "/build/assets/app.css";
+            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
+            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
 
     const soals = page.props.asesmen.jml_soal.split(",");
     let pgTh = "";
@@ -151,7 +151,7 @@ const cetak = () => {
         <html>
             <head>
                 <title>${page.props.asesmen.label}</title>
-                <link rel="stylesheet" href="${cssUrl}" />
+                ${style}
             </head>
             <body>
                 <h3 class="text-center">Hasil ${page.props.asesmen.label}</h3>

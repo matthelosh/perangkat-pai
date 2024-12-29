@@ -83,18 +83,19 @@ const jams = computed(() => {
 });
 
 const cetak = async () => {
-    let cssLink =
+    let style =
         page.props.app_env == "local"
-            ? "https://localhost:5173/resources/css/app.css"
-            : "/build/assets/app2.css";
+            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
+            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let element = document.querySelector(".cetak");
     let html = `
             <!doctype html>
             <html>
                 <head>
                     <title>Jadwal Pelajaran PAI | ${page.props.user.userable.nama}</title>    
-                    <link href="${cssLink}" rel="stylesheet" />
-                </head>
+                    ${style}
+                    </head>
+
                 <body>
                     
                     ${element.outerHTML}

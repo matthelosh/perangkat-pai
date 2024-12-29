@@ -85,14 +85,14 @@ const simpan = async() => {
 
 const cetak = () => {
     const el = document.querySelector('.cetak')
-    let cssLink =
+    let style =
         page.props.app_env == "local"
-            ? "https://perangkat.test:5173/resources/css/app.css"
-            : "/build/assets/app.css";
+            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
+            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let html = `<html>
                 <head>
                     <title>Madul Ajar</title>    
-                    <link href="${cssLink}" rel="stylesheet" />
+                    ${style}
                     <style>
                         ul.langkah table {
                             border: 1px solid black;

@@ -67,10 +67,6 @@ const skor = (index) => {
 
 const cetak = () => {
     let win = window.open("", "_blank", "width=1200,height=900");
-    const cssUrl =
-        page.props.app_env == "local"
-            ? window.location.origin + ":5173/resources/css/app.css"
-            : window.location.origin + "/build/assets/app.css";
 
     const soals = props.asesmen.jml_soal.split(",");
     let pgTh = "";
@@ -147,12 +143,17 @@ const cetak = () => {
         uraianTh += `<th class="border">${i + 1}</th>`;
     }
 
+    let style =
+        page.props.app_env == "local"
+            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
+            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
+
     let html = `
         <!doctype html>
         <html>
             <head>
                 <title>${props.asesmen.label}</title>
-                <link rel="stylesheet" href="${cssUrl}" />
+                ${style}
             </head>
             <body>
                 <h3 class="text-center">Hasil ${props.asesmen.label}</h3>

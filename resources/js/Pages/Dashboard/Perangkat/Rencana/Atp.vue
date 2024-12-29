@@ -67,14 +67,14 @@ const onMineChanged = (e) => {
 
 const cetak = async () => {
     let el = document.querySelector(".cetak");
-    let cssLink =
+    let style =
         page.props.app_env == "local"
-            ? "https://perangkat.test:5173/resources/css/app.css"
-            : "/build/assets/app.css";
+            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
+            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let html = `<html>
                 <head>
                     <title>Alur Tujuan Pembelajaran</title>    
-                    <link href="${cssLink}" rel="stylesheet" />
+                    ${style}
                 </head>
                 <body>
                     ${el.outerHTML}
