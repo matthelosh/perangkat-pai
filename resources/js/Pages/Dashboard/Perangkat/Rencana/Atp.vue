@@ -510,7 +510,7 @@ onBeforeMount(() => {
                                 >
                                     <ul>
                                         <li v-for="ma in atp.mas">
-                                            Modul Ajar {{ ma.id }}
+                                            Modul Ajar {{ ma.kode }}
                                         </li>
                                     </ul>
                                 </td>

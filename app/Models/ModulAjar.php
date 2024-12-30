@@ -11,6 +11,7 @@ class ModulAjar extends Model
 
     protected $fillable = [
         'atp_id',
+        'kode',
         'guru_id',
         'rombel_id',
         'p5',

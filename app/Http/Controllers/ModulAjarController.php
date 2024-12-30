@@ -61,9 +61,13 @@ class ModulAjarController extends Controller
     {
         try {
             $data = $request->data;
+            $atp = Atp::whereId($data['atp_id'])->first();
+            $lastMa = ModulAjar::latest()->first();
+            $kode = $lastMa ? ($atp->kode . '-' . $lastMa->id + 1) : ($atp->kode . '-' . 1);
             $store = ModulAjar::updateOrCreate(
                 [
                     'id' => $data['id'] ?? null,
+                    'kode' => $data['kode'] ?? $kode,
                 ],
                 [
                     'atp_id' => $data['atp_id'],

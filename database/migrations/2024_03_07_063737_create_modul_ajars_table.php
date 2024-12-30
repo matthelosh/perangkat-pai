@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('modul_ajars', function (Blueprint $table) {
             $table->id();
             $table->integer('atp_id');
+            $table->string('kode', 60)->unique();
             $table->string('guru_id', 30)->nullable();
             $table->string('rombel_id', 50)->nullable();
             $table->text('p5');
