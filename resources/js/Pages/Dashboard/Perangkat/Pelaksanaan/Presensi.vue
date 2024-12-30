@@ -3,7 +3,7 @@ import { ref, computed, defineAsyncComponent } from "vue";
 import { usePage, Head, Link } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
 
-import { cssLink } from "@/helpers/printHelper.js";
+import { cssFiles } from "@/helpers/printHelper.js";
 import dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
 import "dayjs/locale/id";
@@ -32,9 +32,6 @@ const cetak = async () => {
                     <title>
                         Presensi Siswa
                     </title>
-                    <link href="${cssLink(
-                        page.props.app_env
-                    )}" rel="stylesheet" />
                 </head>
                 <body>
                     ${el.outerHTML}
@@ -44,9 +41,16 @@ const cetak = async () => {
 
     let win = window.open("", "_blank", "width=800,height=700");
     win.document.write(html);
-
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const link = win.document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = css;
+        win.document.head.append(link);
+    });
     setTimeout(() => {
         win.print();
+        // win.close();
     }, 500);
 };
 </script>

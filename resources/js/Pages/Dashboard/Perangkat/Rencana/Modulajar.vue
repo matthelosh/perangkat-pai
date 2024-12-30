@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, defineAsyncComponent } from "vue";
-import { usePage, Head, Link } from "@inertiajs/vue3";
+import { usePage, Head, Link, router } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
 import dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
@@ -37,10 +37,12 @@ const extensions = [
 ];
 
 import DashLayout from "@/layouts/DashboardLayout.vue";
+import { ElNotification } from "element-plus";
 const FormMa = defineAsyncComponent(() =>
     import("@/components/Dashboard/Perangkat/Rencana/FormMa.vue")
 );
 
+const loading = ref(false);
 const mode = ref("list");
 const selectedAtp = ref(null);
 const selectedMa = ref(null);
@@ -58,6 +60,21 @@ const makeMa = (atp) => {
 const closeForm = () => {
     mode.value = "list";
     selectedAtp.value = null;
+};
+
+const hapusMa = async (id) => {
+    router.delete(route("modulajar.destroy", { id: id }), {
+        onStart: () => (loading.value = true),
+        onSuccess: () => {
+            ElNotification({
+                title: "Info",
+                message: page.props.flash.message,
+                type: "success",
+            });
+            router.reload({ only: ["atps"] });
+        },
+        onFinish: () => (loading.value = false),
+    });
 };
 </script>
 <template>
@@ -125,6 +142,14 @@ const closeForm = () => {
                                         >
                                             <Icon icon="mdi:magnify" />
                                             Lihat
+                                        </el-button>
+                                        <el-button
+                                            :native-type="null"
+                                            type="danger"
+                                            @click="hapusMa(row.id)"
+                                        >
+                                            <Icon icon="mdi:delete" />
+                                            Hapus
                                         </el-button>
                                     </template>
                                 </el-table-column>

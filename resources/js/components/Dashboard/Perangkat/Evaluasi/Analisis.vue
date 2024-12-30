@@ -3,6 +3,7 @@ import { ref, computed, onBeforeMount } from "vue";
 import { usePage, Link, router } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
 import { writeFile, utils } from "xlsx";
+import { cssFiles } from "@/helpers/printHelper";
 
 const loading = ref(false);
 const page = usePage();
@@ -65,7 +66,7 @@ const skor = (index) => {
     // return isian;
 };
 
-const cetak = () => {
+const cetak = async () => {
     let win = window.open("", "_blank", "width=1200,height=900");
 
     const soals = props.asesmen.jml_soal.split(",");
@@ -143,17 +144,11 @@ const cetak = () => {
         uraianTh += `<th class="border">${i + 1}</th>`;
     }
 
-    let style =
-        page.props.app_env == "local"
-            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
-            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
-
     let html = `
         <!doctype html>
         <html>
             <head>
                 <title>${props.asesmen.label}</title>
-                ${style}
             </head>
             <body>
                 <h3 class="text-center">Hasil ${props.asesmen.label}</h3>
@@ -199,10 +194,16 @@ const cetak = () => {
     `;
 
     win.document.write(html);
-
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const cssLink = win.document.createElement("link");
+        cssLink.rel = "stylesheet";
+        cssLink.href = css;
+        win.document.head.append(cssLink);
+    });
     setTimeout(() => {
         win.print();
-    }, 500);
+    }, 1000);
 };
 
 const unduh = async () => {

@@ -28,33 +28,33 @@ class AtpController extends Controller
         try {
             $kaldiks = Kaldik::whereIsLibur(true)->where('tapel_id', $this->tapel())->get();
             if ($request->query('fase')) {
-                if ($request->query('mine') == 'true') {
-                    $nip = auth()->user()->userable->nip;
-                    $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function ($q) use ($nip) {
-                        $q->where('guru_id', $nip);
-                    })->with('atps', function ($q) use ($nip) {
-                        $q->where('guru_id', $nip);
-                        $q->orderBy('semester', 'ASC');
-                    })->get();
+                // if ($request->query('mine') == 'true') {
+                $nip = auth()->user()->userable->nip;
+                $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function ($q) use ($nip) {
+                    $q->where('guru_id', $nip);
+                })->with('atps', function ($q) use ($nip) {
+                    $q->where('guru_id', $nip);
+                    $q->orderBy('semester', 'ASC');
+                })->get();
 
 
-                    $atps = Atp::whereFase($request->query('fase'))
-                        ->whereGuruId($nip)
-                        ->with('elemen')
-                        ->get();
-                } else {
-                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps')->with('atps', function ($q) {
-                        $q->whereNull('guru_id');
-                        $q->orderBy('semester', 'ASC');
-                    })->get();
+                $atps = Atp::whereFase($request->query('fase'))
+                    ->whereGuruId($nip)
+                    ->with('elemen', 'mas')
+                    ->get();
+                // } else {
+                //     $elemens = Elemen::where('fase', $request->query('fase'))->with('tps')->with('atps', function ($q) {
+                //         $q->whereNull('guru_id');
+                //         $q->orderBy('semester', 'ASC');
+                //     })->get();
 
-                    $atps = Atp::whereFase($request->query('fase'))
-                        ->whereNull('guru_id')
-                        ->with('elemen')
-                        ->get();
+                //     $atps = Atp::whereFase($request->query('fase'))
+                //         ->whereNull('guru_id')
+                //         ->with('elemen', 'mas')
+                //         ->get();
 
-                    // $rombels = null;
-                }
+                //     // $rombels = null;
+                // }
 
                 $cp = Cp::where('fase', $request->query('fase'))->first();
             }

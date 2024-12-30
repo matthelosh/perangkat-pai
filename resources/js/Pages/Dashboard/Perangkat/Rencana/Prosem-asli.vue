@@ -8,7 +8,7 @@ import localeData from "dayjs/plugin/localeData";
 import "dayjs/locale/id";
 dayjs.extend(localeData);
 dayjs.locale("id");
-import { cssLink } from "@/helpers/printHelper";
+import { cssFiles } from "@/helpers/printHelper";
 import { unefektif, allUnefektif, weeksPerMonth } from "@/helpers/ApeHelper";
 import { ElNotification } from "element-plus";
 

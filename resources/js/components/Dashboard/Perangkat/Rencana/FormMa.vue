@@ -3,7 +3,7 @@ import { ref, computed, onBeforeMount, defineAsyncComponent } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import { Icon } from '@iconify/vue'
 import { Doc, Text, Paragraph, Color,  Bold, Underline, Italic, BulletList, OrderedList, Strike, Highlight, Table } from 'element-tiptap-vue3-fixed'
-
+import { cssFiles } from '@/helpers/printHelper'
 const Ttd = defineAsyncComponent(() => import('@/components/Umum/Ttd.vue'))
 const extensions = [
     Doc, Text, Paragraph,
@@ -83,16 +83,11 @@ const simpan = async() => {
     })
 }
 
-const cetak = () => {
+const cetak = async() => {
     const el = document.querySelector('.cetak')
-    let style =
-        page.props.app_env == "local"
-            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
-            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let html = `<html>
                 <head>
                     <title>Madul Ajar</title>    
-                    ${style}
                     <style>
                         ul.langkah table {
                             border: 1px solid black;
@@ -113,6 +108,15 @@ const cetak = () => {
 
     let win = window.open("", "_blank", "width=800,height=700");
     win.document.write(html);
+
+    const styles = await cssFiles()
+    styles.forEach(css => {
+        const cssLink = win.document.createElement('link')
+        cssLink.rel='stylesheet'
+        cssLink.href=css
+        win.document.head.append(cssLink)
+    })
+
     setTimeout(() => {
         win.print();
         // win.close();
@@ -151,6 +155,7 @@ onBeforeMount(() => {
                 </div>
             </div>
         </template>
+        <el-scrollbar max-height="85vh">
         <div class="card-body font-serif cetak">
             <div class="title text-center uppercase font-bold mb-6">
                 <h3 class="text-2xl">Modul Ajar</h3>
@@ -256,6 +261,7 @@ onBeforeMount(() => {
 
             <Ttd :tanggal="tanggal" v-if="!edit" />
         </div>
+    </el-scrollbar>
     </el-card>
 
     <!-- Drawer Info -->
@@ -330,7 +336,7 @@ onBeforeMount(() => {
     </div>
 </template>
 
-<style>
+<style scoped>
     ul.langkah table {
         width: 100%;
     }

@@ -15,9 +15,9 @@ const rombels = computed(() => {
     return Object.groupBy(page.props.rombels, (rombel) => rombel.fase);
 });
 
-const buka = (doc, fase, rombel = null) => {
+const buka = (doc, fase, tingkat = null) => {
     router.get(
-        route(doc, { _query: { fase: fase, rombel: rombel, mine: "true" } })
+        route(doc, { _query: { fase: fase, tingkat: tingkat, mine: "false" } })
     );
 };
 
@@ -78,7 +78,11 @@ const close = () => {
                                         :key="rombel.kode"
                                         :index="`3-${r + 1}`"
                                         @click="
-                                            buka('ape.index', fase, rombel.kode)
+                                            buka(
+                                                'ape.index',
+                                                fase,
+                                                rombel.tingkat
+                                            )
                                         "
                                         >{{ rombel.label }}</el-menu-item
                                     >
@@ -104,7 +108,7 @@ const close = () => {
                                             buka(
                                                 'prota.index',
                                                 fase,
-                                                rombel.kode
+                                                rombel.tingkat
                                             )
                                         "
                                         >{{ rombel.label }}</el-menu-item
@@ -131,7 +135,7 @@ const close = () => {
                                             buka(
                                                 'prosem.index',
                                                 fase,
-                                                rombel.kode
+                                                rombel.tingkat
                                             )
                                         "
                                         >{{ rombel.label }}</el-menu-item
@@ -158,7 +162,7 @@ const close = () => {
                                             buka(
                                                 'modulajar.index',
                                                 fase,
-                                                rombel.kode
+                                                rombel.tingkat
                                             )
                                         "
                                         >{{ rombel.label }}</el-menu-item

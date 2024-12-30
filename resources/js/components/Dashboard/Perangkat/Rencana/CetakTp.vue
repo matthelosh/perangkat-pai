@@ -8,6 +8,7 @@ import localeData from "dayjs/plugin/localeData";
 import "dayjs/locale/id";
 dayjs.locale("id");
 dayjs.extend(localeData);
+import { cssFiles } from "@/helpers/printHelper";
 
 const page = usePage();
 const props = defineProps({ elemens: Array });
@@ -37,11 +38,6 @@ const params = computed(() => route().params);
 const cetak = async () => {
     let lembar = document.querySelector(".cetak").outerHTML;
     let style = "";
-    if (page.props.app_env == "local") {
-        style = `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`;
-    } else {
-        style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`;
-    }
     let html = `
             <!doctype html>
             <html>
@@ -59,6 +55,13 @@ const cetak = async () => {
     let win = window.open("", "_blank", "width=600,height=800");
     win.document.open();
     win.document.write(html);
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const cssLink = win.document.createElement("link");
+        cssLink.rel = "stylesheet";
+        cssLink.href = css;
+        win.document.head.append(cssLink);
+    });
 
     setTimeout(() => {
         win.print();

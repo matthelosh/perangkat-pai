@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, defineAsyncComponent, onBeforeMount } from "vue";
-import { usePage, Head, router } from "@inertiajs/vue3";
+import { usePage, Head, router, Link } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
 import {
     Doc,
@@ -23,6 +23,8 @@ dayjs.locale("id");
 dayjs.extend(localeData);
 import { ElNotification } from "element-plus";
 import { effectiveOfYear } from "@/helpers/ApeHelper";
+
+import { cssFiles } from "@/helpers/printHelper";
 const page = usePage();
 const tanggal = ref(dayjs().format("YYYY-MM-DD"));
 
@@ -67,14 +69,9 @@ const onMineChanged = (e) => {
 
 const cetak = async () => {
     let el = document.querySelector(".cetak");
-    let style =
-        page.props.app_env == "local"
-            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
-            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let html = `<html>
                 <head>
                     <title>Alur Tujuan Pembelajaran</title>    
-                    ${style}
                 </head>
                 <body>
                     ${el.outerHTML}
@@ -83,6 +80,14 @@ const cetak = async () => {
 
     let win = window.open("", "_blank", "width=800,height=700");
     win.document.write(html);
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const cssLink = win.document.createElement("link");
+        cssLink.rel = "stylesheet";
+        cssLink.href = css;
+        win.document.head.append(cssLink);
+    });
+
     setTimeout(() => {
         win.print();
         // win.close();
@@ -412,6 +417,9 @@ onBeforeMount(() => {
                                     Dimensi P5
                                 </th>
                                 <th class="border border-black p-2">Asesmen</th>
+                                <th class="border border-black p-2">
+                                    Modul Ajar
+                                </th>
                                 <th
                                     class="border border-black p-2 print:hidden"
                                 >
@@ -498,9 +506,25 @@ onBeforeMount(() => {
                                     ></span>
                                 </td>
                                 <td
+                                    class="border border-black pl-6 py-2 align-top"
+                                >
+                                    <ul>
+                                        <li v-for="ma in atp.mas">
+                                            Modul Ajar {{ ma.id }}
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td
                                     class="border border-black px-2 print:hidden text-center"
                                 >
                                     <div class="flex items-center gap-1">
+                                        <Link
+                                            :href="`https://perangkat.test/rencana/modulajar?fase=A&tingkat=${atp.tingkat}&mine=true`"
+                                            class="flex items-center gap-1 text-sky-500 mr-2"
+                                        >
+                                            <Icon icon="mdi:plus" />
+                                            MA
+                                        </Link>
                                         <el-button
                                             :native-type="null"
                                             circle
@@ -590,6 +614,9 @@ onBeforeMount(() => {
                                     {{ totalAw }} JP <br />
                                     ({{ totalAw / 4 }} TM)
                                 </td>
+                                <td
+                                    class="border border-black p-2 text-center font-bold"
+                                ></td>
                                 <td
                                     class="border border-black p-2 text-center font-bold"
                                 ></td>

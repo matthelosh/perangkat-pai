@@ -16,12 +16,12 @@ class ModulAjarController extends Controller
     public function index(Request $request)
     {
         try {
-            $rombel = Rombel::where('kode', $request->query('rombel'))->with('jadwals')->first();
-
+            $nip = $request->user()->userable->nip;
+            $rombel = Rombel::where('tingkat', $request->query('tingkat'))->where('guru_id', $nip)->with('jadwals')->first();
             if ($request->query('mine')) {
                 $nip = auth()->user()->userable->nip;
                 $atps = Atp::where('guru_id', $nip)
-                    ->where('tingkat', $rombel->tingkat)
+                    ->where('tingkat', $request->tingkat)
                     ->with('elemen')
                     ->with('protas', function ($q) use ($nip) {
                         $q->where('guru_id', $nip);
@@ -29,7 +29,7 @@ class ModulAjarController extends Controller
                     ->with('mas')
                     ->get();
             } else {
-                $atps = Atp::where('tingkat', $rombel->tingkat)
+                $atps = Atp::where('tingkat', $request->tingkat)
                     ->whereNull('guru_id')
                     ->with('elemen')
                     ->with('protas', function ($q) {
@@ -64,6 +64,8 @@ class ModulAjarController extends Controller
             $store = ModulAjar::updateOrCreate(
                 [
                     'id' => $data['id'] ?? null,
+                ],
+                [
                     'atp_id' => $data['atp_id'],
                     'p5' => $data['p5'],
                     'tps' => $data['tps'],
@@ -75,6 +77,7 @@ class ModulAjarController extends Controller
                     'penutup' => $data['penutup'],
                     'asesmen' => $data['asesmen'],
                     'referensi' => $data['referensi']
+
                 ]
             );
             return back()->with('message', 'Modul Ajar Disimpan');
@@ -110,8 +113,13 @@ class ModulAjarController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ModulAjar $modulAjar)
+    public function destroy(ModulAjar $modulAjar, $id)
     {
-        //
+        try {
+            $modulAjar::destroy($id);
+            return \back()->with('message', 'Modul Ajar dihapus');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

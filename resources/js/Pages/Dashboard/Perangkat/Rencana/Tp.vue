@@ -17,7 +17,7 @@ const mode = ref("form");
 const cpTeks = page.props.elemens;
 const addTp = (elemen) => {
     const index = elemens.value.findIndex((el) => el.kode == elemen.kode);
-    // alert(elemens.value[index].label)
+    const params = computed(() => route().params ?? {});
     console.log(elemens.value[index]);
     elemens.value[index].tps.push({
         elemen_id: elemen.kode,
@@ -129,7 +129,10 @@ const cetak = async () => {
     mode.value = "cetak";
 };
 
-onBeforeMount(() => {});
+onBeforeMount(() => {
+    const params = route().params;
+    mine.value = params.mine == "true";
+});
 </script>
 
 <template>
@@ -137,13 +140,18 @@ onBeforeMount(() => {});
         <el-card v-if="mode == 'form'">
             <template #header>
                 <div class="w-full flex items-center justify-between">
-                    <h3>Tujuan Pembelajaran</h3>
+                    <div class="title flex gap-1">
+                        <el-button :native-type="null" @click="tutup" link>
+                            <Icon
+                                icon="mdi:arrow-left"
+                                class="text-xl font-bold"
+                            />
+                        </el-button>
+                        <h3>Tujuan Pembelajaran</h3>
+                    </div>
                     <div class="toolbar-items flex gap-2">
                         <el-button :native-type="null" circle @click="cetak">
                             <Icon icon="mdi:printer" />
-                        </el-button>
-                        <el-button :native-type="null" circle @click="tutup">
-                            <Icon icon="mdi:close" />
                         </el-button>
                     </div>
                 </div>

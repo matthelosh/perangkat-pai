@@ -2,7 +2,7 @@
 import { ref, computed, defineAsyncComponent } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
-import { cssLink } from "@/helpers/printHelper.js";
+import { cssFiles } from "@/helpers/printHelper.js";
 
 const Kop = defineAsyncComponent(() => import("@/components/Umum/Kop.vue"));
 const Ttd = defineAsyncComponent(() => import("@/components/Umum/Ttd.vue"));
@@ -18,7 +18,7 @@ const kode = (teks) => {
     return teks.join("");
 };
 
-const cetak = () => {
+const cetak = async () => {
     let el = document.querySelector(".cetak");
 
     let html = `
@@ -26,9 +26,7 @@ const cetak = () => {
             <html>
                 <head>
                     <title>Program Tahunan</title>
-                    <link href="${cssLink(
-                        page.props.app_env
-                    )}" rel="stylesheet" />
+
                 </head>
                 <body>
                     ${el.outerHTML}
@@ -37,6 +35,13 @@ const cetak = () => {
     `;
     let win = window.open("", "_blank", "width=800,height=700");
     win.document.write(html);
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const link = win.document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = css;
+        win.document.head.append(link);
+    });
     setTimeout(() => {
         win.print();
     }, 500);

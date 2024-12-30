@@ -2,7 +2,7 @@
 import { ref, computed, defineAsyncComponent } from "vue";
 import { Head, usePage, Link, router } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
-import { cssLink } from "@/helpers/printHelper";
+import { cssFiles } from "@/helpers/printHelper";
 
 import DashLayout from "@/layouts/DashboardLayout.vue";
 const Kop = defineAsyncComponent(() => import("@/components/Umum/Kop.vue"));
@@ -21,10 +21,7 @@ const cetak = async () => {
         <!doctype html>
         <html>
             <head>
-                <title>Program Tahunan Kelas ${page.props.rombel.label} - ${
-        sekolah.value.nama
-    }</title>    
-                <link href="${cssLink(page.props.app_env)}" rel="stylesheet" />
+                <title>Program Tahunan Kelas ${page.props.rombel.label} - ${sekolah.value.nama}</title>    
             </head>
             <body>${el.outerHTML}</body>
         </html>
@@ -32,7 +29,13 @@ const cetak = async () => {
 
     let win = window.open("", "_blank", "width=800, height=600");
     win.document.write(html);
-
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const link = win.document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = css;
+        win.document.head.append(link);
+    });
     setTimeout(() => {
         win.print();
         win.close();

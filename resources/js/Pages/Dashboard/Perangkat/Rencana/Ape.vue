@@ -44,18 +44,14 @@ const tanggal = computed(
             : new Date().getFullYear() + "-07-10")
 );
 
+import { cssFiles } from "@/helpers/printHelper";
 const cetak = async () => {
-    let style =
-        page.props.app_env == "local"
-            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
-            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let el = document.querySelector(".cetak");
     let html = `
         <!doctype html>
         <html>
             <head>
                 <title>Rencana Pekan Efektif Kelas ${page.props.rombel.label}</title>    
-                ${style}
             </head>
             
             <body>
@@ -66,11 +62,17 @@ const cetak = async () => {
 
     let win = window.open("", "_blank", "width=800,height=600");
     win.document.write(html);
-
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const cssLink = win.document.createElement("link");
+        cssLink.rel = "stylesheet";
+        cssLink.href = css;
+        win.document.head.append(cssLink);
+    });
     setTimeout(() => {
         win.print();
-        win.close();
-    }, 500);
+        // win.close();
+    }, 1000);
 };
 </script>
 

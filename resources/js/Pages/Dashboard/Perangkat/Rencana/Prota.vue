@@ -7,7 +7,7 @@ import "v-calendar/style.css";
 import { ElNotification } from "element-plus";
 import { weekOfMonth } from "@/helpers/ApeHelper";
 import Layout from "@/layouts/DashboardLayout.vue";
-import { cssLink } from "@/helpers/printHelper";
+import { cssFiles } from "@/helpers/printHelper";
 
 const CetakProta = defineAsyncComponent(() =>
     import("@/components/Dashboard/Perangkat/Rencana/CetakProta.vue")
@@ -125,9 +125,8 @@ const attributes = computed(() => {
                 ? prot.atp_id.includes("CADANGAN")
                     ? "purple"
                     : "orange"
-                : prot.atp.materi.includes("Asesmen Sumatif")
-                ? "yellow"
-                : "teal",
+                : "",
+
             dates: {
                 start: new Date(prot.tanggal),
                 end: new Date(prot.tanggal),
@@ -276,12 +275,7 @@ const cetak = async () => {
     let html = `<!doctype html>
                 <html>
                     <head>
-                        <title>Program Tahunan ${
-                            page.props.tapel.label
-                        }</title>    
-                        <link href="${cssLink(
-                            page.props.app_env
-                        )}" rel="stylesheet" />
+                        <title>Program Tahunan ${page.props.tapel.label}</title>    
                     </head>
                     <body>
                         <h3></h3>
@@ -306,6 +300,18 @@ const cetak = async () => {
 
     let win = window.open("", "_blank", "width=800,height=700");
     win.document.write(html);
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const link = win.document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = css;
+        win.document.head.append(link);
+    });
+
+    setTimeout(() => {
+        win.print();
+        // win.close()
+    }, 1000);
 };
 </script>
 

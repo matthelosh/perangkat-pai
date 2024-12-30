@@ -3,8 +3,8 @@ import { ref, computed, defineAsyncComponent } from "vue";
 import { Icon } from "@iconify/vue";
 import { usePage, router, Link } from "@inertiajs/vue3";
 import dayjs from "dayjs";
-
 dayjs.locale("id");
+import { cssFiles } from "@/helpers/printHelper.js";
 const page = usePage();
 
 const Kop = defineAsyncComponent(() => import("@/components/Umum/Kop.vue"));
@@ -83,17 +83,12 @@ const jams = computed(() => {
 });
 
 const cetak = async () => {
-    let style =
-        page.props.app_env == "local"
-            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
-            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let element = document.querySelector(".cetak");
     let html = `
             <!doctype html>
             <html>
                 <head>
                     <title>Jadwal Pelajaran PAI | ${page.props.user.userable.nama}</title>    
-                    ${style}
                     </head>
 
                 <body>
@@ -105,10 +100,21 @@ const cetak = async () => {
 
     let win = window.open("", "_blank", "width=800,height=600");
     win.document.write(html);
-    setTimeout(() => {
-        win.print();
-        // win.close()
-    }, 500);
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const link = win.document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = css;
+        win.document.head.append(link);
+    });
+
+    const cssLoaded = win.document.head.querySelectorAll("link");
+
+    if (cssLoaded.length > 0) {
+        setTimeout(() => {
+            win.print();
+        }, 1000);
+    }
 };
 </script>
 

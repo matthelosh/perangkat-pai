@@ -8,7 +8,7 @@ import localeData from "dayjs/plugin/localeData";
 import "dayjs/locale/id";
 dayjs.extend(localeData);
 dayjs.locale("id");
-import { cssLink } from "@/helpers/printHelper";
+import { cssFiles } from "@/helpers/printHelper";
 import {
     weekOfMonth,
     allUnefektif,
@@ -88,16 +88,11 @@ const cekLibur = (m, w) => {
     );
 };
 
-const cetak = () => {
+const cetak = async () => {
     let el = document.querySelector(".cetak");
-    let style =
-        page.props.app_env == "local"
-            ? `<link href="stylesheet" href="${window.location.origin}:5173/resources/css/app.css" />`
-            : (style = `<link href="stylesheet" href="${window.location.origin}/build/assets/app.css" /><link href="stylesheet" href="${window.location.origin}/build/assets/app2.css" />`);
     let html = `<html>
                 <head>
                     <title>Program Semester</title>    
-                    ${style}
                 </head>
                 <body>
                     ${el.outerHTML}
@@ -106,6 +101,13 @@ const cetak = () => {
 
     let win = window.open("", "_blank", "width=800,height=700");
     win.document.write(html);
+    const styles = await cssFiles();
+    styles.forEach((css) => {
+        const link = win.document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = css;
+        win.document.head.append(link);
+    });
     setTimeout(() => {
         win.print();
         win.close();
