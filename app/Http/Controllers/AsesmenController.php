@@ -12,7 +12,10 @@ class AsesmenController extends Controller
     public function index(Request $request)
     {
         try {
-            $asesmens = Asesmen::whereTapel(\tapel()->kode)->whereSemester(\semester()->kode)->get();
+            $asesmens = Asesmen::whereTapel(\tapel()->kode)
+                ->whereSemester(\semester()->kode)
+                ->with('soals')
+                ->get();
 
             return Inertia::render('Dashboard/Utama/Asesmen', [
                 'asesmens' => $asesmens
@@ -56,6 +59,7 @@ class AsesmenController extends Controller
             // dd($delAnalisis);
             $delNilai = $asesmen->nilais()->delete();
             // dd($delNilai);
+            $delSoal = $asesmen->soals()->detach();
             $asesmen->delete();
 
             return response()->json(['message' => 'Asesmen dihapus']);

@@ -96,6 +96,7 @@ onBeforeMount(() => {
             </figure>
             <h3
                 class="absolute h-10 flex items-center justify-center bg-opacity-95 bottom-0 bg-slate-400 w-full text-center text-slate-50 font-bold uppercase"
+                v-if="!isCollapse"
             >
                 {{ props.user.name }}
             </h3>

@@ -147,6 +147,12 @@ Route::middleware("auth")->group(function () {
                 });
             }
         );
+
+        Route::prefix('soal')->group(
+            function () {
+                Route::get('/', [SoalController::class, 'index'])->name('soal.index');
+            }
+        );
     });
 
     // Settings

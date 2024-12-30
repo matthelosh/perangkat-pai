@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { usePage, router } from "@inertiajs/vue3";
+import { usePage, router, Link } from "@inertiajs/vue3";
 import DashLayout from "@/layouts/DashboardLayout.vue";
 import { Icon } from "@iconify/vue";
 
@@ -81,6 +81,13 @@ const hapus = async (id) => {
                         {{ page.props.tapel.label }}
                     </h3>
                     <div class="tool-items flex items-center">
+                        <Link
+                            :href="appRoute('soal.index')"
+                            class="flex items-center gap-1 mr-3"
+                        >
+                            <Icon icon="mdi:table-question" />
+                            Bank Soal
+                        </Link>
                         <el-button
                             :native-type="null"
                             @click="openForm"
@@ -112,6 +119,21 @@ const hapus = async (id) => {
                         label="Kelas"
                         prop="tingkat"
                     ></el-table-column>
+                    <el-table-column label="Periode">
+                        <template #default="{ row }">
+                            <span>
+                                Semester {{ row.semester }} Tahun
+                                {{ row.tapel }}</span
+                            >
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Jml Soal">
+                        <template #default="{ row }">
+                            <span>
+                                {{ row.soals?.length }}
+                            </span>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="Opsi">
                         <template #default="{ row }">
                             <el-button-group :native-type="null">

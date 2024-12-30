@@ -29,4 +29,9 @@ class Asesmen extends Model
     {
         return $this->hasMany(Analisis::class);
     }
+
+    public function soals()
+    {
+        return $this->belongsToMany(Soal::class, 'asesmen_soal', 'asesmen_id', 'soal_id');
+    }
 }

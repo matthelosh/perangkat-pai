@@ -79,7 +79,12 @@ const processing = computed(() => page.props.processing);
                         </el-popover>
                     </div>
                 </el-header>
-                <el-main class="bg-slate-200">
+                <el-main
+                    class="bg-slate-200"
+                    :style="`padding: ${
+                        ['xs', 'sm'].includes(viewPort) ? '0!important' : '20px'
+                    }`"
+                >
                     <div
                         v-show="processing"
                         class="loading-overlay fixed top-0 right-0 bottom-0 left-0 bg-slate-200 bg-opacity-70 z-[999999999]"

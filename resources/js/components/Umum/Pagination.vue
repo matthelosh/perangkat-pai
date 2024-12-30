@@ -1,5 +1,5 @@
 <script setup>
-defineProps({ total: Number });
+defineProps({ total: Number, perPage: Number });
 const emit = defineEmits(["change"]);
 
 const onChange = (e) => {
@@ -9,7 +9,8 @@ const onChange = (e) => {
 <template>
     <el-pagination
         background
-        layout="prev, pager, next"
+        layout="total, prev, pager, next"
+        :page-size="perPage"
         :total="total"
         @current-change="onChange"
     />
