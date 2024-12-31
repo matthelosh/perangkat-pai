@@ -10,9 +10,16 @@ class ElemenController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {
+            $fase = (int) $request->tingkat > 4 ? 'C' : ((int) $request->tingkat > 2 ? 'B' : 'A');
+            $elemens = Elemen::whereFase($fase)->get(['kode', 'label']);
+
+            return \response()->json(['elemens' => $elemens], 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

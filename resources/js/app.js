@@ -3,6 +3,7 @@ import './bootstrap';
 // import 'normalize.css';
 // import '../css/preflight.css';
 import '../css/app.css';
+import '../css/codemirror.css';
 import 'element-plus/dist/index.css'
 import 'element-tiptap-vue3-fixed/lib/style.css'
 import 'element-plus/theme-chalk/display.css'

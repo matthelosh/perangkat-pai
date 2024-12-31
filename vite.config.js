@@ -8,6 +8,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/codemirror.css',
                 'resources/js/app.js',
             ],
             refresh: true,
@@ -24,6 +25,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': '/resources/js',
+            'codemirror': path.resolve(__dirname, 'node_modules/codemirror'),
             vue: 'vue/dist/vue.esm-bundler.js',
             'ziggy-js': path.resolve('vendor/tightenco/ziggy/dist/vue.es.js')
         },

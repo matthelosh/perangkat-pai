@@ -2,9 +2,9 @@
 import { ref, computed, onBeforeMount, defineAsyncComponent } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import { Icon } from '@iconify/vue'
-import { Doc, Text, Paragraph, Color,  Bold, Underline, Italic, BulletList, OrderedList, Strike, Highlight, Table } from 'element-tiptap-vue3-fixed'
 import { cssFiles } from '@/helpers/printHelper'
 const Ttd = defineAsyncComponent(() => import('@/components/Umum/Ttd.vue'))
+import { Doc, Text, Paragraph, Color,  Bold, Underline, Italic, BulletList, OrderedList, Strike, Highlight, Table } from 'element-tiptap-vue3-fixed'
 const extensions = [
     Doc, Text, Paragraph,
     Color.configure({bubble: true}),

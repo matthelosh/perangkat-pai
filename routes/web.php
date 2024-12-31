@@ -98,6 +98,7 @@ Route::middleware("auth")->group(function () {
             Route::get("/", [KurikulumController::class, 'index'])->name('kurikulum.index');
             Route::resource("cp", CpController::class);
             Route::resource("elemen", ElemenController::class);
+            Route::post('/list', [ElemenController::class, 'index'])->name('elemen.index');
             Route::resource("materi", MateriAjarController::class);
             Route::resource('submateri', SubMateriController::class);
             Route::post('/submateri/impor', [SubMateriController::class, 'impor'])->name('kurikulum.submateri.impor');
@@ -105,6 +106,7 @@ Route::middleware("auth")->group(function () {
 
         // Tujuan Pembelajaran
         Route::resource('tp', TpController::class);
+        Route::post('/tp/list', [TpController::class, 'list'])->name('tp.list');
 
         // alur Tujuan Pembelajaran
         Route::resource("atp", AtpController::class);
@@ -172,6 +174,13 @@ Route::middleware("auth")->group(function () {
                     Route::get("/", [KkgController::class, 'kegiatan'])->name('kkg.kegiatan');
                 }
             );
+        }
+    );
+
+    // Image
+    Route::prefix('image')->group(
+        function () {
+            Route::post('/upload', [ImageController::class, 'upload'])->name('image.upload');
         }
     );
 

@@ -5,6 +5,10 @@ import { Icon } from "@iconify/vue";
 import { usePage } from "@inertiajs/vue3";
 import { computed, defineAsyncComponent, ref } from "vue";
 
+const FormSoal = defineAsyncComponent(() =>
+    import("@/components/Dashboard/Perangkat/Evaluasi/FormSoal.vue")
+);
+
 const Pagination = defineAsyncComponent(() =>
     import("@/components/Umum/Pagination.vue")
 );
@@ -16,6 +20,17 @@ const paged = computed(() => {
 const currentPage = ref(0);
 const changePage = (num) => {
     currentPage.value = num - 1;
+};
+
+const selectedSoal = ref(null);
+const showFormSoal = ref(false);
+const openFormSoal = (item) => {
+    selectedSoal.value = item ?? null;
+    showFormSoal.value = true;
+};
+const closeFormSoal = () => {
+    selectedSoal.value = null;
+    showFormSoal.value = false;
 };
 
 defineOptions({
@@ -39,9 +54,13 @@ defineOptions({
                                 <Icon icon="mdi:import" />
                                 Impor Soal
                             </el-button>
-                            <el-button :native-type="null" type="primary">
+                            <el-button
+                                :native-type="null"
+                                type="primary"
+                                @click="openFormSoal"
+                            >
                                 <Icon icon="mdi:plus" />
-                                Tambah Soal
+                                Buat Soal
                             </el-button>
                         </el-button-group>
                         <el-button-group class="hidden-sm-and-down">
@@ -128,5 +147,12 @@ defineOptions({
                 />
             </template>
         </el-card>
+
+        <FormSoal
+            v-if="showFormSoal"
+            :open="showFormSoal"
+            :selected-soal="selectedSoal"
+            @close="closeFormSoal"
+        />
     </div>
 </template>

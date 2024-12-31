@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('tps', function (Blueprint $table) {
             $table->id();
-            $table->string('elemen_id',50);
-            $table->string('guru_id',50)->nullable();
-            $table->string('kode', 30);
-            $table->enum('fase', ['A','B','C','D','E','F']);
+            $table->string('elemen_id', 50);
+            $table->string('guru_id', 50)->nullable();
+            $table->string('kode', 30)->unique();
+            $table->enum('fase', ['A', 'B', 'C', 'D', 'E', 'F']);
             $table->string('kompetensi', 191);
             $table->string('materi', 191);
             $table->text('teks');

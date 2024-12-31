@@ -16,18 +16,17 @@ class TpController extends Controller
     {
         try {
             if ($request->query('fase')) {
-                if($request->query('mine') == 'true') {
+                if ($request->query('mine') == 'true') {
                     // dd($request->query('mine'));
                     $nip = auth()->user()->userable->nip;
-                    $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function($q) use($nip) {
+                    $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function ($q) use ($nip) {
                         $q->where('guru_id', $nip);
                     })->get();
                 } else {
-                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps', function($q) {
+                    $elemens = Elemen::where('fase', $request->query('fase'))->with('tps', function ($q) {
                         $q->where('guru_id', null);
                     })->get();
                 }
-                
             }
 
             return Inertia::render('Dashboard/Perangkat/Rencana/Tp', ['elemens' => $elemens]);
@@ -45,11 +44,18 @@ class TpController extends Controller
         try {
             $elemen = $request->elemen;
             $i = 0;
-            foreach($elemen['tps'] as $tp)
-            {
-                $kode = $request->query('min') == '1' ? auth()->user()->userable->nip.'-'.substr($elemen['kode'],0,2).'-'.$i+1 : substr($elemen['kode'],0,2).'-'.$i+1;
+            foreach ($elemen['tps'] as $tp) {
+                // $kode = $request->query('mine') == '1' ? auth()->user()->userable->nip . '-' . substr($elemen['kode'], 0, 2) . '-' . $i + 1 : substr($elemen['kode'], 0, 2) . '-' . $i + 1;
+                $latestKode = Tp::where('elemen_id', $elemen['kode'])->orderBy('id', 'DESC')->pluck('kode')->first();
+                // $latest = !$last ? [0, 0] : explode("-", $last->kode);
+                $urut = 0;
+                if ($latestKode !== null) {
+                    $plitKode = \explode("-", $latestKode);
+                    $urut = (int) $plitKode[1];
+                }
+                $kode = \str_replace("-", "", $elemen['kode']) . '-' . ($urut + 1);
 
-                Tp::updateOrCreate(
+                $tp = Tp::updateOrCreate(
                     [
                         'id' => $tp['id'] ?? null,
                         'kode' => $kode,
@@ -62,7 +68,8 @@ class TpController extends Controller
                         'materi' => $tp['materi'],
                         'teks' => $tp['teks']
                     ]
-                    );
+                );
+                $last = $tp;
 
                 $i++;
             }
@@ -74,11 +81,26 @@ class TpController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Get Tp for Select Element
      */
-    public function show(Tp $tp)
+    public function show(Tp $tp) {}
+    /**
+     * 
+     * Get Tp for Select Element
+     */
+    public function list(Request $request)
     {
-        //
+        try {
+            $elemen = $request->elemen;
+            $fase = (int) $request->tingkat > 4 ? 'C' : ((int) $request->tingkat > 2 ? 'B' : 'A');
+
+            $tps = Tp::where('fase', $fase)
+                ->where('elemen_id', $elemen)
+                ->get(['kode', 'teks']);
+            return response()->json(['tps' => $tps], 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -109,6 +131,5 @@ class TpController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors('message', $e->getMessage());
         }
-        
     }
 }

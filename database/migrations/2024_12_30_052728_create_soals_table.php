@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('soals', function (Blueprint $table) {
             $table->id();
             $table->enum('tingkat', ['1', '2', '3', '4', '5', '6']);
+            $table->string('elemen_id', 30);
             $table->string('tp_id', 50);
             $table->string('guru_id', 30)->nullable();
             $table->string('agama', 20)->default('Islam');
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->enum('level', ['lot', 'mot', 'hot'])->default('lot');
             $table->enum('semester', ['1', '2']);
             $table->text('pertanyaan');
-            $table->text('a');
+            $table->text('a')->nullable();
             $table->text('b')->nullable();
             $table->text('c')->nullable();
             $table->text('d')->nullable();

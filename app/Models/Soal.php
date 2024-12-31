@@ -10,6 +10,7 @@ class Soal extends Model
     use HasFactory;
 
     protected $fillable = [
+        'elemen_id',
         'tingkat',
         'tp_id',
         'guru_id',

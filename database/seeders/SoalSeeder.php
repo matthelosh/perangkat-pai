@@ -13,11 +13,12 @@ class SoalSeeder extends Seeder
      */
     public function run(): void
     {
-        $tps = Tp::pluck('kode');
-        for ($i = 0; $i < count($tps); $i++) {
+        $tps = Tp::all();
+        foreach ($tps as $tp) {
             Soal::create([
                 'tingkat' => \fake()->randomElement(['1', '2', '3', '4', '5', '6']),
-                'tp_id' => $tps[$i],
+                'tp_id' => $tp->kode,
+                'elemen_id' => $tp->elemen_id,
                 'guru_id' => \null,
                 'agama' => 'Islam',
                 'tipe' => \fake()->randomElement(['pilihan', 'isian', 'uraian']),
