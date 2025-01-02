@@ -12,13 +12,15 @@ const showSide = ref(localStorage.getItem("menuCollapsed") !== "true");
 
 const viewPort = computed(() => {
     let width = window.innerWidth;
-    return width >= 2048
+    return width >= 1536
+        ? "2xl"
+        : width >= 1280
         ? "xl"
-        : width > 1024
+        : width >= 1024
         ? "lg"
-        : width > 768
+        : width >= 768
         ? "md"
-        : width > 414
+        : width >= 640
         ? "sm"
         : "xs";
 });
