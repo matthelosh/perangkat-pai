@@ -2,17 +2,22 @@
 import { paginate } from "@/helpers/arrayHelper";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import { Icon } from "@iconify/vue";
-import { usePage } from "@inertiajs/vue3";
+import { usePage, router } from "@inertiajs/vue3";
 import { computed, defineAsyncComponent, ref } from "vue";
+import { ElNotification } from "element-plus";
 
 const FormSoal = defineAsyncComponent(() =>
     import("@/components/Dashboard/Perangkat/Evaluasi/FormSoal.vue")
+);
+const FormImporSoal = defineAsyncComponent(() =>
+    import("@/components/Dashboard/Perangkat/Evaluasi/FormImporSoal.vue")
 );
 
 const Pagination = defineAsyncComponent(() =>
     import("@/components/Umum/Pagination.vue")
 );
 
+const loading = ref(false);
 const page = usePage();
 const paged = computed(() => {
     return paginate(page.props.soals, 18);
@@ -25,13 +30,36 @@ const changePage = (num) => {
 const selectedSoal = ref(null);
 const showFormSoal = ref(false);
 const openFormSoal = (item) => {
-    selectedSoal.value = item ?? null;
+    selectedSoal.value = item;
     showFormSoal.value = true;
 };
 const closeFormSoal = () => {
     selectedSoal.value = null;
     showFormSoal.value = false;
 };
+
+const hapusSoal = async (id) => {
+    router.delete(route("soal.destroy", { id: id }), {
+        onStart: () => {
+            loading.value = true;
+        },
+        onSuccess: () => {
+            ElNotification({
+                title: "Info",
+                message: page.props.flash.message,
+                type: "success",
+            });
+        },
+        onFinish: () => (loading.value = false),
+    });
+};
+
+// Impor Soal
+const showFormImpor = ref(false);
+const closeFormImpor = () => {
+    showFormImpor.value = false;
+};
+const openFormImpor = () => (showFormImpor.value = true);
 
 defineOptions({
     layout: DashboardLayout,
@@ -50,6 +78,7 @@ defineOptions({
                                 :native-type="null"
                                 type="primary"
                                 class="hidden-sm-and-down"
+                                @click="openFormImpor"
                             >
                                 <Icon icon="mdi:import" />
                                 Impor Soal
@@ -57,22 +86,16 @@ defineOptions({
                             <el-button
                                 :native-type="null"
                                 type="primary"
-                                @click="openFormSoal"
+                                @click="openFormSoal(null)"
                             >
                                 <Icon icon="mdi:plus" />
                                 Buat Soal
                             </el-button>
                         </el-button-group>
-                        <el-button-group class="hidden-sm-and-down">
-                            <el-button :native-type="null" type="success">
-                                <Icon icon="mdi:file-excel" />
-                                Unduh Soal
-                            </el-button>
-                            <el-button :native-type="null" type="success">
-                                <Icon icon="mdi:printer" />
-                                Cetak Soal
-                            </el-button>
-                        </el-button-group>
+                        <el-button :native-type="null" type="success">
+                            <Icon icon="mdi:file-excel" />
+                            Unduh Soal
+                        </el-button>
                     </div>
                 </div>
             </template>
@@ -84,10 +107,11 @@ defineOptions({
                     width="60px"
                     sortable
                 ></el-table-column>
-                <el-table-column
-                    label="Pertanyaan"
-                    prop="pertanyaan"
-                ></el-table-column>
+                <el-table-column label="Pertanyaan">
+                    <template #default="{ row }">
+                        <div v-html="row.pertanyaan" />
+                    </template>
+                </el-table-column>
                 <el-table-column
                     width="100px"
                     label="Tipe"
@@ -122,6 +146,8 @@ defineOptions({
                             type="warning"
                             link
                             size="large"
+                            @click="openFormSoal(row)"
+                            v-loading.fullscreen.lock="loading"
                         >
                             <Icon
                                 icon="mdi:file-document-edit-outline"
@@ -133,6 +159,7 @@ defineOptions({
                             type="danger"
                             link
                             size="large"
+                            @click="hapusSoal(row.id)"
                         >
                             <Icon icon="mdi:delete" class="text-lg" />
                         </el-button>
@@ -153,6 +180,11 @@ defineOptions({
             :open="showFormSoal"
             :selected-soal="selectedSoal"
             @close="closeFormSoal"
+        />
+        <FormImporSoal
+            v-if="showFormImpor"
+            :open="showFormImpor"
+            @close="closeFormImpor"
         />
     </div>
 </template>

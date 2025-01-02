@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('agama', 20)->default('Islam');
             $table->enum('tipe', ['pilihan', 'isian', 'uraian'])->default('pilihan');
             $table->enum('level', ['lot', 'mot', 'hot'])->default('lot');
-            $table->enum('semester', ['1', '2']);
             $table->text('pertanyaan');
             $table->text('a')->nullable();
             $table->text('b')->nullable();

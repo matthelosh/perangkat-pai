@@ -23,4 +23,44 @@ class SoalController extends Controller
             throw $th;
         }
     }
+
+    public function store(Request $request)
+    {
+        try {
+            $soal = Soal::updateOrCreate(
+                [
+                    'id' => $request->id ?? null,
+                ],
+                [
+                    'elemen_id' => $request->elemen_id,
+                    'tingkat' => $request->tingkat,
+                    'tp_id' => $request->tp_id,
+                    'guru_id' => $request->user()->userable->nip,
+                    'agama' => 'Islam',
+                    'tipe' => $request->tipe,
+                    'level' => $request->level,
+                    'pertanyaan' => $request->pertanyaan,
+                    'a' => $request->a,
+                    'b' => $request->b,
+                    'c' => $request->c,
+                    'd' => $request->d,
+                    'kunci' => $request->kunci
+                ]
+            );
+
+            return back()->with('message', 'Soal disimpan');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function destroy(Soal $soal, $id)
+    {
+        try {
+            $soal::destroy($id);
+            return \back()->with('message', 'Soal dihapus');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
 }

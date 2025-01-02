@@ -17,7 +17,6 @@ class Soal extends Model
         'agama',
         'tipe',
         'level',
-        'semester',
         'pertanyaan',
         'a',
         'b',

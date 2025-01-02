@@ -153,6 +153,8 @@ Route::middleware("auth")->group(function () {
         Route::prefix('soal')->group(
             function () {
                 Route::get('/', [SoalController::class, 'index'])->name('soal.index');
+                Route::post('/store', [SoalController::class, 'store'])->name('soal.store');
+                Route::delete('/{id}', [SoalController::class, 'destroy'])->name('soal.destroy');
             }
         );
     });

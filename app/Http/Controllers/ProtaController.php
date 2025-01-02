@@ -20,32 +20,36 @@ class ProtaController extends Controller
     {
         try {
             // if ($)
-            $rombel = Rombel::where('kode', $request->query('rombel'))->with('jadwals')->first();
-            
+            $rombel = Rombel::where([
+                ['tingkat', '=', $request->tingkat],
+                ['guru_id', '=', $request->user()->userable->nip],
+                ['tapel', '=', \tapel()->kode]
+            ])->with('jadwals')->first();
+
             if ($request->query('mine')) {
                 $nip = auth()->user()->userable->nip;
-                $atps = Atp::where('guru_id', $nip)    
-                            ->where('tingkat', $rombel->tingkat)
-                            ->with('elemen')
-                            ->with('protas', function($q) use($nip) {
-                                $q->where('guru_id', $nip);
-                            })
-                            ->get();
+                $atps = Atp::where('guru_id', $nip)
+                    ->where('tingkat', $request->tingkat)
+                    ->with('elemen')
+                    ->with('protas', function ($q) use ($nip) {
+                        $q->where('guru_id', $nip);
+                    })
+                    ->get();
                 $protas = Prota::whereGuruId($nip)
-                                ->whereRombelId($rombel->kode)
-                                ->with('atp')
-                                ->get();
+                    ->whereRombelId($rombel->kode)
+                    ->with('atp')
+                    ->get();
             } else {
                 $atps = Atp::where('tingkat', $rombel->tingkat)
-                            ->whereNull('guru_id')
-                            ->with('elemen')
-                            ->with('protas', function($q) {
-                                $q->whereNull('guru_id');
-                            })
-                            ->get();
+                    ->whereNull('guru_id')
+                    ->with('elemen')
+                    ->with('protas', function ($q) {
+                        $q->whereNull('guru_id');
+                    })
+                    ->get();
                 $protas = Prota::whereRombelId($rombel->kode)
-                            ->with('atp')
-                            ->get();
+                    ->with('atp')
+                    ->get();
             }
             // dd($atps[0]->protas);
             return Inertia::render("Dashboard/Perangkat/Rencana/Prota", [

@@ -3,17 +3,11 @@ import { Icon } from "@iconify/vue";
 import { defineAsyncComponent, onBeforeMount, ref } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { ElNotification } from "element-plus";
-const props = defineProps({ selectedSoal: Object, open: Boolean });
+const props = defineProps({ open: Boolean });
 const emit = defineEmits(["close"]);
 const tingkats = ref(["1", "2", "3", "4", "5", "6"]);
 const tps = ref([]);
 const elemens = ref([]);
-const TextEditor = defineAsyncComponent(() =>
-    import("@/components/Umum/TextEditor.vue")
-);
-const Option = defineAsyncComponent(() =>
-    import("@/components/Umum/SimpleText.vue")
-);
 
 const page = usePage();
 const loading = ref(false);
@@ -108,10 +102,6 @@ const simpanSoal = async () => {
 
 onBeforeMount(() => {
     show.value = props.open;
-    if (props.selectedSoal) {
-        newSoal.value = props.selectedSoal;
-    }
-    // console.log(props.selectedSoal);
 });
 </script>
 
@@ -146,11 +136,11 @@ onBeforeMount(() => {
             />
             <el-form label-position="top" :disabled="loading">
                 <el-row :gutter="10">
-                    <el-col :span="24" :sm="10">
+                    <el-col :span="24" :sm="8">
                         <el-card>
                             <h3 class="font-bold text-sky-800">Data Soal</h3>
                             <el-row :gutter="10">
-                                <el-col :span="24" :sm="8">
+                                <el-col :span="24" :sm="5">
                                     <el-form-item label="Kelas">
                                         <el-select
                                             v-model="newSoal.tingkat"
@@ -166,7 +156,7 @@ onBeforeMount(() => {
                                         </el-select>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="24" :sm="16">
+                                <el-col :span="24" :sm="9">
                                     <el-form-item label="Elemen">
                                         <el-select
                                             v-model="newSoal.elemen_id"
@@ -184,31 +174,7 @@ onBeforeMount(() => {
                                         </el-select>
                                     </el-form-item>
                                 </el-col>
-                            </el-row>
-                            <el-row :gutter="10">
-                                <el-col :span="24">
-                                    <el-form-item label="Tujuan Pembelajaran">
-                                        <el-select
-                                            v-model="newSoal.tp_id"
-                                            placeholder="Pilih TP"
-                                            size="large"
-                                            value-key="kode"
-                                            :disabled="tps.length < 1"
-                                            filterable
-                                        >
-                                            <el-option
-                                                v-for="tp in tps"
-                                                :value="tp.kode"
-                                                class="wrapped-option"
-                                                :label="tp.teks"
-                                            >
-                                            </el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <el-row :gutter="10">
-                                <el-col :span="24" :sm="12">
+                                <el-col :span="24" :sm="6">
                                     <el-form-item label="Tipe Soal">
                                         <el-select
                                             v-model="newSoal.tipe"
@@ -227,112 +193,49 @@ onBeforeMount(() => {
                                         </el-select>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="24" :sm="12">
-                                    <el-form-item label="Level Soal">
-                                        <el-select
-                                            v-model="newSoal.level"
-                                            placeholder="Pilih Level Soal"
+                                <el-col :span="24" :sm="4">
+                                    <el-form-item label="Unduh Format">
+                                        <el-button
                                             size="large"
+                                            :native-type="null"
+                                            type="warning"
                                         >
-                                            <el-option
-                                                v-for="level in [
-                                                    'lot',
-                                                    'mot',
-                                                    'hot',
-                                                ]"
-                                                :value="level"
-                                                :label="level.toUpperCase()"
-                                            ></el-option>
-                                        </el-select>
+                                            <Icon icon="mdi:download" />
+                                            Unduh
+                                        </el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="10">
+                                <el-col :span="24" :sm="20">
+                                    <el-form-item label="Ambil File Soal">
+                                        <input
+                                            type="file"
+                                            ref="fileImporSoal"
+                                            accept=".xls, .xlsx, .ods"
+                                        />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24" :sm="4">
+                                    <el-form-item label="Upload File">
+                                        <el-button
+                                            size="large"
+                                            :native-type="null"
+                                            type="primary"
+                                        >
+                                            <Icon icon="mdi:upload" />
+                                            Upload
+                                        </el-button>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
                         </el-card>
                     </el-col>
-                    <el-col :span="24" :sm="14">
+                    <el-col :span="24" :sm="16">
                         <el-card>
                             <h3 class="text-sky-800 font-bold">
                                 Data Pertanyaan
                             </h3>
-                            <el-row :gutter="10">
-                                <el-col>
-                                    <h3>Pertanyaan</h3>
-                                    <TextEditor v-model="newSoal.pertanyaan" />
-                                </el-col>
-                            </el-row>
-                            <el-row
-                                :gutter="10"
-                                v-if="newSoal.tipe == 'pilihan'"
-                            >
-                                <el-col>
-                                    <h3 class="mt-4 font-bold text-sky-800">
-                                        Pilihan A
-                                    </h3>
-                                    <Option v-model="newSoal.a" />
-                                </el-col>
-                                <el-col>
-                                    <h3 class="mt-4 font-bold text-sky-800">
-                                        Pilihan B
-                                    </h3>
-                                    <Option v-model="newSoal.b" />
-                                </el-col>
-                                <el-col>
-                                    <h3 class="mt-4 font-bold text-sky-800">
-                                        Pilihan C
-                                    </h3>
-                                    <Option v-model="newSoal.c" />
-                                </el-col>
-                                <el-col>
-                                    <h3 class="mt-4 font-bold text-sky-800">
-                                        Pilihan D
-                                    </h3>
-                                    <Option v-model="newSoal.d" />
-                                </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col>
-                                    <el-form-item
-                                        label="Kunci Jawaban"
-                                        class="mt-6"
-                                    >
-                                        <!-- <el-radio-group
-                                v-model="newSoal.kunci"
-                                v-if="newSoal.tipe == 'pilihan'"
-                            >
-                                <el-radio :value="'a'">A</el-radio>
-                                <el-radio :value="'b'">B</el-radio>
-                                <el-radio :value="'c'">C</el-radio>
-                                <el-radio :value="'d'">D</el-radio>
-                            </el-radio-group> -->
-                                        <div
-                                            v-if="newSoal.tipe == 'pilihan'"
-                                            class="flex justify-between items-center w-full mr-8 text-lg"
-                                        >
-                                            <label
-                                                for="radio"
-                                                v-for="v in [
-                                                    'a',
-                                                    'b',
-                                                    'c',
-                                                    'd',
-                                                ]"
-                                                class="flex items-center gap-1"
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    :value="v"
-                                                    v-model="newSoal.kunci"
-                                                />
-                                                {{ v.toUpperCase() }}
-                                            </label>
-                                        </div>
-                                        <Option
-                                            v-else
-                                            v-model="newSoal.kunci"
-                                        ></Option>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
                         </el-card>
                     </el-col>
                 </el-row>

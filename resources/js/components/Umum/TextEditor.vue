@@ -65,11 +65,21 @@ const extensions = [
         uploadRequest: async (file) => {
             let fd = new FormData();
             fd.append("image", file);
-            return new Promise(async (resolve, reject) => {
-                await axios.post(route("image.upload"), fd).then((res) => {
-                    resolve(res.data.url);
+            try {
+                const response = await axios.post(route("image.upload"), fd);
+                return response.data.url;
+            } catch (error) {
+                // Show errorKg(error.response?.data);
+                ElNotification({
+                    title: "Upload Failed",
+                    message:
+                        error.response?.data?.message ||
+                        "File harus berupa gambar jpg, jpeg, png atau webp",
+                    type: "error",
+                    duration: 3000,
                 });
-            });
+                throw error; // Rethrow to let tiptap know the upload failed
+            }
         },
     }),
     Table,
