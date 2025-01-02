@@ -54,7 +54,7 @@ onBeforeMount(() => {
     //     isCollapse.value = true;
     //     localStorage.setItem("menuCollapse", "true");
     // }
-    isCollapse.value = ["xs", "sm"].includes(props.vp);
+    isCollapse.value = ["xs", "sm", "md", "lg"].includes(props.vp);
     const findActiveMenu = (items) => {
         for (let i = 0; i < items.length; i++) {
             if (items[i].url === currentRoute.value) {
