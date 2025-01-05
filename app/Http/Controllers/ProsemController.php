@@ -14,7 +14,7 @@ class ProsemController extends Controller
 
     public function __construct(private ProsemService $prosemService)
     {
-        
+        $this->middleware('role:gpai');
     }
     /**
      * Display a listing of the resource.
@@ -23,7 +23,7 @@ class ProsemController extends Controller
     {
         try {
 
-            $datas = $this->prosemService->index($request->rombel, $request->mine);
+            $datas = $this->prosemService->index($request->tingkat, $request->mine);
             $component = 'Dashboard/Perangkat/Rencana/Prosem';
             return Inertia::render($component, $datas);
         } catch (\Throwable $th) {
@@ -60,12 +60,12 @@ class ProsemController extends Controller
             $data = $request->atp;
             // dd($data);
             $jadwal = Jadwal::whereRombelId($data['rombel_id'])->first();
-            $i=0;
+            $i = 0;
             $deleteNotInTanggal = Prosem::whereAtpId($data['id'])->whereNotIn('tanggal', $data['prosems']['tanggals'])->delete();
             // dd($deleteNotInTanggal);
             foreach ($data['prosems']['tanggals'] as $tanggal) {
                 $date = Carbon::parse($data['prosems']['tanggals'][$i]);
-                
+
                 Prosem::updateOrCreate(
                     [
                         'id' => $data['prosems']['ids'][$i] ?? null

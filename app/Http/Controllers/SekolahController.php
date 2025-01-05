@@ -9,6 +9,11 @@ use Inertia\Inertia;
 
 class SekolahController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('role:admin')->only(['import', 'destroy']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -17,14 +22,12 @@ class SekolahController extends Controller
         try {
             $sekolahs = Sekolah::all();
             $user = User::find(auth()->user()->id);
-            if($user->hasRole('gpai'))
-            {
+            if ($user->hasRole('gpai')) {
                 $sekolahs = Sekolah::where('npsn', $user->userable->sekolah_id)->get();
             }
             return Inertia::render("Dashboard/Utama/Sekolah", [
                 'sekolahs' => $sekolahs
             ]);
-
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -59,7 +62,7 @@ class SekolahController extends Controller
                     'nama_ks'  => $request['nama_ks'] ?? null,
                     'nip_ks'  => $request['nip_ks'] ?? null
                 ]
-                );
+            );
             return back();
         } catch (\Throwable $th) {
             throw $th;
@@ -69,33 +72,32 @@ class SekolahController extends Controller
     public function import(Request $request)
     {
         try {
-        foreach($request->sekolahs as $sekolah)
-        {
-            Sekolah::updateOrCreate(
-                [
-                    'id' => $sekolah['id'] ?? null,
-                ],
-                [
-                    'npsn' => $sekolah['npsn'],
-                    'nss' => $sekolah['nss'] ?? null,
-                    'nama'  => $sekolah['nama'],
-                    'alamat' => $sekolah['alamat'],
-                    'rt' => $sekolah['rt'] ?? null,
-                    'rw'  => $sekolah['rw'] ?? null,
-                    'desa'  => $sekolah['desa'],
-                    'kecamatan' => $sekolah['kecamatan'] ?? 'Wagir',
-                    'kode_pos'  => $sekolah['kode_pos'] ?? '65158',
-                    'kabupaten'  => $sekolah['kabupaten'] ?? 'Malang',
-                    'telp'  => $sekolah['telp'] ?? null,
-                    'email'  => $sekolah['email'],
-                    'website'  => $sekolah['website'] ?? null,
-                    'logo'  => $sekolah['logo'] ?? null,
-                    'nama_ks'  => $sekolah['nama_ks'] ?? null,
-                    'nip_ks'  => $sekolah['nip_ks'] ?? null
-                ]
+            foreach ($request->sekolahs as $sekolah) {
+                Sekolah::updateOrCreate(
+                    [
+                        'id' => $sekolah['id'] ?? null,
+                    ],
+                    [
+                        'npsn' => $sekolah['npsn'],
+                        'nss' => $sekolah['nss'] ?? null,
+                        'nama'  => $sekolah['nama'],
+                        'alamat' => $sekolah['alamat'],
+                        'rt' => $sekolah['rt'] ?? null,
+                        'rw'  => $sekolah['rw'] ?? null,
+                        'desa'  => $sekolah['desa'],
+                        'kecamatan' => $sekolah['kecamatan'] ?? 'Wagir',
+                        'kode_pos'  => $sekolah['kode_pos'] ?? '65158',
+                        'kabupaten'  => $sekolah['kabupaten'] ?? 'Malang',
+                        'telp'  => $sekolah['telp'] ?? null,
+                        'email'  => $sekolah['email'],
+                        'website'  => $sekolah['website'] ?? null,
+                        'logo'  => $sekolah['logo'] ?? null,
+                        'nama_ks'  => $sekolah['nama_ks'] ?? null,
+                        'nip_ks'  => $sekolah['nip_ks'] ?? null
+                    ]
                 );
-        }
-        return back();
+            }
+            return back();
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -112,7 +114,7 @@ class SekolahController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy( Request $request, $id)
+    public function destroy(Request $request, $id)
     {
         $sekolah = Sekolah::findOrFail($id);
         $sekolah->delete();

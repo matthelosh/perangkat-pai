@@ -10,6 +10,12 @@ use Inertia\Inertia;
 
 class GuruController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['role:admin'])->only('index');
+    }
+
     /**
      * Display a listing of the resource.
      */

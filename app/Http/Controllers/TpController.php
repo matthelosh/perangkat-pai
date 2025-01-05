@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tp;
 use Inertia\Inertia;
 use App\Models\Elemen;
+use App\Models\MateriAjar;
 use Illuminate\Http\Request;
 
 class TpController extends Controller
@@ -16,6 +17,8 @@ class TpController extends Controller
     {
         try {
             if ($request->query('fase')) {
+                $tingkat = $request->fase == 'A' ? ['1', '2'] : ($request->fase == 'B' ? ['3', '4'] : ['5', '6']);
+                $materis = MateriAjar::whereIn('tingkat', $tingkat)->get();
                 if ($request->query('mine') == 'true') {
                     // dd($request->query('mine'));
                     $nip = auth()->user()->userable->nip;
@@ -29,7 +32,7 @@ class TpController extends Controller
                 }
             }
 
-            return Inertia::render('Dashboard/Perangkat/Rencana/Tp', ['elemens' => $elemens]);
+            return Inertia::render('Dashboard/Perangkat/Rencana/Tp', ['elemens' => $elemens, 'materis' => $materis]);
         } catch (\Throwable $th) {
             throw $th;
         }

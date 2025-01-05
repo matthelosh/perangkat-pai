@@ -129,8 +129,11 @@ const cetak = async () => {
     mode.value = "cetak";
 };
 
+// Drawer Materi
+const drawerMateri = ref(false);
+
+const params = computed(() => route().params);
 onBeforeMount(() => {
-    const params = route().params;
     mine.value = params.mine == "true";
 });
 </script>
@@ -150,6 +153,14 @@ onBeforeMount(() => {
                         <h3>Tujuan Pembelajaran</h3>
                     </div>
                     <div class="toolbar-items flex gap-2">
+                        <el-button
+                            :native-type="null"
+                            type="primary"
+                            @click="drawerMateri = !drawerMateri"
+                        >
+                            <Icon icon="mdi:list-box" />
+                            Lihat Materi
+                        </el-button>
                         <el-button :native-type="null" circle @click="cetak">
                             <Icon icon="mdi:printer" />
                         </el-button>
@@ -327,5 +338,20 @@ onBeforeMount(() => {
             :elemens="elemens"
             @close="mode = 'form'"
         />
+        <el-drawer v-model="drawerMateri" :title="`Materi Fase ${params.fase}`">
+            <template #default>
+                <div>
+                    <ol class="list-disc list-inside">
+                        <li v-for="materi in page.props.materis">
+                            <span>
+                                {{ materi.bab }}
+                                <small> [Kelas {{ materi.tingkat }}]</small>
+                                {{ materi.label }}
+                            </span>
+                        </li>
+                    </ol>
+                </div>
+            </template>
+        </el-drawer>
     </div>
 </template>

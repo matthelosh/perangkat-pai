@@ -4,4 +4,8 @@ export const hasRole = (role) => {
     return page.props.roles.map(role => role.name).includes(role)
 }
 
-export default {hasRole}
+export const isAdmin = () => {
+    return hasRole('admin')
+}
+
+export default {hasRole, isAdmin}

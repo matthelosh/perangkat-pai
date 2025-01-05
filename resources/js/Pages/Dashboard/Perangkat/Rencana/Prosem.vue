@@ -158,7 +158,7 @@ const cetak = async () => {
                     <div class="card-body cetak">
                         <Kop />
 
-                        <!-- {{ eventsDate }} -->
+                        {{ page.props.protas }}
                         <div class="title uppercase text-center my-6 font-bold">
                             <h3 class="text-xl">
                                 PROGRAM Semester (PROSEM)

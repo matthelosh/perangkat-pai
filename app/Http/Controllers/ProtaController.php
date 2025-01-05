@@ -26,7 +26,7 @@ class ProtaController extends Controller
                 ['tapel', '=', \tapel()->kode]
             ])->with('jadwals')->first();
 
-            if ($request->query('mine')) {
+            if ($request->query('mine') == 'true') {
                 $nip = auth()->user()->userable->nip;
                 $atps = Atp::where('guru_id', $nip)
                     ->where('tingkat', $request->tingkat)
@@ -40,8 +40,8 @@ class ProtaController extends Controller
                     ->with('atp')
                     ->get();
             } else {
-                $atps = Atp::where('tingkat', $rombel->tingkat)
-                    ->whereNull('guru_id')
+                $atps = Atp::where('tingkat', $request->tingkat)
+                    // ->whereNull('guru_id')
                     ->with('elemen')
                     ->with('protas', function ($q) {
                         $q->whereNull('guru_id');

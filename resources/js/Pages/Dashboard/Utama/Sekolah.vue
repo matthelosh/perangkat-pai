@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { Head, usePage, router } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
 import Layout from "@/layouts/DashboardLayout.vue";
-
+import { isAdmin } from "@/helpers/authHelper";
 const page = usePage();
 
 const showDialog = ref(false);
@@ -58,6 +58,7 @@ defineOptions({
                                         <el-button
                                             :native-type="null"
                                             @click="importDialog = true"
+                                            :disabled="!isAdmin()"
                                         >
                                             <Icon
                                                 icon="mdi:text-box-multiple"
@@ -73,6 +74,7 @@ defineOptions({
                                         <el-button
                                             :native-type="null"
                                             @click="showDialog = true"
+                                            :disabled="!isAdmin()"
                                         >
                                             <Icon icon="mdi:plus" />
                                         </el-button>
@@ -120,7 +122,11 @@ defineOptions({
                                         @confirm="hapus(scope.row.id)"
                                     >
                                         <template #reference>
-                                            <el-button :native-type="null">
+                                            <el-button
+                                                :native-type="null"
+                                                type="danger"
+                                                plain
+                                            >
                                                 <Icon icon="mdi:delete" />
                                             </el-button>
                                         </template>

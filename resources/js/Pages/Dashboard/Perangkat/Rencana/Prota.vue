@@ -125,7 +125,7 @@ const attributes = computed(() => {
                 ? prot.atp_id.includes("CADANGAN")
                     ? "purple"
                     : "orange"
-                : "",
+                : "green",
 
             dates: {
                 start: new Date(prot.tanggal),
@@ -381,6 +381,22 @@ const cetak = async () => {
                     </div>
                 </el-card>
             </el-col>
+        </el-row>
+        <el-row v-if="page.props.atps.length < 1 && mode == 'list'">
+            <el-alert type="error">
+                <template #title>
+                    <h3 class="text-lg">Error</h3>
+                </template>
+                <p>
+                    Susun
+                    <Link
+                        :href="`/rencana/atp?fase=${params.fase}&tingkat=${params.tingkat}&mine=true`"
+                        class="text-teal-600 hover:underline"
+                        >ATP untuk Fase {{ params.fase }}</Link
+                    >
+                    terlebih dulu!
+                </p>
+            </el-alert>
         </el-row>
         <CetakProta
             :protas="page.props.protas"

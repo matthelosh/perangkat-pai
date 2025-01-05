@@ -289,10 +289,22 @@ const syncRombel = async () => {
                             </el-row>
                         </div>
                         <el-table :data="item.siswas" stripe height="400px">
-                            <el-table-column label="NISN" prop="nisn" />
+                            <el-table-column
+                                label="NISN"
+                                prop="nisn"
+                                width="100"
+                            />
                             <el-table-column label="Nama" prop="nama" />
-                            <el-table-column label="JK" prop="jk" />
-                            <el-table-column label="Opsi">
+                            <el-table-column label="JK" width="60">
+                                <template #default="{ row }">
+                                    {{ row.jk.substring(0, 1) }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                label="Opsi"
+                                fixed="right"
+                                width="50"
+                            >
                                 <template #default="scope">
                                     <el-popconfirm
                                         title="Yakin Hapus Siswa?"
