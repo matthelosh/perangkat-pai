@@ -248,7 +248,7 @@ onBeforeMount(() => {
                     >
                         <h3>Form Alur Tujuan Pembelajaran</h3>
                         <div class="items flex items-center gap-2">
-                            <el-switch v-model="mine" @change="onMineChanged" />
+                            <!-- <el-switch v-model="mine" @change="onMineChanged" /> -->
                             <el-button :native-type="null" type="primary"
                                 >{{ totalAw }} JP</el-button
                             >
