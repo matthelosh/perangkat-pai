@@ -10,6 +10,9 @@ const page = usePage();
 const CetakTp = defineAsyncComponent(() =>
     import("@/components/Dashboard/Perangkat/Rencana/CetakTp.vue")
 );
+const FormSyncTp = defineAsyncComponent(() =>
+    import("@/components/Dashboard/Perangkat/Rencana/FormSyncTp.vue")
+);
 const mine = ref(true);
 const elemens = computed(() => page.props.elemens);
 const fase = computed(() => route().params.fase);
@@ -129,6 +132,13 @@ const cetak = async () => {
     mode.value = "cetak";
 };
 
+// SYnc TP Rapor SD
+const formSyncTp = ref(false);
+const closeFormSyncTp = () => (formSyncTp.value = false);
+const syncTpRapor = async () => {
+    formSyncTp.value = true;
+};
+
 // Drawer Materi
 const drawerMateri = ref(false);
 
@@ -152,15 +162,25 @@ onBeforeMount(() => {
                         </el-button>
                         <h3>Tujuan Pembelajaran</h3>
                     </div>
-                    <div class="toolbar-items flex gap-2">
-                        <el-button
-                            :native-type="null"
-                            type="primary"
-                            @click="drawerMateri = !drawerMateri"
-                        >
-                            <Icon icon="mdi:list-box" />
-                            Lihat Materi
-                        </el-button>
+                    <div class="toolbar-items flex gap-1">
+                        <el-button-group>
+                            <el-button
+                                :native-type="null"
+                                type="primary"
+                                @click="syncTpRapor"
+                            >
+                                <Icon icon="mdi:list-box" />
+                                Sinkron TP Rapor
+                            </el-button>
+                            <el-button
+                                :native-type="null"
+                                type="primary"
+                                @click="drawerMateri = !drawerMateri"
+                            >
+                                <Icon icon="mdi:list-box" />
+                                Lihat Materi
+                            </el-button>
+                        </el-button-group>
                         <el-button :native-type="null" circle @click="cetak">
                             <Icon icon="mdi:printer" />
                         </el-button>
@@ -337,6 +357,12 @@ onBeforeMount(() => {
             v-if="mode == 'cetak'"
             :elemens="elemens"
             @close="mode = 'form'"
+        />
+        <FormSyncTp
+            v-if="formSyncTp"
+            :open="formSyncTp"
+            :selected-fase="params.fase"
+            @close="closeFormSyncTp"
         />
         <el-drawer v-model="drawerMateri" :title="`Materi Fase ${params.fase}`">
             <template #default>

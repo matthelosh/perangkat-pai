@@ -18,7 +18,7 @@ class ElemenSeeder extends Seeder
                 'fase' => 'A',
                 'cp_id' => '1',
                 'kode' => 'qh-a',
-                'label' => 'Al-Quran Hadits',
+                'label' => 'Al-Quran dan Hadis',
                 'deskripsi_cp' => 'Pendidikan Agama Islam dan Budi Pekerti menekankan kemampuan mengenal huruf hijaiah dan harakatnya, huruf hijaiah bersambung, dan kemampuan membaca surah-surah pendek AlQuran dengan baik.'
             ],
             [
@@ -53,7 +53,7 @@ class ElemenSeeder extends Seeder
                 'fase' => 'B',
                 'cp_id' => '2',
                 'kode' => 'qh-b',
-                'label' => 'Al-Quran Hadits',
+                'label' => 'Al-Quran dan Hadis',
                 'deskripsi_cp' => 'Peserta didik mampu membaca surah-surah pendek atau ayat Al-Quran dan menjelaskan pesan pokoknya dengan baik. Peserta didik mengenal hadis tentang kewajiban salat dan menjaga hubungan baik dengan sesama serta mampu menerapkan dalam kehidupan sehari-hari.'
             ],
             [
@@ -88,7 +88,7 @@ class ElemenSeeder extends Seeder
                 'fase' => 'C',
                 'cp_id' => '3',
                 'kode' => 'qh-c',
-                'label' => 'Al-Quran Hadits',
+                'label' => 'Al-Quran dan Hadis',
                 'deskripsi_cp' => 'Peserta didik mampu membaca, menghafal, menulis, dan memahami pesan pokok surah-surah pendek dan ayat Al-Quran tentang keragaman dengan baik dan benar.'
             ],
             [
@@ -121,15 +121,18 @@ class ElemenSeeder extends Seeder
             ],
         ];
 
-        foreach($elemens as $elemen)
-        {
-            Elemen::create([
-                'fase' => $elemen['fase'],
-                'cp_id' => $elemen['cp_id'],
-                'kode' => $elemen['kode'],
-                'label' => $elemen['label'],
-                'deskripsi_cp' => $elemen['deskripsi_cp']
-            ]);
+        foreach ($elemens as $elemen) {
+            Elemen::updateOrCreate(
+                [
+                    'fase' => $elemen['fase'],
+                    'cp_id' => $elemen['cp_id'],
+                    'kode' => $elemen['kode'],
+                ],
+                [
+                    'label' => $elemen['label'],
+                    'deskripsi_cp' => $elemen['deskripsi_cp']
+                ]
+            );
         }
     }
 }

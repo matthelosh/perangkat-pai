@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Rombel;
 use App\Models\Siswa;
+use App\Models\Tp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
@@ -62,6 +63,34 @@ class RaporController extends Controller
                 }
             }
             return back()->with('message', 'Data Rombel disinkron');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    // Sync TP
+    public function getTp(Request $request)
+    {
+        try {
+            $localTp = Tp::where('fase', $request->query('fase'))->with('elemen')->get();
+            $response = Http::withHeaders([
+                'X-CLIENT-TOKEN' => env('RAPOR_TOKEN')
+            ])
+                ->withQueryParameters(
+                    [
+                        'fase' => $request->query('fase')
+                    ]
+                )->get(env('RAPOR_URI') . '/api/tps');
+
+            if ($response->failed()) {
+                return $response->status();
+            } else {
+                // $data = $response->object();
+                return \response()->json([
+                    'raporTps' => $response->json('tps'),
+                    'localTps' => $localTp
+                ])->setStatusCode(200);
+            };
         } catch (\Throwable $th) {
             throw $th;
         }

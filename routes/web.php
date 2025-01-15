@@ -24,6 +24,10 @@ Route::middleware("auth")->group(function () {
             Route::get('/', [RaporController::class, 'getRombel'])->name('rapor.rombel.get');
             Route::post('/sync', [RaporController::class, 'syncRombel'])->name('rapor.rombel.sync');
         });
+        Route::prefix('tp')->group(function () {
+            Route::get('/', [RaporController::class, 'getTp'])->name('rapor.tp.get');
+            Route::post('/sync', [RaporController::class, 'syncTp'])->name('rapor.tp.sync');
+        });
     });
 
 
