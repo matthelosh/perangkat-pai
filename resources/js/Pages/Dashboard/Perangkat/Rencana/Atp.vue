@@ -519,7 +519,7 @@ onBeforeMount(() => {
                                 >
                                     <div class="flex items-center gap-1">
                                         <Link
-                                            :href="`https://perangkat.test/rencana/modulajar?fase=A&tingkat=${atp.tingkat}&mine=true`"
+                                            :href="`/rencana/modulajar?fase=A&tingkat=${atp.tingkat}&mine=true`"
                                             class="flex items-center gap-1 text-sky-500 mr-2"
                                         >
                                             <Icon icon="mdi:plus" />
