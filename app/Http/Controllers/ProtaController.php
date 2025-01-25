@@ -88,7 +88,7 @@ class ProtaController extends Controller
                     'id' => $data['id'] ?? null,
                 ],
                 [
-                    'guru_id' => $data['guru_id'],
+                    'guru_id' => $request->mine == 'true' ? $request->user()->userable->nip : null,
                     'rombel_id' => $data['rombel_id'],
                     'atp_id' => $data['atp_id'],
                     'tanggal' => $data['tanggal'],

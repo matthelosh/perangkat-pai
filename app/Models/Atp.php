@@ -24,20 +24,22 @@ class Atp extends Model
         'p5'
     ];
 
-    function elemen() {
+    function elemen()
+    {
         return $this->belongsTo(Elemen::class, 'elemen_id', 'kode');
     }
 
-    function prosems() {
+    function prosems()
+    {
         return $this->hasMany(Prosem::class, 'atp_id', 'id');
     }
-    function protas() {
+    function protas()
+    {
         return $this->hasMany(Prota::class, 'atp_id', 'kode');
     }
 
-    function mas() {
-        return $this->hasMany(ModulAjar::class, 'atp_id', 'id');
+    function mas()
+    {
+        return $this->hasOne(ModulAjar::class, 'atp_id', 'id');
     }
-
-
 }

@@ -15,9 +15,9 @@ const rombels = computed(() => {
     return Object.groupBy(page.props.rombels, (rombel) => rombel.fase);
 });
 
-const buka = (doc, fase, tingkat = null) => {
+const buka = (doc, fase, tingkat = null, mine = "false") => {
     router.get(
-        route(doc, { _query: { fase: fase, tingkat: tingkat, mine: "false" } })
+        route(doc, { _query: { fase: fase, tingkat: tingkat, mine: mine } })
     );
 };
 
@@ -108,7 +108,8 @@ const close = () => {
                                             buka(
                                                 'prota.index',
                                                 fase,
-                                                rombel.tingkat
+                                                rombel.tingkat,
+                                                'true'
                                             )
                                         "
                                         >{{ rombel.label }}</el-menu-item
@@ -135,7 +136,8 @@ const close = () => {
                                             buka(
                                                 'prosem.index',
                                                 fase,
-                                                rombel.tingkat
+                                                rombel.tingkat,
+                                                'true'
                                             )
                                         "
                                         >{{ rombel.label }}</el-menu-item
@@ -162,7 +164,8 @@ const close = () => {
                                             buka(
                                                 'modulajar.index',
                                                 fase,
-                                                rombel.tingkat
+                                                rombel.tingkat,
+                                                'true'
                                             )
                                         "
                                         >{{ rombel.label }}</el-menu-item

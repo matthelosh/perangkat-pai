@@ -12,8 +12,18 @@ import { cssFiles } from "@/helpers/printHelper";
 const CetakProta = defineAsyncComponent(() =>
     import("@/components/Dashboard/Perangkat/Rencana/CetakProta.vue")
 );
-
 const page = usePage();
+const semester = ref("1");
+
+const atps = computed(() => {
+    // return page.props.atps.filter((atp) => {
+    //     return (atp.semester = prota.value.semester);
+    // });
+    return !prota.value.semester
+        ? page.props.atps
+        : page.props.atps.filter((atp) => atp.semester == prota.value.semester);
+});
+
 const mode = ref("list");
 const layout = computed(() => {
     const width = window.innerWidth;
@@ -454,7 +464,7 @@ const cetak = async () => {
                             <el-option value="PAS">PAS</el-option>
                             <el-option value="CADANGAN">CADANGAN</el-option>
                             <el-option
-                                v-for="(atp, a) in page.props.atps"
+                                v-for="(atp, a) in atps"
                                 :key="atp.kode"
                                 :value="atp.kode"
                             >

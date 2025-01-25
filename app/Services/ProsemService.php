@@ -20,19 +20,20 @@ class ProsemService
         $rombel = Rombel::whereGuruId(Auth::user()->userable->nip)->whereTingkat($tingkat)->whereTapel(\tapel()->kode)->with('jadwals')->first();
         if ($mine == 'true') {
             $atps = Atp::where('guru_id', auth()->user()->userable->nip)
-                ->whereTingkat($this->rombel($rombel)->tingkat)
+                ->whereTingkat($tingkat)
                 ->whereSemester($this->semester()->kode)
                 ->with('prosems')
                 ->get();
 
-            $protas = Prota::whereGuruId(auth()->user()->userable->nip)
-                ->whereRombelId($rombel)
+            $protas = Prota::
+                // whereGuruId(auth()->user()->userable->nip)
+                whereRombelId($rombel->kode)
                 ->whereSemester($this->semester()->kode)
                 ->with('atp')
                 ->get();
         } else {
             $atps = Atp::whereNull('guru_id')
-                ->whereTingkat($rombel->tingkat)
+                ->whereTingkat($tingkat)
                 ->whereSemester($this->semester()->kode)
                 ->with('prosems')
                 ->get();

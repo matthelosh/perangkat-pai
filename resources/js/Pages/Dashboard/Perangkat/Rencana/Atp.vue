@@ -67,16 +67,139 @@ const onMineChanged = (e) => {
     // atps.value = page.props.atps
 };
 
+const showCetak = ref(false);
+
 const cetak = async () => {
     let el = document.querySelector(".cetak");
+    let trs = "";
+    atps.value.forEach((atp, a) => {
+        trs += `
+                <tr>
+                    <td class="border border-black align-top p-2">
+                                    ${atp.elemen.label}
+                                </td>
+                                <td class="border border-black align-top p-2">
+                                    ${atp.materi}
+                                </td>
+                                <td
+                                    class="border border-black align-top p-2 text-center"
+                                >
+                                    ${atp.tingkat}
+                                </td>
+                                <td
+                                    class="border border-black align-top p-2 text-center"
+                                >
+                                    ${atp.semester}
+                                </td>
+                                <td
+                                    class="border border-black align-top p-2 text-center"
+                                >
+                                    ${atp.aw}
+                                </td>
+                                <td class="border border-black align-top p-2">
+                                    ${atp.tps ? atp.tps : "Asesmen Sumatif"}
+                                </td>
+                                <td class="border border-black align-top p-2">
+                                    ${atp.konten}
+                                </td>
+                                <td class="border border-black align-top p-2">
+                                    ${atp.p5}
+                                </td>
+                                <td
+                                    class="border border-black pl-6 py-2 align-top"
+                                >
+                                    ${atp.asesmen}
+                                </td>
+                                <td
+                                    class="border border-black pl-6 py-2 align-top"
+                                >
+                                    ${atp.mas?.kode ?? ""}
+                                </td>   
+                </tr>
+        `;
+    });
+
     let html = `<html>
-                <head>
-                    <title>Alur Tujuan Pembelajaran</title>    
-                </head>
-                <body>
-                    ${el.outerHTML}
-                </body>
-            </html>`;
+                    <head>
+                        <title>Alur Tujuan Pembelajaran</title>    
+                        <style>
+                            .hidden-print {
+                                display: none;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h3 class="text-center text-blue-800 font-bold tracking-wide uppercase">Alur Tujuan Pembelajaran</h3>
+                        <table class="uppercase my-8">
+                            <tbody>
+                                <tr>
+                                    <td>Mata Pelajaran</td>
+                                    <td>:</td>
+                                    <td>Pendidikan Agama Islam dan Budi Pekerti </td>
+                                </tr>
+                                <tr>
+                                    <td>Fase / Kelas</td>
+                                    <td>:</td>
+                                    <td>${params.value.fase} / ${
+        atp.value.tingkat
+    }</td>
+                                </tr>
+                                <tr>
+                                    <td>Satuan Pendidikan</td>
+                                    <td>:</td>
+                                    <td>${page.props.sekolahs[0].nama} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="border">
+                            <thead>
+                                <tr>
+                                    <th class="border border-black p-2">Elemen</th>
+                                    <th class="border border-black p-2">Materi</th>
+                                    <th class="border border-black p-2">Kelas</th>
+                                    <th class="border border-black p-2">Semester</th>
+                                    <th class="border border-black p-2">AW</th>
+                                    <th class="border border-black p-2">Tujuan Pembelajaran</th>
+                                    <th class="border border-black p-2">Konten Materi</th>
+                                    <th class="border border-black p-2">Dimensi P5</th>
+                                    <th class="border border-black p-2">Asesmen</th>
+                                    <th class="border border-black p-2">Modul Ajar</th>
+                                </tr>
+                            </thead>    
+                            <tbody>
+                                ${trs}   
+                            </tbody>
+                        </table>
+
+                        <div class="mt-6 my-4 w-full flex items-start justify-between">
+                                <div>
+                                    <p>&nbsp;</p>
+                                    <p>Kepala Sekolah,</p>
+                                    <p class="mt-10 font-bold underline">${
+                                        page.props.sekolahs[0].nama_ks
+                                    }</p>
+                                    <p>NIP. ${page.props.sekolahs[0].nip_ks}</p>
+                                </div>    
+                                <div>
+                                    <p>Wagir, ${new Date(
+                                        tanggal.value
+                                    ).toLocaleDateString("id-ID", {
+                                        day: "2-digit",
+                                        month: "long",
+                                        year: "numeric",
+                                    })}</p>   
+                                    <p>Guru PAI Bp</p> 
+                                    <p class="mt-10 font-bold underline">${
+                                        page.props.user.userable.nama
+                                    }, ${
+        page.props.user.userable.gelar_belakang
+    }</p>
+                                    <p>NIP. ${page.props.user.userable.nip}</p>
+                                </div>    
+                        </div>
+                    </body>
+                </html>`;
 
     let win = window.open("", "_blank", "width=800,height=700");
     win.document.write(html);
@@ -90,6 +213,7 @@ const cetak = async () => {
 
     setTimeout(() => {
         win.print();
+        showCetak.value = false;
         // win.close();
     }, 1000);
 };
@@ -246,7 +370,14 @@ onBeforeMount(() => {
                     <div
                         class="flex items-center justify-between sticky top-12 z-40 bg-white py-2"
                     >
-                        <h3>Form Alur Tujuan Pembelajaran</h3>
+                        <div class="flex gap-1 items-center">
+                            <el-button text @click="kembali">
+                                <Icon icon="mdi:arrow-left" class="text-2xl" />
+                            </el-button>
+                            <h3 class="font-bold text-blue-800 text-lg">
+                                Form Alur Tujuan Pembelajaran
+                            </h3>
+                        </div>
                         <div class="items flex items-center gap-2">
                             <!-- <el-switch v-model="mine" @change="onMineChanged" /> -->
                             <el-button :native-type="null" type="primary"
@@ -276,20 +407,12 @@ onBeforeMount(() => {
                             >
                                 <Icon icon="mdi:printer" />
                             </el-button>
-                            <el-button
-                                :native-type="null"
-                                circle
-                                type="danger"
-                                @click="kembali"
-                            >
-                                <Icon icon="mdi:close" />
-                            </el-button>
                         </div>
                     </div>
                 </el-affix>
             </template>
             <div class="card-body cetak" v-if="atp.tingkat">
-                <Kop />
+                <Kop v-if="showCetak" />
                 <h1
                     class="text-lg text-blue-900 font-bold text-center mb-4 uppercase"
                 >
@@ -368,274 +491,173 @@ onBeforeMount(() => {
                         </el-collapse-item>
                     </el-collapse>
                 </div>
-                <div
-                    class="w-full flex h-10 bg-slate-100 justify-between items-center px-2 print:hidden"
-                >
-                    <!-- <el-switch v-model="mine" active-value="1" inactive-value="0" active-text="Punya saya" inactive-text="Dari sistem" @change="onMineChanged"></el-switch> -->
-                    <div>Tambahkan ATP</div>
-                    <div class="items flex items-center gap-2">
-                        <el-popconfirm
-                            :title="`Anda akan menghapus seluruh ATP dase ${params.fase}`"
-                            @confirm="hapusSemua"
-                        >
-                            <template #reference>
-                                <el-button :native-type="null" circle>
-                                    <Icon
-                                        icon="mdi:delete"
-                                        class="text-red-500"
-                                    />
-                                </el-button>
-                            </template>
-                        </el-popconfirm>
-                        <el-button :native-type="null" circle @click="addAtp">
-                            <Icon icon="mdi:plus" />
-                        </el-button>
+                <el-affix :offset="60">
+                    <div
+                        class="w-full flex h-10 bg-slate-100 justify-between items-center px-2 print:hidden"
+                    >
+                        <!-- <el-switch v-model="mine" active-value="1" inactive-value="0" active-text="Punya saya" inactive-text="Dari sistem" @change="onMineChanged"></el-switch> -->
+                        <div>Tambahkan ATP</div>
+                        <div class="items flex items-center gap-2">
+                            <el-popconfirm
+                                :title="`Anda akan menghapus seluruh ATP dase ${params.fase}`"
+                                @confirm="hapusSemua"
+                            >
+                                <template #reference>
+                                    <el-button :native-type="null" circle>
+                                        <Icon
+                                            icon="mdi:delete"
+                                            class="text-red-500"
+                                        />
+                                    </el-button>
+                                </template>
+                            </el-popconfirm>
+                            <el-button
+                                :native-type="null"
+                                circle
+                                @click="addAtp"
+                            >
+                                <Icon icon="mdi:plus" />
+                            </el-button>
+                        </div>
                     </div>
-                </div>
-                <el-scrollbar>
-                    <table class="my-2 w-full">
-                        <thead>
-                            <tr class="uppercase bg-slate-300">
-                                <th class="border border-black p-2">Elemen</th>
-                                <th class="border border-black p-2">
-                                    Materi Ajar
-                                </th>
-                                <th class="border border-black p-2">Tingkat</th>
-                                <th class="border border-black p-2">
-                                    Semester
-                                </th>
-                                <th class="border border-black p-2">
-                                    Alokasi Waktu
-                                </th>
-                                <th class="border border-black p-2">
-                                    Tujuan Pembelajaran
-                                </th>
-                                <th class="border border-black p-2">
-                                    Alur Konten (Lingkup Materi)
-                                </th>
-                                <th class="border border-black p-2">
-                                    Dimensi P5
-                                </th>
-                                <th class="border border-black p-2">Asesmen</th>
-                                <th class="border border-black p-2">
-                                    Modul Ajar
-                                </th>
-                                <th
-                                    class="border border-black p-2 print:hidden"
+                </el-affix>
+                <el-table :data="atps" :border="true" stripe>
+                    <el-table-column label="Elemen" width="150">
+                        <template #default="{ row }">
+                            {{ row.elemen.label }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Materi" width="200">
+                        <template #default="{ row }">
+                            {{ row.materi }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Kelas" width="50">
+                        <template #default="{ row }">
+                            {{ row.tingkat }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Sem" width="50">
+                        <template #default="{ row }">
+                            {{ row.semester }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="AW" width="50">
+                        <template #default="{ row }">
+                            {{ row.aw }} JP
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="Tujuan Pembelajaran">
+                        <template #default="{ row }">
+                            <ul class="list-disc pl-4" v-if="row.tps">
+                                <li
+                                    v-for="(tp, t) in row.tps.split(';')"
+                                    :key="t + 'tp'"
                                 >
-                                    Opsi
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- {{page.props.atps}} -->
-                            <tr v-for="(atp, a) in atps" :key="a">
-                                <td class="border border-black align-top p-2">
-                                    {{ atp.elemen.label }}
-                                </td>
-                                <td class="border border-black align-top p-2">
-                                    {{ atp.materi }}
-                                </td>
-                                <td
-                                    class="border border-black align-top p-2 text-center"
+                                    {{ tp }}
+                                </li>
+                            </ul>
+                            <p v-else>Asesmen Sumatif</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Konten" width="200">
+                        <template #default="{ row }">
+                            <div v-if="row.konten !== ''">
+                                <ul class="pl-4 list-disc">
+                                    <li
+                                        v-for="(
+                                            kont, k
+                                        ) in typeof row.konten === 'string'
+                                            ? row.konten.split(';')
+                                            : row.konten"
+                                        :key="k"
+                                    >
+                                        {{ kont }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Dimensi P5" width="200">
+                        <template #default="{ row }">
+                            <div v-if="row.p5 !== ''">
+                                <ul class="pl-4 list-disc">
+                                    <li
+                                        v-for="(p5, p) in typeof row.p5 ===
+                                        'string'
+                                            ? row.p5.split(';')
+                                            : row.p5"
+                                        :key="p"
+                                    >
+                                        {{ p5 }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Asesmen" width="80">
+                        <template #default="{ row }">
+                            <span v-html="row.asesmen" class="asesmen"></span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Modul Ajar" width="200">
+                        <template #default="{ row }">
+                            <ul>
+                                <li v-for="ma in row.mas">
+                                    Modul Ajar {{ ma.kode }}
+                                </li>
+                            </ul>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        v-if="!showCetak"
+                        label="Opsi"
+                        class-name="hidden-print"
+                        width="150"
+                    >
+                        <template #default="{ row }">
+                            <div class="flex items-center gap-1">
+                                <Link
+                                    :href="`/rencana/modulajar?fase=A&tingkat=${row.tingkat}&mine=true`"
+                                    class="flex items-center gap-1 text-sky-500 mr-2"
                                 >
-                                    {{ atp.tingkat }}
-                                </td>
-                                <td
-                                    class="border border-black align-top p-2 text-center"
+                                    <Icon icon="mdi:plus" />
+                                    MA
+                                </Link>
+                                <el-button
+                                    :native-type="null"
+                                    circle
+                                    text
+                                    class="p-2"
+                                    type="warning"
+                                    @click="edit(row)"
                                 >
-                                    {{ atp.semester }}
-                                </td>
-                                <td
-                                    class="border border-black align-top p-2 text-center"
+                                    <Icon icon="mdi:edit" class="text-xl" />
+                                </el-button>
+                                <el-popconfirm
+                                    title="Yakin menghapus ATP ini?"
+                                    @confirm="hapus(row)"
                                 >
-                                    {{ atp.aw }}
-                                </td>
-                                <td class="border border-black align-top p-2">
-                                    <ul class="list-disc pl-4" v-if="atp.tps">
-                                        <li
-                                            v-for="(tp, t) in atp.tps.split(
-                                                ';'
-                                            )"
-                                            :key="t + 'tp'"
-                                        >
-                                            {{ tp }}
-                                        </li>
-                                    </ul>
-                                    <p v-else>Asesmen Sumatif</p>
-                                </td>
-                                <td class="border border-black align-top p-2">
-                                    <div v-if="atp.konten !== ''">
-                                        <ul class="pl-4 list-disc">
-                                            <li
-                                                v-for="(
-                                                    kont, k
-                                                ) in typeof atp.konten ===
-                                                'string'
-                                                    ? atp.konten.split(';')
-                                                    : atp.konten"
-                                                :key="k"
-                                            >
-                                                {{ kont }}
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                                <td class="border border-black align-top p-2">
-                                    <div v-if="atp.p5 !== ''">
-                                        <ul class="pl-4 list-disc">
-                                            <li
-                                                v-for="(
-                                                    p5, p
-                                                ) in typeof atp.p5 === 'string'
-                                                    ? atp.p5.split(';')
-                                                    : atp.p5"
-                                                :key="p"
-                                            >
-                                                {{ p5 }}
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                                <td
-                                    class="border border-black pl-6 py-2 align-top"
-                                >
-                                    <span
-                                        v-html="atp.asesmen"
-                                        class="asesmen"
-                                    ></span>
-                                </td>
-                                <td
-                                    class="border border-black pl-6 py-2 align-top"
-                                >
-                                    <ul>
-                                        <li v-for="ma in atp.mas">
-                                            Modul Ajar {{ ma.kode }}
-                                        </li>
-                                    </ul>
-                                </td>
-                                <td
-                                    class="border border-black px-2 print:hidden text-center"
-                                >
-                                    <div class="flex items-center gap-1">
-                                        <Link
-                                            :href="`/rencana/modulajar?fase=A&tingkat=${atp.tingkat}&mine=true`"
-                                            class="flex items-center gap-1 text-sky-500 mr-2"
-                                        >
-                                            <Icon icon="mdi:plus" />
-                                            MA
-                                        </Link>
+                                    <template #reference>
                                         <el-button
                                             :native-type="null"
                                             circle
                                             text
                                             class="p-2"
-                                            type="warning"
-                                            @click="edit(atp)"
+                                            type="danger"
                                         >
                                             <Icon
-                                                icon="mdi:edit"
+                                                icon="mdi:delete"
                                                 class="text-xl"
                                             />
                                         </el-button>
-                                        <el-popconfirm
-                                            title="Yakin menghapus ATP ini?"
-                                            @confirm="hapus(atp)"
-                                        >
-                                            <template #reference>
-                                                <el-button
-                                                    :native-type="null"
-                                                    circle
-                                                    text
-                                                    class="p-2"
-                                                    type="danger"
-                                                >
-                                                    <Icon
-                                                        icon="mdi:delete"
-                                                        class="text-xl"
-                                                    />
-                                                </el-button>
-                                            </template>
-                                        </el-popconfirm>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- <template v-for="(el,e) in page.props.elemens" :key="e">
-                            <tr v-for="(atp,a) in el.atps" :key="atp.kode">
-                                <td class="border border-black p-2" v-if="(e+a===e)" :rowspan="(e+a===e) ? el.atps.length : '0'">{{ el.label }}</td>
-                                <td class="border border-black p-2 align-top">{{ atp.materi }}</td>
-                                <td class="border border-black p-2 text-center align-top">{{ atp.tingkat }}</td>
-                                <td class="border border-black p-2 text-center align-top">{{ atp.semester }}</td>
-                                <td class="border border-black p-2 text-center align-top"><span @blur="onAwChanged($event, atp)" class="px-2 bg-yellow-100 print:bg-white" contenteditable>{{ atp.aw }}</span> JP</td>
-                                <td class="border border-black p-2 align-top">
-                                    <div v-if="atp.tps !== ''">
-                                        <ul class="pl-4 list-decimal">
-                                            <li v-for="(tp,t) in ((typeof atp.tps === 'string') ? atp.tps.split(';') : atp.tps)" :key="t">{{ tp }}</li>
-                                        </ul>
-                                    </div>
-                                    <p v-else>Asesmen Sumatif</p>
-                                </td>
-                                <td class="border border-black p-2 align-top">
-                                    <div v-if="atp.konten !== ''">
-                                        <ul class="pl-4 list-disc">
-                                            <li v-for="(kont,k) in ((typeof atp.konten === 'string') ? atp.konten.split(';') : atp.konten)" :key="k">{{ kont }}</li>
-                                        </ul>
-                                    </div>
-                                </td>
-                                <td class="border border-black p-2 align-top">
-                                    <span v-html="atp.asesmen" class="asesmen"></span>
-                                </td>
-                                <td class="border border-black px-2 print:hidden text-center">
-                                    <div class="flex items-center gap-1">
-                                        <el-button :native-type="null"  circle text class="p-2" type="warning" @click="edit(atp)">
-                                            <Icon icon="mdi:edit" class="text-xl" />
-                                        </el-button>
-                                        <el-popconfirm title="Yakin menghapus ATP ini?" @confirm="hapus(atp)">
-                                            <template #reference>
-                                                <el-button :native-type="null"  circle text class="p-2" type="danger" >
-                                                    <Icon icon="mdi:delete" class="text-xl" />
-                                                </el-button>
-                                            </template>
-                                        </el-popconfirm>
-                                    </div>
-                                </td>
-                            </tr>
-                        </template> -->
-                            <tr class="bg-slate-300">
-                                <td
-                                    colspan="4"
-                                    class="border border-black text-right p-2 font-bold"
-                                >
-                                    Total Alokasi Waktu
-                                </td>
-                                <td
-                                    class="border border-black p-2 text-center font-bold"
-                                >
-                                    {{ totalAw }} JP <br />
-                                    ({{ totalAw / 4 }} TM)
-                                </td>
-                                <td
-                                    class="border border-black p-2 text-center font-bold"
-                                ></td>
-                                <td
-                                    class="border border-black p-2 text-center font-bold"
-                                ></td>
-                                <td
-                                    class="border border-black p-2 text-center font-bold"
-                                ></td>
-                                <td
-                                    class="border border-black p-2 text-center font-bold"
-                                ></td>
-                                <td
-                                    class="border border-black p-2 text-center font-bold"
-                                ></td>
-                                <td
-                                    class="border border-black p-2 text-center font-bold print:hidden"
-                                ></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </el-scrollbar>
+                                    </template>
+                                </el-popconfirm>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
                 <Ttd :tanggal="tanggal" />
             </div>
             <el-alert type="warning" v-else>
