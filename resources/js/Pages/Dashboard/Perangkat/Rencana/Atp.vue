@@ -291,7 +291,39 @@ const simpanAtp = async () => {
 };
 
 const edit = (item) => {
-    atp.value = item;
+    let data = item;
+    // Extract the chapter number and label from item.materi
+    const [chapter, ...labelParts] = item.materi.split(", ");
+    const label = labelParts.join(", "); // rejoin in case label contains commas
+    let mate = item.materi.split(".");
+
+    // Find the material by matching both chapter and label
+    const materi = page.props.babs.find((bab) => bab.bab === mate[0]);
+    console.log(materi);
+    if (materi) {
+        data.materi = materi.bab + ". " + materi.label;
+    } else if (item.materi.startsWith("Asesmen Sumatif")) {
+        // Handle Asesmen Sumatif case
+        data.materi = item.materi;
+    }
+
+    data.tps = data.tps
+        ? Array.isArray(data.tps)
+            ? data.tps
+            : data.tps.split(";")
+        : [];
+    data.konten = data.konten
+        ? Array.isArray(data.konten)
+            ? data.konten
+            : data.konten.split(";")
+        : [];
+    data.p5 = data.p5
+        ? Array.isArray(data.p5)
+            ? data.p5
+            : data.p5.split(";")
+        : [];
+
+    atp.value = data;
     showForm.value = true;
 };
 
@@ -552,7 +584,9 @@ onBeforeMount(() => {
                         <template #default="{ row }">
                             <ul class="list-disc pl-4" v-if="row.tps">
                                 <li
-                                    v-for="(tp, t) in row.tps.split(';')"
+                                    v-for="(tp, t) in Array.isArray(row.tps)
+                                        ? row.tps
+                                        : row.tps.split(';')"
                                     :key="t + 'tp'"
                                 >
                                     {{ tp }}

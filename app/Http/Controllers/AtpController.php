@@ -96,10 +96,10 @@ class AtpController extends Controller
                     'semester' => $data['semester'],
                     'aw' => $data['aw'],
                     'materi' => $data['materi'],
-                    'tps' => implode(";", $data['tps']),
-                    'konten' => implode(";", $data['konten']),
+                    'tps' => \is_array($data['tps']) ? implode(";", $data['tps']) : $data['tps'],
+                    'konten' => is_array($data['konten']) ? implode(";", $data['konten']) : $data['konten'],
                     'asesmen' => $data['asesmen'],
-                    'p5' => implode(";", $data['p5'])
+                    'p5' => is_array($data['p5']) ? implode(";", $data['p5']) : $data['p5']
                 ]
             );
 
