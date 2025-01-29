@@ -2,13 +2,12 @@ name: Laravel
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   laravel-tests:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -23,9 +22,11 @@ jobs:
           port: 22
           script: |
             cd /home/perangkat/htdocs/perangkat.kkgpaiwagir.or.id
+            php artisan down
             git pull origin main
             git status
             composer install
             php artisan migrate
             yarn --only=prod
             yarn build
+            php artisan up
