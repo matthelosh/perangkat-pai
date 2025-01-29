@@ -58,7 +58,8 @@ export const unefektif = (month, day) => {
     console.log(month, day)
     let events = [];
      page.props.kaldiks.forEach(kaldik => {
-        let rentang = dayjs(kaldik.selesai).date() - dayjs(kaldik.mulai).date()
+        // let rentang = dayjs(kaldik.selesai).date() - dayjs(kaldik.mulai).date()
+        let rentang = dayjs(kaldik.selesai).diff(dayjs(kaldik.mulai), 'day')
         if ( rentang < 1 ) {
             if ((haris.lastIndexOf(day)) == dayjs(kaldik.mulai).get('day') && (bulans.lastIndexOf(month) == dayjs(kaldik.mulai).get('month'))) {
                 events.push(kaldik)

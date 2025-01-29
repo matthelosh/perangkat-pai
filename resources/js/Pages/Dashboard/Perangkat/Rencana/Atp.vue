@@ -21,7 +21,7 @@ import localeData from "dayjs/plugin/localeData";
 import "dayjs/locale/id";
 dayjs.locale("id");
 dayjs.extend(localeData);
-import { ElNotification } from "element-plus";
+import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import { effectiveOfYear } from "@/helpers/ApeHelper";
 
 import { cssFiles } from "@/helpers/printHelper";
@@ -342,17 +342,42 @@ const onAwChanged = async (e, item) => {
 };
 
 const hapusSemua = async () => {
-    await router.post(
-        `/rencana/atp/destroy/all?fase=${params.value.fase}&mine=${params.value.mine}`,
+    ElMessageBox.confirm(
+        "Prota, Prosem dan Modul Ajar dari ATP ini akan dihapus semua",
+        "Peringatan",
         {
-            onSuccess: (page) => {
-                router.reload({ only: ["elemens"] });
-            },
-            onError: (err) => {
-                console.log(err);
-            },
+            confirmButtonText: "Yakin",
+            cancelButtonText: "Batal",
+            type: "warning",
         }
-    );
+    )
+        .then(async () => {
+            await router.post(
+                `/rencana/atp/destroy/all?fase=${params.value.fase}&mine=${params.value.mine}`,
+                {
+                    onSuccess: () => {
+                        router.reload({ only: ["elemens"] });
+                        ElMessage({
+                            type: "success",
+                            message: page.props.flash.message,
+                        });
+                    },
+                    onError: (err) => {
+                        console.log(err);
+                        ElMessage({
+                            type: "error",
+                            message: err,
+                        });
+                    },
+                }
+            );
+        })
+        .catch((err) => {
+            ElMessage({
+                type: "error",
+                message: err,
+            });
+        });
 };
 
 const hapus = (item) => {
