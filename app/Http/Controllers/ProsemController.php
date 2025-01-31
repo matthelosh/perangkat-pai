@@ -22,8 +22,8 @@ class ProsemController extends Controller
     public function index(Request $request)
     {
         try {
-
-            $datas = $this->prosemService->index($request->tingkat, $request->mine);
+            $semester = $request->query('semester') ?? \semester()->kode;
+            $datas = $this->prosemService->index($request->tingkat, $request->mine, $request->fase, $semester);
             $component = 'Dashboard/Perangkat/Rencana/Prosem';
             return Inertia::render($component, $datas);
         } catch (\Throwable $th) {
@@ -37,8 +37,8 @@ class ProsemController extends Controller
     public function cetak(Request $request)
     {
         try {
-
-            $datas = $this->prosemService->index($request->rombel, $request->mine);
+            $semester = $request->query('semester') ?? \semester()->kode;
+            $datas = $this->prosemService->index($request->rombel, $request->mine, $request->fase, $semester);
             $component = 'Dashboard/Perangkat/Rencana/CetakProsem';
             return Inertia::render($component, [
                 'atps' => $datas['atps'],

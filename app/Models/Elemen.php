@@ -17,14 +17,26 @@ class Elemen extends Model
         'deskripsi_cp'
     ];
 
-    function cp() {
+    function cp()
+    {
         return $this->belongsTo(Cp::class);
     }
 
-    function tps() {
+    function tps()
+    {
         return $this->hasMany(Tp::class, 'elemen_id', 'kode');
     }
-    function atps() {
+    function atps()
+    {
         return $this->hasMany(Atp::class, 'elemen_id', 'kode');
+    }
+    function materis()
+    {
+        return $this->hasMany(MateriAjar::class, 'elemen', 'label');
+    }
+
+    function protas()
+    {
+        return $this->hasMany(Prota::class, 'elemen_id', 'kode');
     }
 }

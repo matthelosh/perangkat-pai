@@ -359,14 +359,14 @@ const hapusSemua = async () => {
                         router.reload({ only: ["elemens"] });
                         ElMessage({
                             type: "success",
-                            message: page.props.flash.message,
+                            message: "Data ATP dihapus semua",
                         });
                     },
                     onError: (err) => {
                         console.log(err);
                         ElMessage({
                             type: "error",
-                            message: err,
+                            message: "Gagal Menghapus Semua",
                         });
                     },
                 }
@@ -375,7 +375,7 @@ const hapusSemua = async () => {
         .catch((err) => {
             ElMessage({
                 type: "error",
-                message: err,
+                message: "Gagal menghapus semua",
             });
         });
 };
@@ -579,6 +579,11 @@ onBeforeMount(() => {
                     </div>
                 </el-affix>
                 <el-table :data="atps" :border="true" stripe>
+                    <el-table-column
+                        label="#"
+                        type="index"
+                        width="50"
+                    ></el-table-column>
                     <el-table-column label="Elemen" width="150">
                         <template #default="{ row }">
                             {{ row.elemen.label }}

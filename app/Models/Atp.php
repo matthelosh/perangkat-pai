@@ -33,10 +33,11 @@ class Atp extends Model
     {
         return $this->hasMany(Prosem::class, 'atp_id', 'id');
     }
-    function protas()
+    function prota()
     {
-        return $this->hasMany(Prota::class, 'atp_id', 'kode');
+        return $this->hasOne(Prota::class, 'atp_id', 'kode');
     }
+
 
     function mas()
     {

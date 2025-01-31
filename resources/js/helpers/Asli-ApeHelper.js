@@ -31,22 +31,17 @@ export const weeksPerMonth = (month, hari, semester) => {
 
 
 export const weekOfMonth = (tanggal) => {
-    const date = dayjs(tanggal)
-    const firstDayOfMonth = date.startOf('month')
-    const firstWeekday = firstDayOfMonth.day()
-    const dayOfMonth = date.date()
-    
-    console.log('Date calculation for:', tanggal)
-    console.log('First day of month:', firstDayOfMonth.format('YYYY-MM-DD'))
-    console.log('First weekday:', firstWeekday)
-    console.log('Day of month:', dayOfMonth)
-    
-    // Adjusted calculation to properly handle first week
-    const adjustedDay = dayOfMonth + firstWeekday - 1
-    const weekNum = Math.ceil(adjustedDay / 7)
-    
-    console.log('Calculated week number:', weekNum)
-    return weekNum
+    const month = dayjs(tanggal).format('MMMM')
+    const hari = dayjs(tanggal).format('dddd')
+    const semester = dayjs(tanggal).get('month') >= 6 ? '1' : '2'
+    const weekdays  = weeksPerMonth(month, hari, semester)
+    let days = dayjs(tanggal).daysInMonth()
+    let date = dayjs(tanggal)
+    let i = 0;
+    for (let d = parseInt(date.format('D')); d < days; d +=7) {
+        i++
+    }
+    return weekdays === 5 ? weekdays - i : (weekdays+1)-i
 }
 
 export const allUnefektif = (months, day) => {
@@ -60,13 +55,11 @@ export const allUnefektif = (months, day) => {
 }
 
 export const unefektif = (month, day) => {
-    console.log('Processing unefektif for month:', month, 'day:', day)
+    console.log(month, day)
     let events = [];
-    page.props.kaldiks.forEach(kaldik => {
-        console.log('Processing kaldik:', kaldik.label)
-        console.log('Start date:', kaldik.mulai, 'End date:', kaldik.selesai)
+     page.props.kaldiks.forEach(kaldik => {
+        // let rentang = dayjs(kaldik.selesai).date() - dayjs(kaldik.mulai).date()
         let rentang = dayjs(kaldik.selesai).diff(dayjs(kaldik.mulai), 'day')
-        console.log('Date range:', rentang, 'days')
         if ( rentang < 1 ) {
             if ((haris.lastIndexOf(day)) == dayjs(kaldik.mulai).get('day') && (bulans.lastIndexOf(month) == dayjs(kaldik.mulai).get('month'))) {
                 events.push(kaldik)
@@ -75,12 +68,8 @@ export const unefektif = (month, day) => {
             
         } else {
                 for (let h = 0; h < rentang+1; h++) {
-                    let currentDate = dayjs(kaldik.mulai).add(h, 'day')
-                    let hari = currentDate.get('day')
-                    let bulan = currentDate.get('month')
-                    console.log('Checking date:', currentDate.format('YYYY-MM-DD'))
-                    console.log('Comparing day:', hari, 'with', haris.lastIndexOf(day))
-                    console.log('Comparing month:', bulan, 'with', bulans.lastIndexOf(month))
+                    let hari = dayjs(kaldik.mulai).add(h, 'day').get('day')
+                    let bulan = dayjs(kaldik.mulai).add(h, 'day').get('month')
                     if (hari == haris.lastIndexOf(day) && bulan == bulans.lastIndexOf(month)) {
                         events.push({
                             bulan: bulan,

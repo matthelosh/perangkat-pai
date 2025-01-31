@@ -288,7 +288,7 @@ const cetak = async () => {
                 >
             </el-alert>
             <!-- {{ jadwals }} -->
-            <Ttd class="hidden print:flex" />
+            <Ttd class="hidden print:flex" tanggal="2025-01-05" />
         </div>
 
         <div

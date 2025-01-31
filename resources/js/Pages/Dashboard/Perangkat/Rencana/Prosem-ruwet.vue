@@ -74,10 +74,6 @@ const eventsDate = computed(() => {
     return offs;
 });
 
-const nonAtps = computed(() => {
-    return page.props.protas.filter((prota) => prota.atp == null);
-});
-
 const liburs = computed(() => {
     let all = [];
     for (let m = 0; m < syahrs.value.length; m++) {
@@ -275,62 +271,34 @@ const cetak = async () => {
                                 <template
                                     v-for="(elemen, e) in page.props.elemens"
                                 >
+                                    <!-- First, render ATP items -->
                                     <tr
                                         v-for="(atp, a) in elemen.atps"
-                                        :key="a"
-                                        class="group relative"
+                                        :key="`atp-${a}`"
                                     >
                                         <td
                                             class="border border-black p-1 w-[80px]"
                                             v-if="a === 0"
-                                            :rowspan="elemen.atps.length"
+                                            :rowspan="
+                                                elemen.atps.length +
+                                                (elemen.protas?.length || 0)
+                                            "
                                         >
-                                            <button
-                                                class="absolute top-1 text-sky-600 font-bold"
-                                                :native-type="null"
-                                                type="primary"
-                                            >
-                                                <Icon icon="mdi:plus" />
-                                            </button>
                                             {{ elemen.materis[0].bab }}
                                         </td>
                                         <td
                                             class="border border-black p-1"
                                             style="writing-mode: vertical-lr"
                                             v-if="a === 0"
-                                            :rowspan="elemen.atps.length"
+                                            :rowspan="
+                                                elemen.atps.length +
+                                                (elemen.protas?.length || 0)
+                                            "
                                         >
                                             {{ elemen.label }}
                                         </td>
-                                        <td
-                                            class="border border-black p-1"
-                                            :colspan="
-                                                atp.konten.length == '0' &&
-                                                a === elemen.atps.length - 1
-                                                    ? '2'
-                                                    : '0'
-                                            "
-                                            :rowspan="
-                                                a === 0
-                                                    ? elemen.atps.length - 1
-                                                    : 1
-                                            "
-                                            v-if="
-                                                a === 0 ||
-                                                a === elemen.atps.length - 1
-                                            "
-                                        >
-                                            <div
-                                                v-if="
-                                                    a === 0 ||
-                                                    a === elemen.atps.length - 1
-                                                "
-                                            >
-                                                {{ atp.materi }}
-                                            </div>
-                                            <div v-else>
-                                                {{ elemen.atps.length }}
-                                            </div>
+                                        <td class="border border-black p-1">
+                                            {{ atp.materi }}
                                         </td>
                                         <td
                                             class="border border-black p-1"
@@ -343,18 +311,16 @@ const cetak = async () => {
                                         >
                                             {{ atp.aw }} JP
                                         </td>
-                                        <!-- <td class="border border-black p-1">
-                                            {{ atp.prota?.minggu_ke }}
-                                        </td> -->
+                                        <!-- Week columns for ATP items -->
                                         <template
                                             v-for="m in syahrs"
-                                            :key="m + 'a'"
+                                            :key="`atp-${m}`"
                                         >
                                             <td
                                                 class="border border-black p-2"
                                                 v-for="w in minggus(m)"
                                                 :key="w"
-                                                :class="
+                                                :class="[
                                                     atp.prota?.minggu_ke == w &&
                                                     dayjs(
                                                         atp.prota.tanggal
@@ -362,8 +328,8 @@ const cetak = async () => {
                                                         ? 'bg-white'
                                                         : cekLibur(m, w)
                                                         ? 'bg-red-100'
-                                                        : 'bg-slate-200'
-                                                "
+                                                        : 'bg-slate-200',
+                                                ]"
                                             >
                                                 <span
                                                     v-if="
@@ -373,75 +339,85 @@ const cetak = async () => {
                                                             atp.prota.tanggal
                                                         ).format('MMMM') == m
                                                     "
-                                                    >{{
+                                                >
+                                                    {{
                                                         dayjs(
                                                             atp.prota.tanggal
                                                         ).format("DD")
-                                                    }}</span
-                                                >
+                                                    }}
+                                                </span>
                                                 <span v-else>
                                                     <p v-if="cekLibur(m, w)">
                                                         Libur
                                                     </p>
-                                                    <!-- <p v-else>{{ atp }}</p> -->
+                                                </span>
+                                            </td>
+                                        </template>
+                                    </tr>
+
+                                    <!-- Then, render non-ATP items -->
+                                    <tr
+                                        v-for="(prota, p) in elemen.protas"
+                                        :key="`non-atp-${p}`"
+                                        class="bg-gray-50"
+                                    >
+                                        <td class="border border-black p-1">
+                                            {{
+                                                prota.label ||
+                                                "Kegiatan Tambahan"
+                                            }}
+                                        </td>
+                                        <td class="border border-black p-1">
+                                            {{ prota.deskripsi }}
+                                        </td>
+                                        <td
+                                            class="border border-black p-1 text-center"
+                                        >
+                                            {{ prota.aw }} JP
+                                        </td>
+                                        <!-- Week columns for non-ATP items -->
+                                        <template
+                                            v-for="m in syahrs"
+                                            :key="`non-atp-${m}`"
+                                        >
+                                            <td
+                                                class="border border-black p-2"
+                                                v-for="w in minggus(m)"
+                                                :key="w"
+                                                :class="[
+                                                    prota.minggu_ke == w &&
+                                                    dayjs(prota.tanggal).format(
+                                                        'MMMM'
+                                                    ) == m
+                                                        ? 'bg-white'
+                                                        : cekLibur(m, w)
+                                                        ? 'bg-red-100'
+                                                        : 'bg-slate-200',
+                                                ]"
+                                            >
+                                                <span
+                                                    v-if="
+                                                        prota.minggu_ke == w &&
+                                                        dayjs(
+                                                            prota.tanggal
+                                                        ).format('MMMM') == m
+                                                    "
+                                                >
+                                                    {{
+                                                        dayjs(
+                                                            prota.tanggal
+                                                        ).format("DD")
+                                                    }}
+                                                </span>
+                                                <span v-else>
+                                                    <p v-if="cekLibur(m, w)">
+                                                        Libur
+                                                    </p>
                                                 </span>
                                             </td>
                                         </template>
                                     </tr>
                                 </template>
-                                <tr v-for="nonAtp in nonAtps">
-                                    <td
-                                        class="border border-black p-2"
-                                        colspan="4"
-                                    >
-                                        {{ nonAtp.atp_id }}
-                                    </td>
-                                    <td
-                                        class="border border-black p-2 text-center"
-                                    >
-                                        {{ nonAtp.aw }} JP
-                                    </td>
-                                    <template
-                                        v-for="m in syahrs"
-                                        :key="m + 'a'"
-                                    >
-                                        <td
-                                            class="border border-black p-2"
-                                            v-for="w in minggus(m)"
-                                            :key="w"
-                                            :class="
-                                                nonAtp.minggu_ke == w &&
-                                                dayjs(nonAtp.tanggal).format(
-                                                    'MMMM'
-                                                ) == m
-                                                    ? 'bg-white'
-                                                    : cekLibur(m, w)
-                                                    ? 'bg-red-100'
-                                                    : 'bg-slate-200'
-                                            "
-                                        >
-                                            <span
-                                                v-if="
-                                                    nonAtp.minggu_ke == w &&
-                                                    dayjs(
-                                                        nonAtp.tanggal
-                                                    ).format('MMMM') == m
-                                                "
-                                                >{{
-                                                    dayjs(
-                                                        nonAtp.tanggal
-                                                    ).format("DD")
-                                                }}</span
-                                            >
-                                            <span v-else>
-                                                <p v-if="cekLibur(m, w)">
-                                                    Libur
-                                                </p>
-                                                <!-- <p v-else>{{ atp }}</p> -->
-                                            </span>
-                                        </td>
-                                    </template>
-                                </tr>
                             </tbody>
                         </table>
 

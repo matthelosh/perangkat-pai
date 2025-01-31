@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Atp;
+use App\Models\Elemen;
 use App\Models\Jadwal;
 use App\Models\Prota;
 use App\Models\Tapel;
@@ -15,21 +16,45 @@ use Illuminate\Support\Facades\Auth;
 
 class ProsemService
 {
-    public function index($tingkat = null, $mine = '1')
+    public function index($tingkat = null, $mine = '1', $fase = null, $semester)
     {
+
         $rombel = Rombel::whereGuruId(Auth::user()->userable->nip)->whereTingkat($tingkat)->whereTapel(\tapel()->kode)->with('jadwals')->first();
+        $rombelId = $rombel->id;
         if ($mine == 'true') {
-            $atps = Atp::where('guru_id', auth()->user()->userable->nip)
+            $guruId = \auth()->user()->userable->nip;
+            $atps = Atp::where('guru_id', $guruId)
                 ->whereTingkat($tingkat)
                 ->whereSemester($this->semester()->kode)
                 ->with('prosems')
                 ->get();
 
-            $protas = Prota::
-                // whereGuruId(auth()->user()->userable->nip)
-                whereRombelId($rombel->kode)
-                ->whereSemester($this->semester()->kode)
+            $protas = Prota::whereGuruId(auth()->user()->userable->nip)
+                ->whereRombelId($rombel->kode)
+                ->whereSemester($semester)
                 ->with('atp')
+                ->get();
+
+
+            $elemens = Elemen::where('fase', $fase)
+                ->with([
+                    'atps' => function ($a) use ($semester, $guruId, $rombelId) {
+                        $a->whereSemester($semester);
+                        $a->whereGuruId($guruId);
+                        // $a->whereHas('protas', function ($pr) use ($rombelId, $semester) {
+                        //     $pr->whereRombelId($rombelId);
+                        //     $pr->whereSemester($semester);
+                        // });
+
+                        $a->with([
+                            'prota'
+                        ]);
+                    },
+                    'materis' => function ($m) use ($tingkat, $semester) {
+                        $m->whereTingkat($tingkat);
+                        $m->whereSemester($semester);
+                    }
+                ])
                 ->get();
         } else {
             $atps = Atp::whereNull('guru_id')
@@ -50,6 +75,7 @@ class ProsemService
             'rombel' => $rombel,
             'kaldiks' => $this->kaldiks($this->tapel()),
             'protas' => $protas,
+            'elemens' => $elemens ?? []
         ];
     }
 

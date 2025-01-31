@@ -31,7 +31,7 @@ class ProtaController extends Controller
                 $atps = Atp::where('guru_id', $nip)
                     ->where('tingkat', $request->tingkat)
                     ->with('elemen')
-                    ->with('protas', function ($q) use ($nip) {
+                    ->with('prota', function ($q) use ($nip) {
                         $q->where('guru_id', $nip);
                     })
                     ->get();

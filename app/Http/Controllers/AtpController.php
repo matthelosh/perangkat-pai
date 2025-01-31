@@ -85,7 +85,7 @@ class AtpController extends Controller
             Atp::updateOrCreate(
                 [
                     'id' => $data['id'] ?? null,
-                    'kode' => $this->kode($request->query('mine'), $data['elemen_id']),
+                    'kode' => $data['kode'] ?? $this->kode($request->query('mine'), $data['elemen_id']),
                 ],
                 [
                     'guru_id' => $request->query('mine') ? auth()->user()->userable->nip : null,
