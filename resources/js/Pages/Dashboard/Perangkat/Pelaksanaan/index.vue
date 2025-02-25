@@ -16,6 +16,7 @@ import DashLayout from "@/layouts/DashboardLayout.vue";
         <el-row class="w-full" :gutter="20">
             <el-col
                 :span="8"
+                :xs="24"
                 v-for="(rombel, r) in page.props.rombels"
                 :key="rombel.kode"
             >

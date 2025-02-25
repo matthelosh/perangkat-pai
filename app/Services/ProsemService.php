@@ -38,8 +38,9 @@ class ProsemService
 
             $elemens = Elemen::where('fase', $fase)
                 ->with([
-                    'atps' => function ($a) use ($semester, $guruId, $rombelId) {
+                    'atps' => function ($a) use ($semester, $guruId, $rombelId, $tingkat) {
                         $a->whereSemester($semester);
+                        $a->where('tingkat', $tingkat);
                         $a->whereGuruId($guruId);
                         // $a->whereHas('protas', function ($pr) use ($rombelId, $semester) {
                         //     $pr->whereRombelId($rombelId);

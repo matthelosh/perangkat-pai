@@ -17,7 +17,7 @@ import {
 } from "@/helpers/ApeHelper";
 import { ElNotification } from "element-plus";
 
-const model = ref("1");
+const model = ref("2");
 
 const Kop = defineAsyncComponent(() => import("@/components/Umum/Kop.vue"));
 const Ttd = defineAsyncComponent(() => import("@/components/Umum/Ttd.vue"));
@@ -54,15 +54,7 @@ const eventsDate = computed(() => {
     let events = allUnefektif(syahrs.value, page.props.rombel.jadwals[0].hari);
     events.flat(2);
 
-    // let liburs = []
     let offs = [];
-    // for (let t=0; t < liburs.value.length; t++) {
-    //     offs.push({
-    //         minggu: weekOfMonth(liburs.value[t]),
-    //         bulan: dayjs(liburs.value[t]).format('MMMM'),
-    //         tanggal: dayjs(liburs.value[t]).format('YYYY-MM-DD')
-    //     })
-    // }
     liburs.value.forEach((libur, l) => {
         offs.push({
             minggu: weekOfMonth(libur.mulai),
@@ -72,6 +64,16 @@ const eventsDate = computed(() => {
     });
 
     return offs;
+});
+
+const allprotas = computed(() => {
+    let elemens = [];
+    page.props.elemens.forEach((item, i) => {
+        item.tanggal = item.atps[0].prota.tanggal;
+        elemens.push(item);
+    });
+    let res = [...elemens, ...nonAtps.value];
+    return res.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 });
 
 const nonAtps = computed(() => {
@@ -213,6 +215,7 @@ const cetak = async () => {
                                 </tr>
                             </table>
                         </div>
+                        <!-- {{ allprotas }} -->
                         <!-- Model 2 -->
                         <table class="border w-full" v-if="model == '2'">
                             <thead>
@@ -272,13 +275,12 @@ const cetak = async () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <template
-                                    v-for="(elemen, e) in page.props.elemens"
-                                >
+                                <template v-for="(elemen, e) in allprotas">
                                     <tr
                                         v-for="(atp, a) in elemen.atps"
                                         :key="a"
                                         class="group relative"
+                                        v-if="elemen.atps"
                                     >
                                         <td
                                             class="border border-black p-1 w-[80px]"
@@ -343,9 +345,6 @@ const cetak = async () => {
                                         >
                                             {{ atp.aw }} JP
                                         </td>
-                                        <!-- <td class="border border-black p-1">
-                                            {{ atp.prota?.minggu_ke }}
-                                        </td> -->
                                         <template
                                             v-for="m in syahrs"
                                             :key="m + 'a'"
@@ -383,69 +382,65 @@ const cetak = async () => {
                                                     <p v-if="cekLibur(m, w)">
                                                         Libur
                                                     </p>
-                                                    <!-- <p v-else>{{ atp }}</p> -->
+                                                </span>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                    <tr v-else>
+                                        <td
+                                            class="border border-black p-2"
+                                            colspan="4"
+                                        >
+                                            {{ elemen.atp_id }}
+                                        </td>
+                                        <td
+                                            class="border border-black p-2 text-center"
+                                        >
+                                            {{ elemen.aw }} JP
+                                        </td>
+                                        <template
+                                            v-for="m in syahrs"
+                                            :key="m + 'a'"
+                                        >
+                                            <td
+                                                class="border border-black p-2"
+                                                v-for="w in minggus(m)"
+                                                :key="w"
+                                                :class="
+                                                    elemen.minggu_ke == w &&
+                                                    dayjs(
+                                                        elemen.tanggal
+                                                    ).format('MMMM') == m
+                                                        ? 'bg-white'
+                                                        : cekLibur(m, w)
+                                                        ? 'bg-red-100'
+                                                        : 'bg-slate-200'
+                                                "
+                                            >
+                                                <span
+                                                    v-if="
+                                                        elemen.minggu_ke == w &&
+                                                        dayjs(
+                                                            elemen.tanggal
+                                                        ).format('MMMM') == m
+                                                    "
+                                                    >{{
+                                                        dayjs(
+                                                            elemen.tanggal
+                                                        ).format("DD")
+                                                    }}</span
+                                                >
+                                                <span v-else>
+                                                    <p v-if="cekLibur(m, w)">
+                                                        Libur
+                                                    </p>
                                                 </span>
                                             </td>
                                         </template>
                                     </tr>
                                 </template>
-                                <tr v-for="nonAtp in nonAtps">
-                                    <td
-                                        class="border border-black p-2"
-                                        colspan="4"
-                                    >
-                                        {{ nonAtp.atp_id }}
-                                    </td>
-                                    <td
-                                        class="border border-black p-2 text-center"
-                                    >
-                                        {{ nonAtp.aw }} JP
-                                    </td>
-                                    <template
-                                        v-for="m in syahrs"
-                                        :key="m + 'a'"
-                                    >
-                                        <td
-                                            class="border border-black p-2"
-                                            v-for="w in minggus(m)"
-                                            :key="w"
-                                            :class="
-                                                nonAtp.minggu_ke == w &&
-                                                dayjs(nonAtp.tanggal).format(
-                                                    'MMMM'
-                                                ) == m
-                                                    ? 'bg-white'
-                                                    : cekLibur(m, w)
-                                                    ? 'bg-red-100'
-                                                    : 'bg-slate-200'
-                                            "
-                                        >
-                                            <span
-                                                v-if="
-                                                    nonAtp.minggu_ke == w &&
-                                                    dayjs(
-                                                        nonAtp.tanggal
-                                                    ).format('MMMM') == m
-                                                "
-                                                >{{
-                                                    dayjs(
-                                                        nonAtp.tanggal
-                                                    ).format("DD")
-                                                }}</span
-                                            >
-                                            <span v-else>
-                                                <p v-if="cekLibur(m, w)">
-                                                    Libur
-                                                </p>
-                                                <!-- <p v-else>{{ atp }}</p> -->
-                                            </span>
-                                        </td>
-                                    </template>
-                                </tr>
                             </tbody>
                         </table>
-
-                        <!-- <p>{{ page.props.protas }}</p> -->
 
                         <el-scrollbar width="100vw" v-if="model == '1'">
                             <table class="my-8 w-full">
