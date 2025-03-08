@@ -15,7 +15,7 @@ class KkgController extends Controller
     public function kegiatan(Request $request)
     {
         try {
-            $kegiatans = Kaldik::wherePelaksana("kkg")->get();
+            $kegiatans = Kaldik::wherePelaksana("kkg")->with('kuitansis')->get();
             return Inertia::render('Dashboard/Kkg/Kegiatan', [
                 'kegiatans' => $kegiatans,
                 'gurus' => Guru::with('sekolah')->get()

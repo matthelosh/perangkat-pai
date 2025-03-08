@@ -40,8 +40,8 @@ class KaldikController extends Controller
                 [
                     "tapel_id" => $data['tapel_id'],
                     "label" => $data['label'],
-                    "mulai" => $data['mulai'],
-                    "selesai" => $data['selesai'],
+                    "mulai" => Carbon::parse($data['mulai'])->setTimezone('Asia/Jakarta')->format('Y-m-d'),
+                    "selesai" => Carbon::parse($data['selesai'])->setTimezone('Asia/Jakarta')->format('Y-m-d'),
                     "deskripsi" => $data['deskripsi'],
                     "is_libur" => $data['is_libur'],
                     "pelaksana" => $data['pelaksana'],

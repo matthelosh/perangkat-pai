@@ -19,4 +19,9 @@ class Kaldik extends Model
         "warna",
         'pelaksana'
     ];
+
+    public function kuitansis()
+    {
+        return $this->hasMany(Kuitansi::class, 'kegiatan_id', 'id');
+    }
 }

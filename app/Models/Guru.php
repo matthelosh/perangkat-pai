@@ -28,7 +28,8 @@ class Guru extends Model
     ];
 
 
-    function sekolah() {
+    function sekolah()
+    {
         return $this->belongsTo(Sekolah::class, 'sekolah_id', 'npsn');
     }
 
@@ -37,11 +38,18 @@ class Guru extends Model
         return $this->belongsToMany(Sekolah::class);
     }
 
-    function rombels() {
+    function rombels()
+    {
         return $this->hasMany(Rombel::class, 'guru_id', 'nip');
     }
 
-    function account() {
+    function account()
+    {
         return $this->morphOne(User::class, 'userable');
+    }
+
+    function jabatan()
+    {
+        return $this->hasOne(Jabatan::class, 'guru_id', 'nip');
     }
 }

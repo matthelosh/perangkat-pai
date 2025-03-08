@@ -178,10 +178,16 @@ Route::middleware("auth")->group(function () {
             Route::prefix("kegiatan")->group(
                 function () {
                     Route::get("/", [KkgController::class, 'kegiatan'])->name('kkg.kegiatan');
+                    Route::prefix('kuitansi')->group(
+                        function () {
+                            Route::post('/', [KuitansiController::class, 'store'])->name('kkg.kegiatan.kuitansi.store');
+                        }
+                    );
                 }
             );
         }
     );
+
 
     // Image
     Route::prefix('image')->group(

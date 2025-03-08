@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Jabatan;
 use App\Models\Menu;
 use App\Models\Tapel;
 use App\Models\Semester;
@@ -52,7 +53,8 @@ class HandleInertiaRequests extends Middleware
             'app_url' => \config('app.url'),
             'flash' => [
                 'message' => session('message'),
-            ]
+            ],
+            'penguruses' => Jabatan::with('guru')->get(),
         ]);
     }
 

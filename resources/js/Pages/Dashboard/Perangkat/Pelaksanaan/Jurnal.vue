@@ -94,7 +94,7 @@ const onFotoPicked = async (e) => {
             <!-- On Large Screen and Print -->
             <div class="card-body font-serif cetak hidden sm:block">
                 <div
-                    class="paper w-[60%] mx-auto h-[1024px] print:h-full p-8 print:pl-8 print:w-full bg-slate-100 mb-4 p-4 print:bg-white break-inside-avoid"
+                    class="paper w-[60%] mx-auto h-auto print:h-full p-8 print:pl-8 print:w-full bg-slate-100 mb-4 p-4 print:bg-white break-inside-avoid"
                     v-for="(prota, p) in page.props.protas"
                     :key="p"
                 >
@@ -203,11 +203,11 @@ const onFotoPicked = async (e) => {
                     </div>
                     <p>Absensi:</p>
                     <div
-                        class="catatan border border-2 border-black p-4 h-16"
+                        class="catatan border border-2 border-black p-4 h-28"
                     ></div>
                     <p class="mt-4">Catatan:</p>
                     <div
-                        class="catatan border border-2 border-black p-4 h-16"
+                        class="catatan border border-2 border-black p-4 h-40"
                     ></div>
                     <Ttd :tanggal="prota.tanggal" />
                 </div>
