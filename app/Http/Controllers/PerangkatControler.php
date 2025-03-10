@@ -132,7 +132,28 @@ class PerangkatControler extends Controller
     public function nilaiPts(Request $request)
     {
         $rombel = $this->rombel($request->query('rombel'));
-        dd($rombel);
+        $rombelId = $rombel->id;
+        $asesmen = Asesmen::where(
+            [
+                ['tapel', '=', tapel()->kode],
+                ['semester', '=', semester()->kode],
+                ['tingkat', '=', $rombel->tingkat],
+                ['tipe', '=', 'pts']
+            ]
+        )
+            ->with([
+                'analises'
+                => function ($a) use ($rombelId) {
+                    $a->whereRombelId($rombelId);
+                    $a->with('siswa');
+                }
+            ])
+            ->first();
+
+        return Inertia::render('Dashboard/Perangkat/Evaluasi/Pts', [
+            'rombel' => $rombel,
+            'asesmen' => $asesmen
+        ]);
     }
     public function nilaiPas(Request $request)
     {

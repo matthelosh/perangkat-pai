@@ -144,7 +144,16 @@ Route::middleware("auth")->group(function () {
     Route::prefix('evaluasi')->group(function () {
         Route::get("/", [PerangkatControler::class, 'evaluasi'])->name('evaluasi');
         Route::get("/formatif", [PerangkatControler::class, 'nilaiFormatif'])->name('perangkat.evaluasi.formatif');
-        Route::get("/pts", [PerangkatControler::class, 'nilaiPts'])->name('perangkat.evaluasi.sumatif.pts');
+        Route::prefix("pts")->group(
+            function () {
+                Route::get("/", [PerangkatControler::class, 'nilaiPts'])->name('perangkat.evaluasi.sumatif.pts');
+                Route::prefix("nilai")->group(
+                    function () {
+                        Route::post("/", [NilaiController::class, 'store'])->name('perangkat.evaluasi.nilai.store');
+                    }
+                );
+            }
+        );
         Route::prefix('pas')->group(
             function () {
                 Route::get("/", [PerangkatControler::class, 'nilaiPas'])->name('perangkat.evaluasi.sumatif.pas');
