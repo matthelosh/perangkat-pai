@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -149,7 +150,8 @@ Route::middleware("auth")->group(function () {
                 Route::get("/", [PerangkatControler::class, 'nilaiPts'])->name('perangkat.evaluasi.sumatif.pts');
                 Route::prefix("nilai")->group(
                     function () {
-                        Route::post("/", [NilaiController::class, 'store'])->name('perangkat.evaluasi.nilai.store');
+                        Route::post("/", [NilaiController::class, 'store'])->name('perangkat.evaluasi.nilai.pts.store');
+                        Route::put("/{id}/update", [NilaiController::class, 'update'])->name('perangkat.evaluasi.nilai.pts.update');
                     }
                 );
             }

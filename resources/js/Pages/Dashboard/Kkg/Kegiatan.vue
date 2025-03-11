@@ -583,6 +583,7 @@ const printOne = async (item) => {
                         :native-type="null"
                         type="primary"
                         @click="printKuitansis"
+                        v-if="kegiatan.kuitansis.length > 0"
                     >
                         <Icon icon="mdi:printer-check" />
                         Cetak Semua
@@ -695,7 +696,7 @@ const printOne = async (item) => {
                                             <tr>
                                                 <td>Jumlah</td>
                                                 <td>:</td>
-                                                <td>
+                                                <td contenteditable="true">
                                                     {{
                                                         kuitansi.jumlah.toLocaleString(
                                                             "id-ID",

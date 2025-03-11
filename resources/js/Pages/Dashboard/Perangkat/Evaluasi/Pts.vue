@@ -5,6 +5,7 @@ import { Icon } from "@iconify/vue";
 import { writeFile, utils } from "xlsx";
 
 import DashLayout from "@/layouts/DashboardLayout.vue";
+import { ElNotification } from "element-plus";
 
 const loading = ref(false);
 const page = usePage();
@@ -282,7 +283,7 @@ const simpan = async () => {
     });
     // console.log(datas);
     router.post(
-        route("perangkat.evaluasi.nilai.store", {
+        route("perangkat.evaluasi.nilai.pts.store", {
             _query: {
                 tipe: page.props.asesmen.tipe,
                 rombel_id: page.props.rombel.id,
@@ -294,9 +295,42 @@ const simpan = async () => {
             onSuccess: () => {
                 router.reload({ only: ["asesmen"] });
                 init();
+                ElNotification({
+                    title: "Info",
+                    message: page.props.flash.message,
+                    type: "success",
+                });
             },
             onError: (err) => {
                 console.log(err);
+            },
+            onFinish: () => (loading.value = false),
+        }
+    );
+};
+
+const updateOne = async (item, index) => {
+    let payload = answers.value[index];
+    payload.skor = skor(index);
+    payload.asesmen_id = page.props.asesmen.id;
+    router.put(
+        route("perangkat.evaluasi.nilai.pts.update", {
+            id: payload.id,
+            _query: {
+                tipe: page.props.asesmen.tipe,
+                rombel_id: page.props.rombel.id,
+            },
+        }),
+        payload,
+        {
+            onStart: () => (loading.value = true),
+            onSuccess: () => {
+                router.reload({ only: ["asesmen"] });
+                ElNotification({
+                    title: "Info",
+                    message: page.props.flash.message,
+                    type: "success",
+                });
             },
             onFinish: () => (loading.value = false),
         }
@@ -337,6 +371,7 @@ const init = () => {
         let ans = [];
         page.props.asesmen.analises.forEach((nilai) => {
             ans.push({
+                id: nilai.id,
                 siswa_id: nilai.siswa_id,
                 nama: nilai.siswa.nama,
                 jk: nilai.siswa.jk,
@@ -509,6 +544,19 @@ onBeforeMount(() => {
                             width="80"
                         >
                             {{ skor(scope.$index) }}
+                        </el-table-column>
+                        <el-table-column
+                            label="Opsi"
+                            #default="{ row, $index }"
+                            fixed="right"
+                        >
+                            <el-button
+                                circle
+                                :native-type="null"
+                                @click="updateOne(row, $index)"
+                            >
+                                <Icon icon="mdi:check" />
+                            </el-button>
                         </el-table-column>
                     </el-table>
                 </div>

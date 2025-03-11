@@ -83,9 +83,25 @@ class NilaiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Nilai $nilai)
+    public function update(Request $request, Nilai $nilai, $id)
     {
-        //
+        try {
+            // dd($request->all());
+            $nilai = $nilai::findOrFail($id);
+            $analisis = Analisis::findOrFail($request->asesmen_id)
+                ->where('siswa_id', $request->siswa_id)
+                ->where('rombel_id', $request->rombel_id)
+                ->first();
+            $analisis->update([
+                'pgs' => $request->pgs,
+                'isians' => \join(",", $request->isians),
+                'uraians' => join(",", $request->uraians)
+            ]);
+            $nilai::findOrFail($id)->update(['skor' => $request->skor]);
+            return back()->with('message', 'HORE! NILAI ' . \strtoupper($request->tipe) . ' ' . $request->nama . ' DIPERBARUI');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
