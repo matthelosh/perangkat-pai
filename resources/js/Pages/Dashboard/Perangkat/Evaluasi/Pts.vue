@@ -61,7 +61,6 @@ const skor = (index) => {
         parseInt(soals[1]) * 2 +
         parseInt(soals[2]) * 3;
     skor = pg + isian * 2 + uraian * 3;
-    return soals;
     return parseFloat(((skor / max) * 100).toFixed(2));
     // return isian;
 };
