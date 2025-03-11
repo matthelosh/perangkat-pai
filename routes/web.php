@@ -150,8 +150,8 @@ Route::middleware("auth")->group(function () {
                 Route::get("/", [PerangkatControler::class, 'nilaiPts'])->name('perangkat.evaluasi.sumatif.pts');
                 Route::prefix("nilai")->group(
                     function () {
-                        Route::post("/", [NilaiController::class, 'store'])->name('perangkat.evaluasi.nilai.pts.store');
-                        Route::put("/{id}/update", [NilaiController::class, 'update'])->name('perangkat.evaluasi.nilai.pts.update');
+                        Route::post("/store-many", [NilaiController::class, 'storeMany'])->name('perangkat.evaluasi.nilai.pts.store-many');
+                        Route::post("/store", [NilaiController::class, 'store'])->name('perangkat.evaluasi.nilai.pts.store');
                     }
                 );
             }
@@ -160,7 +160,7 @@ Route::middleware("auth")->group(function () {
             function () {
                 Route::get("/", [PerangkatControler::class, 'nilaiPas'])->name('perangkat.evaluasi.sumatif.pas');
                 Route::prefix("nilai")->group(function () {
-                    Route::post("/", [NilaiController::class, 'store'])->name('perangkat.evaluasi.nilai.store');
+                    Route::post("/", [NilaiController::class, 'storeMany'])->name('perangkat.evaluasi.nilai.store-many');
                 });
             }
         );

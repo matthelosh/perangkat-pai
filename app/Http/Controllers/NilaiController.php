@@ -27,7 +27,7 @@ class NilaiController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function storeMany(Request $request)
     {
         try {
             foreach ($request->datas as $data) {
@@ -83,21 +83,46 @@ class NilaiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Nilai $nilai, $id)
+    public function store(Request $request)
     {
         try {
             // dd($request->all());
-            $nilai = $nilai::findOrFail($id);
-            $analisis = Analisis::findOrFail($request->asesmen_id)
-                ->where('siswa_id', $request->siswa_id)
-                ->where('rombel_id', $request->rombel_id)
-                ->first();
-            $analisis->update([
-                'pgs' => $request->pgs,
-                'isians' => \join(",", $request->isians),
-                'uraians' => join(",", $request->uraians)
-            ]);
-            $nilai::findOrFail($id)->update(['skor' => $request->skor]);
+            // $nilai = Nilai::findOrFail($id);
+            // $analisis = Analisis::findOrFail($request->asesmen_id)
+            //     ->where('siswa_id', $request->siswa_id)
+            //     ->where('rombel_id', $request->rombel_id)
+            //     ->first();
+            // $analisis->update([
+            //     'pgs' => $request->pgs,
+            //     'isians' => \join(",", $request->isians),
+            //     'uraians' => join(",", $request->uraians)
+            // ]);
+            // $nilai::findOrFail($id)->update(['skor' => $request->skor]);
+            $nilai = Nilai::updateOrCreate(
+                [
+                    'id' => $reques->id ?? null,
+                    'siswa_id' => $request->siswa_id,
+                    'asesmen_id' => $request->asesmen_id,
+                    'rombel_id' => $request->rombel_id
+                ],
+                [
+                    'skor' => $request->skor
+                ]
+            );
+
+            $analisis = Analisis::updateOrCreate(
+                [
+                    'asesmen_id' => $request->asesmen_id,
+                    'siswa_id' => $request->siswa_id,
+                    'rombel_id' => $request->rombel_id
+                ],
+                [
+
+                    'pgs' => $request->pgs,
+                    'isians' =>  \join(",", $request->isians),
+                    'uraians' => join(",", $request->uraians),
+                ]
+            );
             return back()->with('message', 'HORE! NILAI ' . \strtoupper($request->tipe) . ' ' . $request->nama . ' DIPERBARUI');
         } catch (\Throwable $th) {
             throw $th;

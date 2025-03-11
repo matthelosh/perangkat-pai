@@ -61,6 +61,7 @@ const skor = (index) => {
         parseInt(soals[1]) * 2 +
         parseInt(soals[2]) * 3;
     skor = pg + isian * 2 + uraian * 3;
+    return soals;
     return parseFloat(((skor / max) * 100).toFixed(2));
     // return isian;
 };
@@ -283,7 +284,7 @@ const simpan = async () => {
     });
     // console.log(datas);
     router.post(
-        route("perangkat.evaluasi.nilai.pts.store", {
+        route("perangkat.evaluasi.nilai.pts.store-many", {
             _query: {
                 tipe: page.props.asesmen.tipe,
                 rombel_id: page.props.rombel.id,
@@ -313,9 +314,8 @@ const updateOne = async (item, index) => {
     let payload = answers.value[index];
     payload.skor = skor(index);
     payload.asesmen_id = page.props.asesmen.id;
-    router.put(
-        route("perangkat.evaluasi.nilai.pts.update", {
-            id: payload.id,
+    router.post(
+        route("perangkat.evaluasi.nilai.pts.store", {
             _query: {
                 tipe: page.props.asesmen.tipe,
                 rombel_id: page.props.rombel.id,
