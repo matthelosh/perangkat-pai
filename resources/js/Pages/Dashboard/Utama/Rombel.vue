@@ -32,7 +32,7 @@ const importedData = ref([]);
 const showDialogImpor = ref(false);
 
 const hapus = async (item) => {
-    ElMessageBox.confirm(`Yakin menghapus rombel ${rombel.label}?`, "Warning", {
+    ElMessageBox.confirm(`Yakin menghapus rombel ${item.label}?`, "Warning", {
         confirmButtonText: "Ya",
         cancelButtonText: "Batal",
         type: "warning",
@@ -214,7 +214,11 @@ const syncRombel = async () => {
                     >
                         <template #title>
                             <div class="title flex gap-2">
-                                <span>Kelas {{ item.label }}</span>
+                                <span
+                                    >Kelas {{ item.label }} [{{
+                                        item.kode
+                                    }}]</span
+                                >
                                 <span class="hidden group-hover:flex gap-2">
                                     <el-link
                                         type="primary"

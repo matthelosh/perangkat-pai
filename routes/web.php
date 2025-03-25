@@ -29,6 +29,12 @@ Route::middleware("auth")->group(function () {
             Route::get('/', [RaporController::class, 'getTp'])->name('rapor.tp.get');
             Route::post('/sync', [RaporController::class, 'syncTp'])->name('rapor.tp.sync');
         });
+
+        Route::prefix("nilai")->group(
+            function () {
+                Route::post('/store', [RaporController::class, "storeNilai"])->name("rapor.nilai.store");
+            }
+        );
     });
 
 

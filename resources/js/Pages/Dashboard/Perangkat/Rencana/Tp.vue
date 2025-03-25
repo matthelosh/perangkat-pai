@@ -134,7 +134,10 @@ const cetak = async () => {
 
 // SYnc TP Rapor SD
 const formSyncTp = ref(false);
-const closeFormSyncTp = () => (formSyncTp.value = false);
+const closeFormSyncTp = () => {
+    formSyncTp.value = false;
+    router.reload({ only: ["elemens"] });
+};
 const syncTpRapor = async () => {
     formSyncTp.value = true;
 };

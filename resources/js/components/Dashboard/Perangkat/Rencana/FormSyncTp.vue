@@ -1,14 +1,21 @@
 <script setup>
 const props = defineProps({ open: Boolean, selectedFase: String });
 const emit = defineEmits(["close"]);
+import { router, usePage } from "@inertiajs/vue3";
 import { Icon } from "@iconify/vue";
 import axios from "axios";
-import { onBeforeMount, ref } from "vue";
+import { defineAsyncComponent, onBeforeMount, ref } from "vue";
+import { ElNotification } from "element-plus";
+
+const Loading = defineAsyncComponent(() =>
+    import("@/components/Umum/Loading.vue")
+);
+
 const loading = ref(false);
 const show = ref(false);
 const localTps = ref([]);
 const raporTps = ref([]);
-
+const page = usePage();
 const list = async () => {
     try {
         const { data } = await axios.get(
@@ -20,6 +27,23 @@ const list = async () => {
     } catch (err) {
         console.log(err);
     }
+};
+
+const SinkronTp = async () => {
+    router.post(route("rapor.tp.sync"), raporTps.value, {
+        onStart: () => (loading.value = true),
+        onSuccess: () => {
+            ElNotification({
+                title: "Info",
+                message: page.props.flash.message,
+                type: "success",
+            });
+        },
+        onFinish: () => {
+            loading.value = false;
+            emit("close");
+        },
+    });
 };
 
 onBeforeMount(async () => {
@@ -40,7 +64,7 @@ onBeforeMount(async () => {
                 <h3>Sinkron TP Rapor</h3>
                 <div class="items flex items-center gap-1">
                     <el-button-group>
-                        <el-button>
+                        <el-button @click="SinkronTp">
                             <Icon icon="mdi:upload" />
                             Sinkron
                         </el-button>
@@ -101,4 +125,7 @@ onBeforeMount(async () => {
             </el-row>
         </template>
     </el-dialog>
+    <Teleport to="body">
+        <Loading v-if="loading" />
+    </Teleport>
 </template>

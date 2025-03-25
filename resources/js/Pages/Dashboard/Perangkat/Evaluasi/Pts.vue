@@ -350,6 +350,46 @@ const impor = async () => {
     };
 };
 
+const syncRapor = async () => {
+    let siswas = [];
+    let queryParams = {
+        rombelId: page.props.rombel.kode,
+        tingkat: page.props.rombel.tingkat,
+        mapelId: "pabp",
+        agama: "Islam",
+        semester: page.props.semester.kode,
+        tipe: "ts",
+        tapel: page.props.tapel.kode,
+        guruId: page.props.user.userable.nip,
+    };
+    answers.value.forEach((siswa, s) => {
+        siswas.push({
+            nisn: siswa.siswa_id,
+            nama: siswa.nama,
+            nilai: skor(s),
+        });
+    });
+    router.post(
+        route("rapor.nilai.store", {
+            _query: queryParams,
+        }),
+        { siswas: siswas },
+        {
+            onStart: () => (loading.value = true),
+            onSuccess: () => {
+                ElNotification({
+                    title: "Info",
+                    message: page.props.flash.message,
+                    type: "success",
+                });
+            },
+            onFinish: () => {
+                loading.value = false;
+            },
+        }
+    );
+};
+
 const init = () => {
     if (!page.props.asesmen || page.props.asesmen.analises.length < 1) {
         let ans = [];
@@ -439,6 +479,10 @@ onBeforeMount(() => {
                         <el-button :native-type="null" @click="simpan">
                             <Icon icon="mdi:hdd" />
                             Simpan
+                        </el-button>
+                        <el-button :native-type="null" @click="syncRapor">
+                            <Icon icon="mdi:send" />
+                            Sync Rapor
                         </el-button>
                     </div>
                 </div>

@@ -18,8 +18,8 @@ class PerangkatControler extends Controller
     public function rencana(Request $request)
     {
         return Inertia::render("Dashboard/Perangkat/Rencana/index", [
-            'rombels' => $this->rombelku(),
-            'jadwals' => $this->jadwalku()
+            'rombels' => $this->rombelku($request->user()),
+            'jadwals' => $this->jadwalku($request->user())
         ]);
     }
 
@@ -37,8 +37,8 @@ class PerangkatControler extends Controller
     {
         try {
             return Inertia::render("Dashboard/Perangkat/Pelaksanaan/index", [
-                'rombels' => $this->rombelku(),
-                'jadwals' => $this->jadwalku(),
+                'rombels' => $this->rombelku($request->user()),
+                'jadwals' => $this->jadwalku($request->user()),
             ]);
         } catch (\Throwable $th) {
             throw $th;
@@ -197,18 +197,23 @@ class PerangkatControler extends Controller
         return Rombel::whereKode($kode)->with('jadwals', 'siswas')->first();
     }
 
-    private function rombelku()
+    private function rombelku($user)
     {
-        if (auth()->user()->hasRole('gpai')) {
+        if ($user->hasRole('gpai')) {
             return Rombel::where('guru_id', auth()->user()->userable->nip)
                 ->where('tapel', $this->tapel()->kode)
                 ->get();
         }
     }
 
-    private function jadwalku()
+    private function jadwalku($user)
     {
-        return Jadwal::where('guru_id', auth()->user()->userable->nip)->whereTapelId($this->tapel()->kode)->with('rombel')->get();
+        $jadwals = [];
+        if ($user->hasRole('gpai')) {
+
+            $jadwals = Jadwal::where('guru_id', auth()->user()->userable->nip)->whereTapelId($this->tapel()->kode)->with('rombel')->get();
+        }
+        return $jadwals;
     }
 
     private function tapel()

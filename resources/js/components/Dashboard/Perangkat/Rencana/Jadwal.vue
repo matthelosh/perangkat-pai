@@ -148,18 +148,21 @@ const cetak = async () => {
                 </button>
             </div>
         </div>
-        <div class="content p-3 bg-white cetak">
+        <div
+            class="content p-3 bg-white cetak"
+            v-if="page.props.jadwals.length > 0"
+        >
             <Kop class="print:flex" />
             <div class="title my-4">
                 <h3 class="font-bold text-xl text-center uppercase">
-                    jadwal Pelajaran Pendidikan Agama Islam (PAI)
+                    Jadwal Pelajaran Pendidikan Agama Islam (PAI)
                 </h3>
                 <h3 class="font-bold text-xl text-center uppercase">
                     TP. {{ page.props.tapel.label }} Semester
                     {{ page.props.semester.kode == "1" ? "Ganjil" : "genap" }}
                 </h3>
             </div>
-            <table class="border w-full" v-if="page.props.rombels.length > 0">
+            <table class="border w-full" v-if="page.props.rombels?.length > 0">
                 <thead>
                     <tr class="bg-slate-300">
                         <th rowspan="2" class="border p-2 border-black">
@@ -288,7 +291,11 @@ const cetak = async () => {
                 >
             </el-alert>
             <!-- {{ jadwals }} -->
-            <Ttd class="hidden print:flex" tanggal="2025-01-05" />
+            <Ttd
+                class="hidden print:flex"
+                tanggal="2025-01-05"
+                v-if="page.props.jadwals.length > 0"
+            />
         </div>
 
         <div
