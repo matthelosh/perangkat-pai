@@ -292,9 +292,10 @@ const simpan = async () => {
         { datas: datas },
         {
             onStart: () => (loading.value = true),
-            onSuccess: () => {
+            onSuccess: async () => {
                 router.reload({ only: ["asesmen"] });
                 init();
+                fillAnswer();
                 ElNotification({
                     title: "Info",
                     message: page.props.flash.message,
@@ -391,45 +392,49 @@ const syncRapor = async () => {
 };
 
 const init = () => {
-    if (!page.props.asesmen || page.props.asesmen.analises.length < 1) {
-        let ans = [];
-        page.props.rombel.siswas.forEach((siswa) => {
-            ans.push({
-                siswa_id: siswa.nisn,
-                nama: siswa.nama,
-                jk: siswa.jk,
-                pgs: "",
-                isians: [],
-                uraians: [],
-                resPgs: "",
-                skor: 0,
-            });
+    let ans = [];
+    page.props.rombel.siswas.forEach((siswa) => {
+        ans.push({
+            siswa_id: siswa.nisn,
+            nama: siswa.nama,
+            jk: siswa.jk,
+            pgs: "",
+            isians: [],
+            uraians: [],
+            resPgs: "",
+            skor: 0,
         });
-        answers.value = ans;
-    } else {
-        let ans = [];
-        page.props.asesmen.analises.forEach((nilai) => {
-            ans.push({
-                id: nilai.id,
-                siswa_id: nilai.siswa_id,
-                nama: nilai.siswa.nama,
-                jk: nilai.siswa.jk,
-                pgs: nilai.pgs.replaceAll(",", ""),
-                isians: [...nilai.isians.split(",")].filter((n) => n !== ""),
-                uraians: [...nilai.uraians.split(",")].filter((n) => n !== ""),
-                resPgs: "",
-            });
-        });
-        answers.value = ans;
-    }
+    });
+    answers.value = ans;
+};
+
+const fillAnswer = async () => {
+    page.props.asesmen.analises.forEach((nilai) => {
+        const answer = {
+            id: nilai.id,
+            siswa_id: nilai.siswa_id,
+            nama: nilai.siswa?.nama ?? "siapa ya",
+            jk: nilai.siswa?.jk,
+            pgs: nilai.pgs.replaceAll(",", ""),
+            isians: [...nilai.isians.split(",")].filter((n) => n !== ""),
+            uraians: [...nilai.uraians.split(",")].filter((n) => n !== ""),
+            resPgs: "",
+        };
+
+        let index = answers.value.findIndex(
+            (ans) => ans.siswa_id === nilai.siswa_id
+        );
+        answers.value[index] = answer;
+    });
 };
 
 const goto = (link) => {
     router.get(route(link));
 };
 
-onBeforeMount(() => {
-    init();
+onBeforeMount(async () => {
+    await init();
+    if (page.props.asesmen?.analises) fillAnswer();
 });
 </script>
 
@@ -445,7 +450,7 @@ onBeforeMount(() => {
                             <Icon
                                 @click="back"
                                 icon="mdi:arrow-left"
-                                class="text-lg hover:cursor-pointer text-red-200"
+                                class="text-lg hover:cursor-pointer text-white"
                             />
                             Analisis
                             {{ page.props.asesmen.label }}
@@ -509,16 +514,12 @@ onBeforeMount(() => {
                             width="300"
                         ></el-table-column>
                         <el-table-column
-                            label="JK"
-                            prop="jk"
-                            width="100"
-                        ></el-table-column>
-                        <el-table-column
                             label="Pilihan Ganda (Bobot 1)"
                             #default="scope"
                             width="250"
                         >
                             <el-input
+                                v-if="answers[scope.$index]"
                                 v-model="answers[scope.$index].pgs"
                                 placeholder="Masukkan Jawaban Siswa"
                                 @keypress="isLetter($event, scope.$index)"
@@ -527,6 +528,7 @@ onBeforeMount(() => {
                                     >{{ answers[scope.$index].pgs.length }}
                                 </template>
                             </el-input>
+                            <!-- {{ answers[scope.$index] }} -->
                         </el-table-column>
                         <el-table-column
                             label="Isian (Bobot 2)"
@@ -539,6 +541,7 @@ onBeforeMount(() => {
                         >
                             <div class="flex gap-1">
                                 <el-input
+                                    v-if="answers[scope.$index]"
                                     type="number"
                                     min="0"
                                     max="1"
@@ -565,6 +568,7 @@ onBeforeMount(() => {
                         >
                             <div class="flex gap-1">
                                 <el-input
+                                    v-if="answers[scope.$index]"
                                     type="number"
                                     min="0"
                                     max="1"
@@ -586,7 +590,9 @@ onBeforeMount(() => {
                             fixed="right"
                             width="80"
                         >
-                            {{ skor(scope.$index) }}
+                            <span v-if="answers[scope.$index]">
+                                {{ skor(scope.$index) }}
+                            </span>
                         </el-table-column>
                         <el-table-column
                             label="Opsi"
@@ -607,7 +613,14 @@ onBeforeMount(() => {
         </el-row>
         <el-alert type="error" :closable="false" v-else>
             <template #title>
-                <h3 class="text-lg mb-4">Belum Ada Asesmen PAS</h3>
+                <h3 class="text-lg mb-4 flex items-center gap-2">
+                    <Icon
+                        @click="back"
+                        icon="mdi:arrow-left"
+                        class="text-lg font-bold hover:cursor-pointer text-slate-500"
+                    />
+                    Belum Ada Asesmen PTS
+                </h3>
             </template>
             <template #default>
                 <el-button :native-type="null" @click="goto('asesmen.index')"

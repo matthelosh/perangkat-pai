@@ -135,6 +135,7 @@ class RaporController extends Controller
     public function storeNilai(Request $request)
     {
         $payloads = $request->siswas;
+        // dd($payloads, env('RAPOR_URI'));
         try {
             $response = Http::withHeaders([
                 'X-CLIENT-TOKEN' => env('CLIENT_TOKEN'),  // Changed from RAPOR_TOKEN
