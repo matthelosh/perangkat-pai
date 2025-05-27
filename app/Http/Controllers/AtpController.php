@@ -161,7 +161,7 @@ class AtpController extends Controller
     {
         try {
             if ($request->query('mine')) {
-                $atps = Atp::where('guru_id', $request->user()->userable->nip)->get();
+                $atps = Atp::where('guru_id', $request->user()->userable->nip)->where('tingkat', $request->query('tingkat'))->get();
                 foreach ($atps as $atp) {
                     $atp->protas()->delete();
                     $atp->prosems()->delete();

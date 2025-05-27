@@ -114,14 +114,14 @@ const cetak = async () => {
                                     class="border border-black pl-6 py-2 align-top"
                                 >
                                     ${atp.mas?.kode ?? ""}
-                                </td>   
+                                </td>
                 </tr>
         `;
     });
 
     let html = `<html>
                     <head>
-                        <title>Alur Tujuan Pembelajaran</title>    
+                        <title>Alur Tujuan Pembelajaran</title>
                         <style>
                             .hidden-print {
                                 display: none;
@@ -166,9 +166,9 @@ const cetak = async () => {
                                     <th class="border border-black p-2">Asesmen</th>
                                     <th class="border border-black p-2">Modul Ajar</th>
                                 </tr>
-                            </thead>    
+                            </thead>
                             <tbody>
-                                ${trs}   
+                                ${trs}
                             </tbody>
                         </table>
 
@@ -180,7 +180,7 @@ const cetak = async () => {
                                         page.props.sekolahs[0].nama_ks
                                     }</p>
                                     <p>NIP. ${page.props.sekolahs[0].nip_ks}</p>
-                                </div>    
+                                </div>
                                 <div>
                                     <p>Wagir, ${new Date(
                                         tanggal.value
@@ -188,15 +188,15 @@ const cetak = async () => {
                                         day: "2-digit",
                                         month: "long",
                                         year: "numeric",
-                                    })}</p>   
-                                    <p>Guru PAI Bp</p> 
+                                    })}</p>
+                                    <p>Guru PAI Bp</p>
                                     <p class="mt-10 font-bold underline">${
                                         page.props.user.userable.nama
                                     }, ${
         page.props.user.userable.gelar_belakang
     }</p>
                                     <p>NIP. ${page.props.user.userable.nip}</p>
-                                </div>    
+                                </div>
                         </div>
                     </body>
                 </html>`;
@@ -353,7 +353,7 @@ const hapusSemua = async () => {
     )
         .then(async () => {
             await router.post(
-                `/rencana/atp/destroy/all?fase=${params.value.fase}&mine=${params.value.mine}`,
+                `/rencana/atp/destroy/all?fase=${params.value.fase}&mine=${params.value.mine}&tingkat=${tingkat.value}`,
                 {
                     onSuccess: () => {
                         router.reload({ only: ["elemens"] });
