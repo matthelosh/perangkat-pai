@@ -88,7 +88,7 @@ class AtpController extends Controller
                     'kode' => $data['kode'] ?? $this->kode($request->query('mine'), $data['elemen_id']),
                 ],
                 [
-                    'guru_id' => $request->query('mine') ? auth()->user()->userable->nip : null,
+                    'guru_id' => auth()->user()->userable->nip,
 
                     'elemen_id' => $data['elemen_id'],
                     'tingkat' => $data['tingkat'],
@@ -160,17 +160,19 @@ class AtpController extends Controller
     public function destroyAll(Request $request)
     {
         try {
-            if ($request->query('mine')) {
-                $atps = Atp::where('guru_id', $request->user()->userable->nip)->where('tingkat', $request->query('tingkat'))->get();
+            $atps = Atp::where('tingkat', $request->query('tingkat'))
+                        /* where('guru_id', $request->user()->userable->nip) */
+                        /* ->where('tingkat', $request->query('tingkat')) */
+                ->get();
+            /* dd($request->all()); */
                 foreach ($atps as $atp) {
-                    $atp->protas()->delete();
+                    $atp->prota()->delete();
                     $atp->prosems()->delete();
                     $atp->mas()->delete();
                     $atp->delete();
                 }
 
                 return back()->with('message', 'Atp dibersihkan');
-            }
         } catch (\Throwable $th) {
             throw $th;
         }

@@ -353,7 +353,7 @@ const hapusSemua = async () => {
     )
         .then(async () => {
             await router.post(
-                `/rencana/atp/destroy/all?fase=${params.value.fase}&mine=${params.value.mine}&tingkat=${tingkat.value}`,
+                `/rencana/atp/destroy/all?fase=${params.value.fase}&mine=${params.value.mine}&tingkat=${atp.value.tingkat}`,
                 {
                     onSuccess: () => {
                         router.reload({ only: ["elemens"] });
@@ -553,7 +553,7 @@ onBeforeMount(() => {
                         class="w-full flex h-10 bg-slate-100 justify-between items-center px-2 print:hidden"
                     >
                         <!-- <el-switch v-model="mine" active-value="1" inactive-value="0" active-text="Punya saya" inactive-text="Dari sistem" @change="onMineChanged"></el-switch> -->
-                        <div>Tambahkan ATP</div>
+                        <div>Tambahkan ATP | <span class="text-red-400 animate-pulse font-bold">Jangan lupa tambahkan Asesmen Akhir Bab</span></div>
                         <div class="items flex items-center gap-2">
                             <el-popconfirm
                                 :title="`Anda akan menghapus seluruh ATP dase ${params.fase}`"
