@@ -584,12 +584,12 @@ onBeforeMount(() => {
                         type="index"
                         width="50"
                     ></el-table-column>
-                    <el-table-column label="Elemen" width="150">
+                    <el-table-column label="Elemen" width="100">
                         <template #default="{ row }">
                             {{ row.elemen.label }}
                         </template>
                     </el-table-column>
-                    <el-table-column label="Materi" width="200">
+                    <el-table-column label="Materi" width="100">
                         <template #default="{ row }">
                             {{ row.materi }}
                         </template>
@@ -625,7 +625,7 @@ onBeforeMount(() => {
                             <p v-else>Asesmen Sumatif</p>
                         </template>
                     </el-table-column>
-                    <el-table-column label="Konten" width="200">
+                    <el-table-column label="Konten" width="100">
                         <template #default="{ row }">
                             <div v-if="row.konten !== ''">
                                 <ul class="pl-4 list-disc">
@@ -643,7 +643,7 @@ onBeforeMount(() => {
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="Dimensi P5" width="200">
+                    <el-table-column label="Dimensi P5" width="150">
                         <template #default="{ row }">
                             <div v-if="row.p5 !== ''">
                                 <ul class="pl-4 list-disc">
@@ -660,12 +660,12 @@ onBeforeMount(() => {
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="Asesmen" width="80">
+                    <el-table-column label="Asesmen" width="60">
                         <template #default="{ row }">
                             <span v-html="row.asesmen" class="asesmen"></span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="Modul Ajar" width="200">
+                    <el-table-column label="Modul Ajar" width="80">
                         <template #default="{ row }">
                             <ul>
                                 <li v-for="ma in row.mas">
@@ -679,6 +679,7 @@ onBeforeMount(() => {
                         label="Opsi"
                         class-name="hidden-print"
                         width="150"
+                        fixed="right"
                     >
                         <template #default="{ row }">
                             <div class="flex items-center gap-1">

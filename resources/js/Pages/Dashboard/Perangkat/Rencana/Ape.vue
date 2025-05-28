@@ -51,11 +51,11 @@ const cetak = async () => {
         <!doctype html>
         <html>
             <head>
-                <title>Rencana Pekan Efektif Kelas ${page.props.rombel.label}</title>    
+                <title>Rencana Pekan Efektif Kelas ${page.props.rombel.label}</title>
             </head>
-            
+
             <body>
-                ${el.outerHTML}    
+                ${el.outerHTML}
             </body>
         </html>
     `;
@@ -269,7 +269,8 @@ const cetak = async () => {
                                                                 page.props
                                                                     .rombel
                                                                     .jadwals[0]
-                                                                    .hari
+                                                                    .hari,
+                                                                semester
                                                             ).length
                                                         }}
                                                     </td>
@@ -289,7 +290,8 @@ const cetak = async () => {
                                                                 page.props
                                                                     .rombel
                                                                     .jadwals[0]
-                                                                    .hari
+                                                                    .hari,
+                                                                semester
                                                             ).length
                                                         }}
                                                     </td>
@@ -305,7 +307,8 @@ const cetak = async () => {
                                                                 page.props
                                                                     .rombel
                                                                     .jadwals[0]
-                                                                    .hari
+                                                                    .hari,
+                                                                semester
                                                             )"
                                                             :key="e"
                                                         >
@@ -357,7 +360,8 @@ const cetak = async () => {
                                                                 page.props
                                                                     .rombel
                                                                     .jadwals[0]
-                                                                    .hari
+                                                                    .hari,
+                                                                semester
                                                             )
                                                         }}
                                                     </td>
