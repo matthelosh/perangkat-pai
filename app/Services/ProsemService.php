@@ -42,6 +42,7 @@ class ProsemService
                         $a->whereSemester($semester);
                         $a->where('tingkat', $tingkat);
                         $a->whereGuruId($guruId);
+                        $a->whereHas('prota');
                         // $a->whereHas('protas', function ($pr) use ($rombelId, $semester) {
                         //     $pr->whereRombelId($rombelId);
                         //     $pr->whereSemester($semester);
@@ -59,6 +60,7 @@ class ProsemService
                 ->get();
         } else {
             $atps = Atp::whereNull('guru_id')
+                ->whereHas('prota')
                 ->whereTingkat($tingkat)
                 ->whereSemester($this->semester()->kode)
                 ->with('prosems')
