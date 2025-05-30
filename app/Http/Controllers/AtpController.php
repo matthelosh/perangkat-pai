@@ -40,7 +40,9 @@ class AtpController extends Controller
                 $atps = Atp::whereFase($request->query('fase'))
                     ->whereGuruId($nip)
                     ->with('elemen', 'mas')
+                    ->orderBy('semester', 'ASC')
                     ->get();
+                $atps->sortBy(fn($item) => $item->elemen->id);
                 // } else {
                 //     $elemens = Elemen::where('fase', $request->query('fase'))->with('tps')->with('atps', function ($q) {
                 //         $q->whereNull('guru_id');

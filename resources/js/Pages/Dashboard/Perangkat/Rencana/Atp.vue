@@ -32,8 +32,15 @@ const Kop = defineAsyncComponent(() => import("@/components/Umum/Kop.vue"));
 const Ttd = defineAsyncComponent(() => import("@/components/Umum/Ttd.vue"));
 const selectedMateri = ref(null);
 const loading = ref(false);
-const atps = computed(() =>
-    page.props.atps.filter((at) => at.tingkat == atp.value.tingkat)
+const params = computed(() => route().params);
+const elemens = ref([])
+const atps = computed(() => {
+    let datas = page.props.atps.filter((at) => at.tingkat == atp.value.tingkat)
+    const res = datas.sort((a, b) => {
+       return a.elemen.id - b.elemen.id
+    })
+    return res.sort((a,b) => a.semester - b.semester)
+}
 );
 const mine = ref(true);
 const tingkat = ref(null);
@@ -54,7 +61,6 @@ const extensions = [
     OrderedList,
 ];
 
-const params = computed(() => route().params);
 const onMineChanged = (e) => {
     // let params = route().params;
     // alert('tes')
@@ -410,10 +416,12 @@ const p5s = ref([
     "Kreatif",
 ]);
 
-onBeforeMount(() => {
+onBeforeMount(async() => {
     // atps.value = page.props.atps
     // mine.value = params.value.mine
     // parseTpAtp()
+    const elemenres = await axios.post(route('elemen.index', { _query: {fase: params.value.fase}}))
+    elemens.value = elemenres.data
 });
 </script>
 
