@@ -51,8 +51,8 @@ const minggus = (m) => {
 };
 
 const eventsDate = computed(() => {
-    let events = allUnefektif(syahrs.value, page.props.rombel.jadwals[0].hari);
-    events.flat(2);
+    let events = allUnefektif(syahrs.value, page.props.rombel.jadwals[0].hari, page.props.semester.kode);
+    //events.flat(2);
 
     let offs = [];
     liburs.value.forEach((libur, l) => {
@@ -62,7 +62,7 @@ const eventsDate = computed(() => {
             tanggal: libur.mulai,
         });
     });
-
+ //   return events.flat(2)
     return offs;
 });
 
@@ -83,7 +83,7 @@ const nonAtps = computed(() => {
 const liburs = computed(() => {
     let all = [];
     for (let m = 0; m < syahrs.value.length; m++) {
-        all.push(unefektif(syahrs.value[m], page.props.rombel.jadwals[0].hari));
+        all.push(unefektif(syahrs.value[m], page.props.rombel.jadwals[0].hari, page.props.semester.kode));
     }
     return all.flat(2);
 });
@@ -100,7 +100,7 @@ const cetak = async () => {
     let el = document.querySelector(".cetak");
     let html = `<html>
                 <head>
-                    <title>Program Semester</title>    
+                    <title>Program Semester</title>
                 </head>
                 <body>
                     ${el.outerHTML}
@@ -350,7 +350,7 @@ const cetak = async () => {
                                             :key="m + 'a'"
                                         >
                                             <td
-                                                class="border border-black p-2"
+                                                class="border border-black p-2 text-center"
                                                 v-for="w in minggus(m)"
                                                 :key="w"
                                                 :class="
@@ -361,7 +361,7 @@ const cetak = async () => {
                                                         ? 'bg-white'
                                                         : cekLibur(m, w)
                                                         ? 'bg-red-100'
-                                                        : 'bg-slate-200'
+                                                        : 'bg-slate-50'
                                                 "
                                             >
                                                 <span
@@ -380,7 +380,7 @@ const cetak = async () => {
                                                 >
                                                 <span v-else>
                                                     <p v-if="cekLibur(m, w)">
-                                                        Libur
+                                                        X
                                                     </p>
                                                 </span>
                                             </td>
@@ -414,7 +414,7 @@ const cetak = async () => {
                                                         ? 'bg-white'
                                                         : cekLibur(m, w)
                                                         ? 'bg-red-100'
-                                                        : 'bg-slate-200'
+                                                        : 'bg-slate-50'
                                                 "
                                             >
                                                 <span
@@ -432,7 +432,7 @@ const cetak = async () => {
                                                 >
                                                 <span v-else>
                                                     <p v-if="cekLibur(m, w)">
-                                                        Libur
+                                                        X
                                                     </p>
                                                 </span>
                                             </td>
@@ -544,7 +544,7 @@ const cetak = async () => {
                                             :key="m + 'a'"
                                         >
                                             <td
-                                                class="border border-black p-2"
+                                                class="border border-black p-2 text-center"
                                                 v-for="w in minggus(m)"
                                                 :key="w"
                                                 :class="
@@ -555,7 +555,7 @@ const cetak = async () => {
                                                         ? 'bg-white'
                                                         : cekLibur(m, w)
                                                         ? 'bg-red-100'
-                                                        : 'bg-slate-200'
+                                                        : 'bg-slate-50'
                                                 "
                                             >
                                                 <span
@@ -573,7 +573,7 @@ const cetak = async () => {
                                                 >
                                                 <span v-else>
                                                     <p v-if="cekLibur(m, w)">
-                                                        Libur
+                                                        X
                                                     </p>
                                                 </span>
                                             </td>

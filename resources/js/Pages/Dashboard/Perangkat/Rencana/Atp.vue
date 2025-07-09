@@ -35,7 +35,7 @@ const loading = ref(false);
 const params = computed(() => route().params);
 const elemens = ref([])
 const atps = computed(() => {
-    let datas = page.props.atps.filter((at) => at.tingkat == atp.value.tingkat)
+    let datas = page.props.atps.filter((at) => at.tingkat == atp.value.tingkat && at.semester == selectedSemester.value)
     const res = datas.sort((a, b) => {
        return a.elemen.id - b.elemen.id
     })
@@ -44,6 +44,7 @@ const atps = computed(() => {
 );
 const mine = ref(true);
 const tingkat = ref(null);
+const selectedSemester = ref('1');
 const kembali = () => {
     router.get(route("rencana"));
 };
@@ -457,6 +458,17 @@ onBeforeMount(async() => {
                                     :key="t"
                                     :value="t"
                                     :label="'Kelas ' + t"
+                                />
+                            </el-select>
+                            <el-select
+                                placeholder="Pilih Semester"
+                                v-model="selectedSemester"
+                            >
+                                <el-option
+                                    v-for="sem in ['1','2']"
+                                    :key="sem"
+                                    :value="sem"
+                                    :label="'Semester ' + sem"
                                 />
                             </el-select>
                             <el-date-picker

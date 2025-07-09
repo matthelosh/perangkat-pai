@@ -49,11 +49,11 @@ export const weekOfMonth = (tanggal) => {
     return weekNum
 }
 
-export const allUnefektif = (months, day) => {
+export const allUnefektif = (months, day, semester) => {
     let dates = []
     for(let m of months) {
-        if (unefektif(m, day).length > 0 ) {
-            dates.push(unefektif(m, day).map(d => d.mulai))
+        if (unefektif(m, day, semester).length > 0 ) {
+            dates.push(unefektif(m, day, semester).map(d => d.mulai))
         }
     }
     return dates
