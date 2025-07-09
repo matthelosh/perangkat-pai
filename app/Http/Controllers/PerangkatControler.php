@@ -74,7 +74,9 @@ class PerangkatControler extends Controller
     {
 
         return Inertia::render("Dashboard/Perangkat/Pelaksanaan/Presensi", [
-            'rombel' => Rombel::whereKode($request->query('rombel'))->with('siswas')->first(),
+            'rombel' => Rombel::whereKode($request->query('rombel'))->with('siswas', function($s) {
+                $s->orderBy('nama', 'ASC');
+            })->first(),
             'protas' => Prota::whereGuruId(auth()->user()->userable->nip)
                 ->whereRombelId($request->query('rombel'))
                 ->whereSemester($this->semester()->kode)
