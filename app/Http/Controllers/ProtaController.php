@@ -30,6 +30,7 @@ class ProtaController extends Controller
                 $nip = auth()->user()->userable->nip;
                 $atps = Atp::where('guru_id', $nip)
                     ->where('tingkat', $request->tingkat)
+                    ->where('tapel', \tapel()->kode)
                     ->with('elemen')
                     ->with('prota', function ($q) use ($nip) {
                         $q->where('guru_id', $nip);
@@ -42,6 +43,7 @@ class ProtaController extends Controller
             } else {
                 $atps = Atp::where('tingkat', $request->tingkat)
                     // ->whereNull('guru_id')
+                    ->where('tapel', \tapel()->kode)
                     ->with('elemen')
                     ->with('protas', function ($q) {
                         $q->whereNull('guru_id');

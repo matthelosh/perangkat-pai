@@ -26,6 +26,7 @@ class ProsemService
             $atps = Atp::where('guru_id', $guruId)
                 ->whereTingkat($tingkat)
                 ->whereSemester($this->semester()->kode)
+                ->where('tapel', \tapel()->kode)
                 ->with('prosems')
                 ->get();
 
@@ -39,6 +40,7 @@ class ProsemService
             $elemens = Elemen::where('fase', $fase)
                 ->with([
                     'atps' => function ($a) use ($semester, $guruId, $rombelId, $tingkat) {
+                        $a->where('tapel', \tapel()->kode)
                         $a->whereSemester($semester);
                         $a->where('tingkat', $tingkat);
                         $a->whereGuruId($guruId);
@@ -63,6 +65,7 @@ class ProsemService
                 ->whereHas('prota')
                 ->whereTingkat($tingkat)
                 ->whereSemester($this->semester()->kode)
+                ->where('tapel', \tapel()->kode)
                 ->with('prosems')
                 ->get();
 
