@@ -23,10 +23,12 @@ class TpController extends Controller
                     // dd($request->query('mine'));
                     $nip = auth()->user()->userable->nip;
                     $elemens  = Elemen::where('fase', $request->query('fase'))->with('tps', function ($q) use ($nip) {
+                        $q->orderBy('teks', 'ASC');
                         $q->where('guru_id', $nip);
                     })->get();
                 } else {
                     $elemens = Elemen::where('fase', $request->query('fase'))->with('tps', function ($q) {
+                        $q->orderBy('teks', 'ASC');
                         $q->where('guru_id', null);
                     })->get();
                 }
@@ -88,7 +90,7 @@ class TpController extends Controller
      */
     public function show(Tp $tp) {}
     /**
-     * 
+     *
      * Get Tp for Select Element
      */
     public function list(Request $request)

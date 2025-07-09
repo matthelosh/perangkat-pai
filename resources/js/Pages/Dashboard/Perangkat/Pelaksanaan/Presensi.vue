@@ -137,12 +137,12 @@ const cetak = async () => {
                                         rowspan="2"
                                         class="border border-black p-2"
                                     >
-                                        NISN
+                                        Nama
                                     </th>
                                 </tr>
                                 <tr>
                                     <th
-                                        class="border border-black p-2 text-sm"
+                                        class="border border-black  text-xs"
                                         v-for="tgl in tanggals"
                                         :key="tgl"
                                     >
@@ -170,7 +170,7 @@ const cetak = async () => {
                                         {{ siswa.nama }}
                                     </td>
                                     <td
-                                        class="border border-black p-2"
+                                        class="border border-black"
                                         v-for="tgl in tanggals"
                                         :key="tgl"
                                     ></td>
