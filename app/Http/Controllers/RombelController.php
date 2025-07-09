@@ -73,11 +73,11 @@ class RombelController extends Controller
                     "id" => $data->id ?? null,
                 ],
                 [
-                    "sekolah_id" => $kodes[1],
+                    "sekolah_id" => $kodes[0],
                     "guru_id" => auth()->user()->userable->nip,
                     "kode" => $data->kode,
                     "label" => $data->label,
-                    "tapel" => $kodes[0],
+                    "tapel" => $kodes[1],
                     "fase" => $data->fase,
                     "tingkat" => $data->tingkat,
                     "is_active" => "1",

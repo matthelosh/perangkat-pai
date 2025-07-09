@@ -1,12 +1,23 @@
 <script setup>
 import { ref, computed, onBeforeMount } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
+import { Icon } from '@iconify/vue';
+import axios from 'axios'
 
 const page = usePage();
 const props = defineProps({ siswa: Object, rombel: Object });
+const loading =ref(false)
 
 const siswa = ref({});
 const rombel = ref({});
+const siswas = ref([]);
+const cariSiswa = async() => {
+    loading.value = true
+    axios.get('/siswa/'+siswa.value.nisn).then( res => {
+        siswa.value = res.data.siswa
+    }).catch(err => {
+    }).finally(() => loading.value = false )
+}
 
 const onSiswaAdded = () => {
     let data = siswa.value;
@@ -56,7 +67,11 @@ onBeforeMount(() => {
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button :native-type="null" @click="onSiswaAdded"
+                    <el-button @click="cariSiswa" :disabled="loading">
+                        <Icon icon="mdi:magnify" />
+                        Cari
+                    </el-button>
+                <el-button :native-type="null" @click="onSiswaAdded" :disabled="loading"
                     >Tambah</el-button
                 >
             </el-form-item>

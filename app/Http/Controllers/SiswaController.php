@@ -85,9 +85,15 @@ class SiswaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Siswa $siswa)
+    public function show(Request $request, $siswa)
     {
-        //
+        try {
+            return response()->json([
+                'siswa' => Siswa::where('nisn', $siswa)->first(),
+            ]);
+        } catch (\Throwable $th) {
+           return response()->json(['error' => $th->getMessage()]);
+        }
     }
 
     /**

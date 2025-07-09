@@ -1,6 +1,7 @@
 <script setup>
 import { watch, ref, onBeforeMount } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
+import { ElNotification } from 'element-plus';
 
 const page = usePage();
 const props = defineProps({ show: Boolean, selectedRombel: Object });
