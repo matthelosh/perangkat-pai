@@ -41,27 +41,7 @@ const close = () => {
                     </template>
                     <div class="card-body">
                         <el-menu>
-                            <el-menu-item
-                                index="1"
-                                @click="buka('tp.index', fase)"
-                            >
-                                <Icon
-                                    icon="mdi:chart-finance"
-                                    class="mr-2 text-lg"
-                                />
-                                <span>Tujuan Pembelajaran</span>
-                            </el-menu-item>
-                            <el-menu-item
-                                index="2"
-                                @click="buka('atp.index', fase)"
-                            >
-                                <Icon
-                                    icon="mdi:timeline"
-                                    class="mr-2 text-lg"
-                                />
-                                <span>Alur Tujuan Pembelajaran</span>
-                            </el-menu-item>
-                            <el-sub-menu
+                                                        <el-sub-menu
                                 index="3"
                                 v-if="
                                     page.props.rombels &&
@@ -88,6 +68,28 @@ const close = () => {
                                     >
                                 </el-menu-item-group>
                             </el-sub-menu>
+                            <el-menu-item
+                                index="1"
+                                @click="buka('tp.index', fase)"
+                            >
+                                <Icon
+                                    icon="mdi:chart-finance"
+                                    class="mr-2 text-lg"
+                                />
+                                <span>Tujuan Pembelajaran</span>
+                            </el-menu-item>
+                            <el-menu-item
+                                index="2"
+                                @click="buka('atp.index', fase)"
+                            >
+                                <Icon
+                                    icon="mdi:timeline"
+                                    class="mr-2 text-lg"
+                                />
+                                <span>Alur Tujuan Pembelajaran</span>
+                            </el-menu-item>
+
+
                             <el-sub-menu
                                 index="4"
                                 v-if="
@@ -144,6 +146,7 @@ const close = () => {
                                     >
                                 </el-menu-item-group>
                             </el-sub-menu>
+
                             <el-sub-menu
                                 index="6"
                                 v-if="

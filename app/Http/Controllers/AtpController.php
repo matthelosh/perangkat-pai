@@ -39,6 +39,7 @@ class AtpController extends Controller
 
                 $atps = Atp::whereFase($request->query('fase'))
                     ->whereGuruId($nip)
+                ->whereTapel(\tapel()->kode)
                     ->with('elemen', 'mas')
                     ->orderBy('semester', 'ASC')
                     ->get();

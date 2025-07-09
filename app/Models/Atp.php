@@ -16,6 +16,7 @@ class Atp extends Model
         'tingkat',
         'fase',
         'semester',
+        'tapel',
         'aw',
         'materi',
         'tps',
