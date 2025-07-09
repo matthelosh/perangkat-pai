@@ -97,6 +97,7 @@ class AtpController extends Controller
                     'tingkat' => $data['tingkat'],
                     'fase' => (int) $data['tingkat'] > 4 ? 'C' : ($data['tingkat'] > 2 ? 'B' : 'A'),
                     'semester' => $data['semester'],
+                    'tapel' => \tapel()->kode,
                     'aw' => $data['aw'],
                     'materi' => $data['materi'],
                     'tps' => \is_array($data['tps']) ? implode(";", $data['tps']) : $data['tps'],

@@ -57,6 +57,10 @@ const simpan = async (e) => {
     });
 };
 
+const tanggal = computed(() => {
+    const tgl = new Date()
+    return tgl.getFullYear()+'-07-09'
+})
 const edit = (item) => {
     jadwal.value = item;
     showForm.value = true;
@@ -88,11 +92,11 @@ const cetak = async () => {
             <!doctype html>
             <html>
                 <head>
-                    <title>Jadwal Pelajaran PAI | ${page.props.user.userable.nama}</title>    
+                    <title>Jadwal Pelajaran PAI | ${page.props.user.userable.nama}</title>
                     </head>
 
                 <body>
-                    
+
                     ${element.outerHTML}
                 </body>
             </html>
@@ -293,7 +297,7 @@ const cetak = async () => {
             <!-- {{ jadwals }} -->
             <Ttd
                 class="hidden print:flex"
-                tanggal="2025-01-05"
+                :tanggal="tanggal"
                 v-if="page.props.jadwals.length > 0"
             />
         </div>
