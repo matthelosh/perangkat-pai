@@ -40,7 +40,7 @@ class ProsemService
             $elemens = Elemen::where('fase', $fase)
                 ->with([
                     'atps' => function ($a) use ($semester, $guruId, $rombelId, $tingkat) {
-                        $a->where('tapel', \tapel()->kode)
+                        $a->where('tapel', \tapel()->kode);
                         $a->whereSemester($semester);
                         $a->where('tingkat', $tingkat);
                         $a->whereGuruId($guruId);
