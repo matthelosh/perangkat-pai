@@ -109,6 +109,7 @@ const hapusMa = async (id) => {
                     >
                         <template #title>
                             <h3>
+                                {{ a + 1}}.
                                 {{
                                     atp.materi +
                                     (atp.konten ? " | " + atp.konten : "")
@@ -116,6 +117,7 @@ const hapusMa = async (id) => {
                             </h3>
                         </template>
                         <div class="content">
+                            <div v-if="!atp.mas">
                             <el-button
                                 :native-type="null"
                                 type="primary"
@@ -124,36 +126,13 @@ const hapusMa = async (id) => {
                                 <Icon icon="mdi:plus" />
                                 Buat
                             </el-button>
-                            <el-table :data="atp.mas">
-                                <el-table-column
-                                    label="#"
-                                    type="index"
-                                ></el-table-column>
-                                <el-table-column
-                                    label="TP"
-                                    prop="tps"
-                                ></el-table-column>
-                                <el-table-column label="Opsi">
-                                    <template #default="{ row }">
-                                        <el-button
-                                            :native-type="null"
-                                            type="primary"
-                                            @click="editMa(atp, row)"
-                                        >
-                                            <Icon icon="mdi:magnify" />
-                                            Lihat
-                                        </el-button>
-                                        <el-button
-                                            :native-type="null"
-                                            type="danger"
-                                            @click="hapusMa(row.id)"
-                                        >
-                                            <Icon icon="mdi:delete" />
-                                            Hapus
-                                        </el-button>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
+                            </div>
+                            <div v-else>
+                                <el-button :native-type="null" type="primary">
+                                    <Icon icon="mdi:edit" />
+                            {{atp.mas?.judul ?? 'Judul Modul Ajar' }}
+                                </el-button>
+                            </div>
                         </div>
                     </el-collapse-item>
                 </el-collapse>

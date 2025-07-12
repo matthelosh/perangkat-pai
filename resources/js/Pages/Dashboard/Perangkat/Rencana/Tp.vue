@@ -277,6 +277,7 @@ onBeforeMount(() => {
                                         <tr
                                             v-for="(tp, t) in elemen.tps"
                                             :key="tp.kode"
+                                            class="hover:bg-sky-100 transition-all duration-300"
                                         >
                                             <td
                                                 class="border border-slate-600 p-1"

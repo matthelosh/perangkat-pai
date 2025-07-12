@@ -687,13 +687,10 @@ onBeforeMount(async() => {
                     </el-table-column>
                     <el-table-column label="Modul Ajar" width="80">
                         <template #default="{ row }">
-                            <ul>
-                                <li v-for="ma in row.mas">
-                                    Modul Ajar {{ ma.kode }}
-                                </li>
-                            </ul>
+                            <div>{{row.mas?.judul ?? '-' }}</div>
                         </template>
                     </el-table-column>
+
                     <el-table-column
                         v-if="!showCetak"
                         label="Opsi"

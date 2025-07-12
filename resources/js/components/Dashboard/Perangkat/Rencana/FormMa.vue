@@ -13,9 +13,9 @@ const extensions = [
     Bold.configure({bubble: true}),
     Underline.configure({bubble: true}),
     Italic.configure({bubble: true}),
-    BulletList, OrderedList, 
+    BulletList, OrderedList,
     Table.configure({resizable:true}),
-    
+
 ]
 const page = usePage()
 const props = defineProps({atp: Object, selectedMa: Object})
@@ -24,46 +24,47 @@ const loading = ref(false)
 const edit = ref(false)
 const info = ref(false)
 const ma = ref({
+    judul: 'Isi Judul Modul',
     pendahuluan: `<table class="w-full" width="100%" border="1" style="border-collapse:collapse;">
                     <thead>
                         <tr>
-                            <th class="border border-black align-top p-2">Kegiatan Pembelajaran</th>    
-                            <th class="border border-black align-top">Alokasi Waktu</th>    
-                        </tr>    
+                            <th class="border border-black align-top p-2">Kegiatan Pembelajaran</th>
+                            <th class="border border-black align-top">Alokasi Waktu</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="border border-black align-top p-2"></td>    
-                            <td class="border border-black align-top p-2">15 Menit</td>    
-                        </tr>    
+                            <td class="border border-black align-top p-2"></td>
+                            <td class="border border-black align-top p-2">15 Menit</td>
+                        </tr>
                     </tbody>
         </table>`,
     inti: `<table class="w-full" width="100%" border="1" style="border-collapse:collapse;">
                     <thead>
                         <tr>
-                            <th class="border border-black align-top p-2">Kegiatan Pembelajaran</th>    
-                            <th class="border border-black align-top">Alokasi Waktu</th>    
-                        </tr>    
+                            <th class="border border-black align-top p-2">Kegiatan Pembelajaran</th>
+                            <th class="border border-black align-top">Alokasi Waktu</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="border border-black align-top p-2"></td>    
-                            <td class="border border-black align-top p-2">11    0 Menit</td>    
-                        </tr>    
+                            <td class="border border-black align-top p-2"></td>
+                            <td class="border border-black align-top p-2">11    0 Menit</td>
+                        </tr>
                     </tbody>
         </table>`,
     penutup: `<table class="w-full" width="100%" border="1" style="border-collapse:collapse;">
                     <thead>
                         <tr>
-                            <th class="border border-black align-top p-2">Kegiatan Pembelajaran</th>    
-                            <th class="border border-black align-top">Alokasi Waktu</th>    
-                        </tr>    
+                            <th class="border border-black align-top p-2">Kegiatan Pembelajaran</th>
+                            <th class="border border-black align-top">Alokasi Waktu</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="border border-black align-top p-2"></td>    
-                            <td class="border border-black align-top p-2">15 Menit</td>    
-                        </tr>    
+                            <td class="border border-black align-top p-2"></td>
+                            <td class="border border-black align-top p-2">15 Menit</td>
+                        </tr>
                     </tbody>
         </table>`,
 })
@@ -87,7 +88,7 @@ const cetak = async() => {
     const el = document.querySelector('.cetak')
     let html = `<html>
                 <head>
-                    <title>Madul Ajar</title>    
+                    <title>Madul Ajar</title>
                     <style>
                         ul.langkah table {
                             border: 1px solid black;
@@ -167,6 +168,15 @@ onBeforeMount(() => {
                 <h3 class="uppercase font-bold">A. Identitas Modul</h3>
                 <table>
                     <tr>
+                        <td>Judul</td>
+                        <td class="px-2">:</td>
+                        <td>
+                            <span v-if="!edit"> {{ ma.judul }}</span>
+                            <el-input v-else v-model="ma.judul" placeholder="Isi Judul modul" />
+                        </td>
+                    </tr>
+
+                    <tr>
                         <td>Penyusun</td>
                         <td class="px-2">:</td>
                         <td>{{ page.props.user.userable.nama }}, {{ page.props.user.userable.gelar_belakang }}</td>
@@ -211,7 +221,7 @@ onBeforeMount(() => {
                         </li>
                     </ul>
                 </div>
-                
+
             </div>
 
             <div class="inti">

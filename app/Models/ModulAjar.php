@@ -10,6 +10,7 @@ class ModulAjar extends Model
     use HasFactory;
 
     protected $fillable = [
+        'judul',
         'atp_id',
         'kode',
         'guru_id',
